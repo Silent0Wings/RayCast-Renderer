@@ -14,7 +14,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Add step to regenerate the configure script if it doesn't exist
+    # Ensure dependencies are installed for autoreconf (if needed)
+    - name: Install dependencies
+      run: sudo apt-get install autoconf automake
+
+    # Regenerate configure script if it's missing
     - name: Regenerate configure script
       run: |
         if [ ! -f ./configure ]; then
