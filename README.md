@@ -2,7 +2,6 @@
 ![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/0d70f502cf390c3f684a59b6940151f66277709a/src/img/Suzane.png)
 ![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/0d70f502cf390c3f684a59b6940151f66277709a/src/img/dhalia%20resolution.png)
 
-
 [Project Report](https://github.com/Silent0Wings/RayCast-Renderer/blob/346a89eef5504809262ef28ceef03915141df271/Github.pdf).
 
 RayCast Renderer is a tool for generating 2D images from 3D scenes using ray casting. Rays are cast from a virtual camera into a 3D scene, checking for intersections with objects. The properties (e.g., colors) of intersected triangles are used to render the final image. This approach is simple, efficient, and avoids complex light interactions like reflections or refractions.
@@ -13,14 +12,14 @@ Ray Casting involves tracing rays from a viewpoint (camera) into a scene to dete
 
 Ray Equation:
 R(t) = O + t * D
-- O: Ray origin (camera position).
-- D: Ray direction (a normalized vector).
-- t: Scalar determining the point along the ray.
+- O: Ray origin (camera position)
+- D: Ray direction (a normalized vector)
+- t: Scalar determining the point along the ray
 
 Triangles as Primitives:
 Objects are represented as collections of triangles. Each triangle has:
-- Vertices: Points in 3D space (v1, v2, v3).
-- Color: A property used for rendering.
+- Vertices: Points in 3D space (v1, v2, v3)
+- Color: A property used for rendering
 
 Intersection Testing:
 The renderer uses the Möller-Trumbore Algorithm to efficiently detect ray-triangle intersections. If a ray intersects a triangle, the triangle’s color is assigned to the corresponding pixel.
@@ -56,8 +55,17 @@ The renderer uses the Möller-Trumbore Algorithm to efficiently detect ray-trian
 1. Clone the repository:
    git clone https://github.com/Silent0Wings/RayCast-Renderer.git
    cd raycast-renderer
-3. Build and run the project:
+
+2. Build and run the project:
    build_run.bat
+
+3. **Additional Requirement**: 
+   This project requires **ImageMagick** installed and linked to your system's path. 
+   Specifically, the project uses the following command to convert the PPM file to PNG format:
+   
+   `std::string convertCommand = "magick convert " + filePath + " " + pngFile;`
+   
+   Ensure that **ImageMagick** is installed and its executable is available in your system's PATH for this to work correctly.
 
 ## Usage
 
@@ -91,8 +99,6 @@ Each triangle is assigned a unique color. When a ray hits a triangle, the pixel 
 - Basic Output: Limited to simple color-based rendering.
 - No direct way to color triangles
 
-
-
 ## License
 
-This project is a personal project for educational purpouses .
+This project is a personal project for educational purposes.
