@@ -51,7 +51,7 @@ The renderer uses the Möller-Trumbore Algorithm to efficiently detect ray-trian
 ## Installation
 
 1. Clone the repository:
-   git clone https://github.com/yourusername/raycast-renderer.git
+   git clone https://github.com/Silent0Wings/RayCast-Renderer.git
    cd raycast-renderer
 3. Build and run the project:
    build_run.bat
