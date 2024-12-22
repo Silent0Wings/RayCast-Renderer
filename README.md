@@ -19,9 +19,8 @@ RayCast Renderer is a simple yet powerful tool for generating 2D images from 3D 
 Ray casting is the process of tracing rays from a viewpoint (camera) into a scene to identify the closest object along each ray's path. This forms the basis for rendering 3D scenes onto a 2D plane.
 
 **Ray Equation**:
-\[
-R(t) = O + t \cdot D
-\]
+R(t) = O + t * D
+
 - **O**: Ray origin, typically the camera position.
 - **D**: Ray direction, represented as a normalized 3D vector.
 - **t**: Scalar parameter, determining the point along the ray.
