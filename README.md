@@ -2,7 +2,7 @@
 ![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/ccea9cce6a20f92a9ce836cf03a78983156d97e4/src/img/suzane2000.png)
 ![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/0d70f502cf390c3f684a59b6940151f66277709a/src/img/dhalia%20resolution.png)
 ![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/b55c0d3123b728a70b56ec5fb3f824abbd48de59/src/img/suzane%20colored%20options.png)
-![Rendered Scene](src/img/dear.png)
+![Rendered Scene](src/img/dear1.png)
 
 
 # RayCast Renderer
