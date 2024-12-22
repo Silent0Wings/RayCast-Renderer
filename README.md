@@ -107,7 +107,7 @@ The renderer employs the **Möller-Trumbore Algorithm** to efficiently calculate
 Intersection Testing:
 The renderer solves the ray-triangle intersection problem:
 1. Check if the ray intersects the plane of the triangle.
-2. Confirm the intersection point lies inside the triangle bounds using barycentric coordinates.
+2. Confirm the intersection point lies inside the triangle bounds.
 
 Color Mapping:
 Each triangle is assigned a unique color. When a ray hits a triangle, the pixel corresponding to the ray is updated with the triangle’s color.
