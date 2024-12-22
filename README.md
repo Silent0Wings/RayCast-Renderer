@@ -27,7 +27,7 @@ R(t) = O + t * D
 
 ### Triangles as Building Blocks
 In this renderer, all objects are represented as collections of **triangles**—the fundamental geometric primitive. Each triangle is defined by:
-- **Vertices**: Three points in 3D space (\(v_1, v_2, v_3\)).
+- **Vertices**: Three points in 3D space (v1, v2, v3).
 - **Color**: A color value that determines how the triangle will appear in the final image.
 
 ### Intersection Testing
