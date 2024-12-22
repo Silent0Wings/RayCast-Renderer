@@ -1,5 +1,5 @@
 # RayCast Renderer
-![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/0d70f502cf390c3f684a59b6940151f66277709a/src/img/Suzane.png)
+![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/ccea9cce6a20f92a9ce836cf03a78983156d97e4/src/img/suzane2000.png)
 ![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/0d70f502cf390c3f684a59b6940151f66277709a/src/img/dhalia%20resolution.png)
 
 [Project Report](https://github.com/Silent0Wings/RayCast-Renderer/blob/2ad704d5b1e4c9e7c13a64448181dc83e63d5246/Github.pdf).
