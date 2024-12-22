@@ -2,7 +2,7 @@
 ![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/ccea9cce6a20f92a9ce836cf03a78983156d97e4/src/img/suzane2000.png)
 ![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/0d70f502cf390c3f684a59b6940151f66277709a/src/img/dhalia%20resolution.png)
 
-[Project Report](https://github.com/Silent0Wings/RayCast-Renderer/blob/aa18fa82f01cf9cfa447876733b18b80c3143989/Github.pdf).
+[Project Report](Github.pdf).
 
 RayCast Renderer is a tool for generating 2D images from 3D scenes using ray casting. Rays are cast from a virtual camera into a 3D scene, checking for intersections with objects. The properties (e.g., colors) of intersected triangles are used to render the final image. This approach is simple, efficient, and avoids complex light interactions like reflections or refractions.
 
