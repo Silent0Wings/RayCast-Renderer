@@ -8,8 +8,10 @@
 #include <cmath>
 #include <iostream>
 #include <vector> // Import the vector library
+#include <array>  // Import the array library
 #include "ray.h" // Assuming vec3 is implemented in vec3.h
 #include "object.h" // Assuming vec3 is implemented in vec3.h
+#include "point.h" // Ensure point is included
 using namespace std;
 
 /**
@@ -29,15 +31,41 @@ private:
 
     image img;
 public:
+    // Copy constructor
+    camera(const camera& other) 
+        : gridRay(other.gridRay), width(other.width), height(other.height), defaultColor(other.defaultColor), img(other.img) {}
     // Default constructor
     camera() : camera(0, 0) {}
-    camera(int width, int height) {
+    camera(int w, int h) {
 
-        if (width < 0 || height < 0)
+        if (w < 0 || h < 0)
         {
             throw std::invalid_argument("Width and height must be non-negative");
         }
-        if (width==0 && height == 0)
+        if (w == 0 && h == 0)
+        {
+            width = 0;
+            height = 0;
+            gridRay = vector<vector<ray>>();
+            img = image();
+        }else   
+        {
+            this->width = static_cast<unsigned int> (w);
+            this->height = static_cast<unsigned int> (h);
+            gridRay.resize(height);
+            for (unsigned int i = 0; i < height; ++i) {
+                gridRay[i].resize(width);
+            }
+            img = image(static_cast<unsigned int> (width), static_cast<unsigned int> (height));
+        }
+    }
+    camera(const int  h,const int w ,const double step,const point origin,const point offset ,const vec3 affect, const vec3 direction) {
+
+        if (w <= 0 || h <= 0 || step <= 0)
+        {
+            throw std::invalid_argument("Width and height must be non-negative");
+        }
+        if (w==0 && h == 0 && step == 0)
         {
             width=0;
             height=0;
@@ -45,44 +73,86 @@ public:
             img = image();
         }else   
         {
-            this->width = width;
-            this->height = height;
+            this->width = static_cast<unsigned int> (w);
+            this->height = static_cast<unsigned int> (h);
             gridRay.resize(height);
             for (unsigned int i = 0; i < (unsigned int) height; ++i) {
                 gridRay[i].resize(width);
             }
-            img = image(width, height);
+            consructRay(height, width, step, origin, offset, affect, direction);
+            img = image(static_cast<unsigned int> (width), static_cast<unsigned int> (height));
+        }
+    }
+    camera(int  h, int w , double step, point origin ,vec3 Xdirection, vec3 Ydirection, vec3 direction) {
+
+        if (w <= 0 || h <= 0 || step <= 0)
+        {
+            throw std::invalid_argument("Width and height must be non-negative");
+        }
+        if (w==0 && h == 0 && step == 0)
+        {
+            width=0;
+            height=0;
+            gridRay=vector<vector<ray>>();
+            img = image();
+        }else   
+        {
+            this->width = static_cast<unsigned int> (w);
+            this->height = static_cast<unsigned int> (h);
+            gridRay.resize(height);
+            for (unsigned int i = 0; i < (unsigned int) height; ++i) {
+                gridRay[i].resize(width);
+            }
+            consructRay(height, width, step, origin, Xdirection, Ydirection, direction);
+            img = image(static_cast<unsigned int> (width), static_cast<unsigned int> (height));
+        }
+    }
+    
+
+    // construct the ray grid for the camera
+    void consructRay(point camOrigin, point CamOffset, vec3 camDirection, unsigned int height ,unsigned int width, double step)
+    {
+        for (unsigned i = 0; i < height; ++i) {
+            for (unsigned j = 0; j < width; ++j) {
+                point temp((i * step),(j * step) ,0 );    
+                gridRay[i][j] = ray(camOrigin+temp+CamOffset, camDirection);
+            }
         }
     }
 
-    // Constructor with gridRay
-    camera(int width, int height, vector<vector<ray>> g) {
-
-        if (width < 0 || height < 0)
-        {
-            throw std::invalid_argument("Width and height must be non-negative");
-        }
-        defaultColor=color(0, 0, 0);
-        if (width==0 && height == 0)
-        {
-            width=0;
-            height=0;
-            gridRay=vector<vector<ray>>();
-            img = image();
-        }else   
-        {
-            this->width = width;
-            this->height = height;
-            gridRay.resize(height);
-            for (unsigned int i = 0; i < (unsigned int) height; ++i) {
-                gridRay[i].resize(width);
+     // construct the ray grid for the camera
+    void consructRay(unsigned int height ,unsigned int width, double step, point origin,point offset ,vec3 affect, vec3 direction)
+    {
+        affect=gmath::normalize(affect);
+        for (unsigned i = 0; i < height; ++i) {
+            for (unsigned j = 0; j < width; ++j) {
+                point temp((i * step)*affect.x(),(j * step)*affect.y() ,(j * step)*affect.z());    
+                gridRay[i][j] = ray(origin + offset + temp , direction);
             }
-
-         
-            
-            this->gridRay = g;
-            img = image(width, height);
         }
+    }
+    void consructRay(unsigned int height ,unsigned int width, double step, point origin ,vec3 Xdirection, vec3 Ydirection, vec3 Raydirection)
+    {
+        Xdirection = gmath::normalize(Xdirection);
+        Ydirection = gmath::normalize(Ydirection);
+        Raydirection = gmath::normalize(Raydirection);
+
+        for (unsigned i = 0; i < height; ++i) {
+            point Yposition = point(0,0,0)+ Ydirection * (i * step);    
+            for (unsigned j = 0; j < width; ++j) {
+                point Xposition = point(0,0,0)+Xdirection * (j * step);
+                point Final = origin +Yposition + Xposition;
+                gridRay[i][j] = ray(Final, Raydirection);
+            }
+        }
+    }
+   
+
+    // Constructor with gridRay
+    // Constructor with gridRay
+    camera(int width, int height, vector<vector<ray>> g): camera(width, height) {
+        gridRay.clear();
+        gridRay = g;
     }
 
     // Get the width of the camera
@@ -116,6 +186,11 @@ public:
         gridRay[y][x] = c;
     }
 
+    // set the ray vector
+    void setRay(vector<vector<ray>> g) {
+        gridRay = g;
+    }
+
     // Check if a pixel is out of bounds return true if out of bounds
     bool constrain( unsigned int& x, unsigned int& y) const{
         return (x < 0 || x >= width || y < 0 || y >= height);
@@ -131,7 +206,7 @@ public:
 
     // Overload operator<< for prunsigned inting
     friend std::ostream& operator<<(std::ostream& os, const camera& img) {
-        os << "Ray(" << img.getwidth() << ", " << img.getheight() << ")\n";
+        os << "Ray( width : " << img.getwidth() << ", height : " << img.getheight() << ")\n";
         for (unsigned int i = 0; i < img.getheight(); ++i) {
             for (unsigned int j = 0; j < img.getwidth(); ++j) {
                 os << img.gridRay[i][j] << " | ";

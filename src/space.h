@@ -2,10 +2,12 @@
 #define SPACE_H
 
 #include <vector>
+#include <thread>
 #include <iostream>
 #include "object.h"
 #include "camera.h"
 #include "ppm.cpp"
+
 
 using namespace std;
 
@@ -76,8 +78,8 @@ public:
         for (auto& cam : cameras) {
 
             for (auto& o : obj) { 
-                cam.cameraToImage(o);
 
+                cam.cameraToImage(o);
                // std::cout << "Processing Camera #" << &cam - &cameras[0] << std::endl;
                // std::cout << "Processing Object #" << &o - &obj[0] << std::endl;
                // cout << "Camera Image: " << endl;
@@ -85,8 +87,20 @@ public:
                 // Output file path
 
                 // Render the image and save it to the file
-                ImageRenderer::renderToFile(cam.getimage(), "output" + std::to_string(&cam - &cameras[0]) + ".ppm");
             }
+        }
+
+        
+    }
+
+    // output the imges 
+    void saveImages()
+    {
+        if(cameras.size()==0)
+        return;
+
+        for (auto& cam : cameras) {
+            ImageRenderer::renderToFile(cam.getimage(), "output" + std::to_string(&cam - &cameras[0]) + ".ppm");
         }
     }
 };

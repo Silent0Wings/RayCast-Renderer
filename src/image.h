@@ -27,13 +27,13 @@ private:
 public:
     // Default constructor
     image() : image(0, 0) {}
-    image(int width, int height) {
+    image(const int w , const int h) {
 
-        if (width < 0 || height < 0)
+        if (w < 0 || h < 0)
         {
             throw std::invalid_argument("Width and height must be non-negative");
         }
-        if (width==0 && height == 0)
+        if (w==0 && h == 0)
         {
             width=0;
             height=0;
@@ -41,14 +41,65 @@ public:
         }else   
         {
 
-            this->width = width;
-            this->height = height;
-            pixels.resize(height);
-            for (unsigned int i = 0; i < (unsigned int) height; ++i) {
+            this->width = static_cast<unsigned int> (w);
+            this->height  = static_cast<unsigned int> (h);
+            pixels.resize(static_cast<size_t> (h));
+            for (unsigned int i = 0; i < static_cast<size_t> (w); ++i) {
                 pixels[i].resize(width);
             }
         }
     }
+    image(const int w , const int h , vector<vector<image>> images) : image(w, h) {
+        imageConstruct(images);
+    }
+
+    // construct image from a vector of vectors of cameras
+    void imageConstruct(const vector<vector<image>>& images) {
+        vector<vector<color>> newpixels;
+
+        // Calculate total height and width based on the input images
+        unsigned int totalHeight = 0;
+        unsigned int totalWidth = 0;
+
+        for (const auto& row : images) {
+            unsigned int rowHeight = 0;
+            unsigned int rowWidth = 0;
+            for (const auto& img : row) {
+                rowWidth += img.getwidth();
+                rowHeight = max(rowHeight, img.getheight());
+            }
+            totalWidth = max(totalWidth, rowWidth);
+            totalHeight += rowHeight;
+        }
+
+        // Resize the newpixels vector
+        newpixels.resize(totalHeight, vector<color>(totalWidth));
+
+        // Construct the new image by placing sub-images at appropriate offsets
+        unsigned int yOffset = 0;
+
+        for (const auto& row : images) {
+            unsigned int xOffset = 0;
+            unsigned int maxRowHeight = 0;
+
+            for (const auto& img : row) {
+                for (size_t z = 0; z < img.getheight(); ++z) {
+                    for (size_t w = 0; w < img.getwidth(); ++w) {
+                        newpixels[yOffset + z][xOffset + w] = img.get(z, w);
+                    }
+                }
+
+                xOffset += img.getwidth(); // Shift X offset by the image width
+                maxRowHeight = max(maxRowHeight, img.getheight());
+            }
+
+            yOffset += maxRowHeight; // Shift Y offset by the maximum row height
+        }
+
+        // Assign newpixels to the class member
+        pixels = newpixels;
+    }
+
 
     // Get the width of the image
     unsigned int getwidth() const {
@@ -61,11 +112,12 @@ public:
     }
 
     // Get the color of a pixel
-    color get(unsigned int x, unsigned int y) const {
+    const color& get(unsigned int x, unsigned int y) const {
+        //cout << " x :" << x << " y : "<< y << endl;
         if (constrain(x,y)) {
             throw std::invalid_argument("Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
         }
-        return pixels[x][y];
+           return pixels[x][y];
     }
 
     // Set the color of a pixel
@@ -79,7 +131,7 @@ public:
 
     // Check if a pixel is out of bounds
     bool constrain( unsigned int& x, unsigned int& y) const{
-        return (x < 0 || x >= height || y < 0 || y >= width);
+        return ( x >= height|| y >= width);
     }
 
     // Clear the image
@@ -93,13 +145,15 @@ public:
 
     // Resize the image
     void resize(unsigned int new_width, unsigned int new_height) {
-        if (new_width < 0 || new_height < 0) {
-            throw std::invalid_argument("Width and height must be non-negative width: " + std::to_string(new_width) + " | height : " + std::to_string(new_height));
-            
+        if (new_width == 0 || new_height == 0) {
+            throw std::invalid_argument("New width and height must be non-zero");
         }
-        vector<vector<color>> pixels;
-
-
+        pixels.resize(new_height);
+        for (unsigned int i = 0; i < new_height; ++i) {
+            pixels[i].resize(new_width);
+        }
+        width = new_width;
+        height = new_height;
     }
 
     // Overload operator<< for prunsigned inting

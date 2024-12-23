@@ -48,7 +48,7 @@ public:
 
     
         // Convert PPM to PNG
-        std::string convertCommand = "magick convert " + filePath + " " + pngFile;
+        std::string convertCommand = "magick " + filePath + " " + pngFile;
         std::cout << "convertCommand: " << convertCommand << std::endl;
         int convertResult = system(convertCommand.c_str());
         if (convertResult != 0) {
