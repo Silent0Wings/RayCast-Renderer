@@ -31,7 +31,7 @@ In this renderer, all objects are represented as collections of **triangles**—
 - **Color**: A color value that determines how the triangle will appear in the final image.
 
 ### Intersection Testing
-The renderer employs the **Möller-Trumbore Algorithm** to efficiently calculate intersections between rays and triangles. When a ray intersects a triangle, the color of the triangle is assigned to the corresponding pixel in the rendered image.
+The renderer employs the **linear algebra intersection** to efficiently calculate intersections between rays and triangles. When a ray intersects a triangle, the color of the triangle is assigned to the corresponding pixel in the rendered image.
 
 ---
 
