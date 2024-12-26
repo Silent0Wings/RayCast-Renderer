@@ -6,6 +6,9 @@
 #include <fstream>
 #include <cstdlib>
 #include "image.h"
+#include <cstdlib>  // For C++ programs
+// OR
+#include <stdlib.h> // For C programs
 
 class ImageRenderer {
 public:

@@ -11,7 +11,7 @@ if exist .\main.exe (
 
 :: Compile the program
 g++ -o main main.cpp -Wall
-
+\\g++ -std=c++17 -o main main.cpp -Wall
 :: Check if the output file (main.exe) was created successfully
 if exist .\main.exe (
     :: Delete output0.png if it exists

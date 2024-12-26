@@ -44,6 +44,46 @@ public:
         parent = nullptr;
     }
 
+    static object Cube(double scaling, point offset) {
+    const vector<point> cubeVertices = {
+        (point(0, 0, 0) * scaling + offset),  // Vertex 0
+        (point(1, 0, 0) * scaling + offset),  // Vertex 1
+        (point(1, 1, 0) * scaling + offset),  // Vertex 2
+        (point(0, 1, 0) * scaling + offset),  // Vertex 3
+        (point(0, 0, 1) * scaling + offset),  // Vertex 4
+        (point(1, 0, 1) * scaling + offset),  // Vertex 5
+        (point(1, 1, 1) * scaling + offset),  // Vertex 6
+        (point(0, 1, 1) * scaling + offset)   // Vertex 7
+    };
+    
+    // Create object vertices for two triangles in the z = 0 plane
+    const vector<vector<point>> vertices = {
+        // Bottom face
+        {cubeVertices[0], cubeVertices[1], cubeVertices[2]},
+        {cubeVertices[0], cubeVertices[2], cubeVertices[3]},
+        
+        // Top face
+        {cubeVertices[4], cubeVertices[5], cubeVertices[6]},
+        {cubeVertices[4], cubeVertices[6], cubeVertices[7]},
+
+        // Front face
+        {cubeVertices[0], cubeVertices[1], cubeVertices[5]},
+        {cubeVertices[0], cubeVertices[5], cubeVertices[4]},
+
+        // Back face
+        {cubeVertices[2], cubeVertices[3], cubeVertices[7]},
+        {cubeVertices[2], cubeVertices[7], cubeVertices[6]},
+
+        // Left face
+        {cubeVertices[0], cubeVertices[3], cubeVertices[7]},
+        {cubeVertices[0], cubeVertices[7], cubeVertices[4]},
+
+        // Right face
+        {cubeVertices[1], cubeVertices[2], cubeVertices[6]},
+        {cubeVertices[1], cubeVertices[6], cubeVertices[5]}
+        };
+        return object(vertices);
+    }
 
     // output operator
     friend ostream& operator<<(ostream& os, const object& obj) {

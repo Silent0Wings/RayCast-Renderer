@@ -1,6 +1,7 @@
 #ifndef SPACE_H
 #define SPACE_H
 
+#include <future>
 #include <vector>
 #include <thread>
 #include <iostream>
@@ -20,12 +21,12 @@ using namespace std;
  */
 class space {
 public:
-    std::vector<object> obj;
-    std::vector<camera> cameras;
+    vector<object> obj;
+    vector<camera> cameras;
 
     // Constructors and Destructor
     space(): obj(), cameras() {}
-    space(std::vector<object> obj) : obj(obj) {}
+    space(vector<object> obj) : obj(obj) {}
 
     // Add an object to the space
     void addObject(const object& o) {
@@ -71,7 +72,7 @@ public:
     // trigger the camera ray behavior
     void triggerCameraRay() {
         if (cameras.empty() || obj.empty()) {
-            std::cout << "No cameras or objects to process." << std::endl;
+            cout << "No cameras or objects to process." << endl;
             return;
         }
 
@@ -80,8 +81,8 @@ public:
             for (auto& o : obj) { 
 
                 cam.cameraToImage(o);
-               // std::cout << "Processing Camera #" << &cam - &cameras[0] << std::endl;
-               // std::cout << "Processing Object #" << &o - &obj[0] << std::endl;
+               // cout << "Processing Camera #" << &cam - &cameras[0] << endl;
+               // cout << "Processing Object #" << &o - &obj[0] << endl;
                // cout << "Camera Image: " << endl;
                // cout << cam.getimage() << endl;
                 // Output file path
@@ -93,6 +94,34 @@ public:
         
     }
 
+    
+    void threadedCameraRay(std::vector<std::future<void>>& futures) {
+        for (auto& cam : cameras) {
+            size_t camIndex = &cam - &cameras[0];
+            std::cout << "Thread N*= " << camIndex << " |started!" << std::endl;
+            for (auto& o : obj) {
+                // Launch asynchronous task for processing each camera-object pair
+                futures.push_back(std::async(std::launch::async, [&cam, &o, &camIndex]() {
+                    // Calculate thread identifier for logging
+
+                    // Log thread start
+
+                    // Clear screen (optional, might not work in all consoles)
+                    std::cout << "\033[2J\033[H";
+
+                    // Process the object with the camera
+                    cam.cameraToImage(o);
+
+                    // Save the rendered image to a file
+                    ImageRenderer::renderToFile(cam.getimage(), "output" + std::to_string(camIndex) + ".ppm");
+
+                    // Log thread end
+                }));
+            }
+            std::cout << "Thread N*= " << camIndex << " |ended!" << std::endl;
+        }
+    }
+
     // output the imges 
     void saveImages()
     {
@@ -100,8 +129,13 @@ public:
         return;
 
         for (auto& cam : cameras) {
-            ImageRenderer::renderToFile(cam.getimage(), "output" + std::to_string(&cam - &cameras[0]) + ".ppm");
+            ImageRenderer::renderToFile(cam.getimage(), "output" + to_string(&cam - &cameras[0]) + ".ppm");
         }
+    }
+
+    void saveImage(camera c)
+    {
+        ImageRenderer::renderToFile(c.getimage(), "output_" + to_string(chrono::high_resolution_clock::now().time_since_epoch().count()) + ".ppm");
     }
 };
 

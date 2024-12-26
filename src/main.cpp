@@ -12,7 +12,7 @@
 #include "ImageRenderer.h"
 #include <vector>  // Include vector header
 #include "MeshReader.h" // Include input/output stream header
-
+#include <future>
 using namespace std;
 
 
@@ -271,7 +271,6 @@ void testSpaceCamera() {
     // Create a camera with the grid of rays
     camera cam(size, size, gridRay);
 
-    // Create object vertices for two triangles in the z = 0 plane
     // Create object vertices for multiple triangles in the z = 0 plane
     std::vector<std::vector<point>> vertices = {
         {point(0, 0, 0), point(1, 0, 0), point(0, 1, 0)},  // Triangle 1
@@ -365,8 +364,8 @@ void testSpaceCameraCube() {
     std::cout << "_________Space Test_______________" << std::endl;
 
     // Define the grid size
-    unsigned int size = 500;
-    double step = 0.01;
+    unsigned int size = 500*8;
+    double step = 0.01/8;
 
     // Create a vector of rays pointing toward the plane z = 0
     std::vector<std::vector<ray>> gridRay;
@@ -465,6 +464,7 @@ void testSpaceCameraCube() {
 
     // Trigger the camera rays
     s.triggerCameraRay();
+    s.saveImages();
 
     
 
@@ -1059,26 +1059,31 @@ void split_raysThreads()
     // get the equivalent grid of images that links to the same grid of cameras
     vector<vector<image>> images;
     // Trigger the camera rays
-    s.triggerCameraRay();
-    // save the images
-    s.saveImages();
+    //s.triggerCameraRay();
 
-    size_t tempIndex =0;
-    for (size_t i = 0; i < num_cameraX; i++)
-    {
-        vector<image> temp;
-        for (size_t j = 0; j < num_cameraY; j++)
-        {
-
-            //thread([&, i, j]() {
-            //    s.triggerCameraRay();
-            //}).detach();
-            temp.push_back(s.cameras.at(tempIndex).getimage());
-            tempIndex++;
-
-        }
-        images.push_back(temp);
+  
+    if (s.cameras.empty() || s.obj.empty()) {
+        std::cout << "No cameras or objects to process." << std::endl;
+        return;
     }
+
+    // Declare a vector to store futures for asynchronous tasks
+    std::vector<std::future<void>> futures;
+    // call the function containing the async behavior for now we are calling on async for each object within each camera 
+    // for our case we only have 1 object and 4 cameras so its 1 thread but we should change it to 1 thread per camera it makes more sense that way
+    // TO-DO XXX : switch thread logic
+    s.threadedCameraRay(futures);
+
+    // Wait for all asynchronous tasks to complete
+    for (auto& future : futures) {
+        future.get();  // Ensures that all tasks finish execution
+    }
+    // save the images
+    //s.saveImages();
+
+    std::cout << "All cameras and objects have been processed asynchronously." << std::endl;
+
+
 
     cout << endl;
     std::cout << "_________stitching_______________" << std::endl;

@@ -1,0 +1,10 @@
+Dependecies:
+
+- C++ compiler
+https://github.com/niXman/mingw-builds-binaries/releases/tag/14.2.0-rt_v12-rev0
+
+- imagemagick (an image converter)
+
+https://imagemagick.org/script/download.php
+
+https://imagemagick.org/archive/binaries/ImageMagick-7.1.1-43-Q16-HDRI-x64-dll.exe
