@@ -95,10 +95,11 @@ image.save("low_res_cube.png");
 ```cpp
 // Load and render a complex model
 MeshReader reader;
-Scene scene = reader.load("dahlia.obj");
+space scene = space("dahlia.obj");
 Image image(1920, 1080);
-Renderer renderer(scene, camera);
-renderer.render(image);
+Camera camera(Point(0, 0, -5), Vec3(0, 0, 1), 90.0);
+scene.addCamera(camera);
+scene.triggerCameras();
 image.save("dahlia_render.png");
 
 ```
