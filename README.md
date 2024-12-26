@@ -9,9 +9,13 @@
 
 [Project Report](Github.pdf)
 
-RayCast Renderer is a simple yet powerful tool for generating 2D images from 3D scenes using the principles of ray casting. It projects rays from a virtual camera into a defined 3D scene, checking for intersections with geometric objects like triangles. The intersected objects' properties, such as color, are used to render the final 2D image. This method is computationally efficient and avoids handling complex light interactions, such as reflections, refractions, or shadows.
+The RayCast Renderer is a lightweight 3D rendering engine that uses ray tracing principles to produce high-quality 2D images from 3D scenes. This project implements concepts such as vector mathematics, intersection logic, and parallel processing, while integrating advanced techniques like sub-camera splitting and asynchronous programming for optimized performance.
 
 ---
+## Key Concepts
+
+### What is Ray Casting?
+Ray casting is the process of tracing rays from a viewpoint (camera) into a scene to identify the closest object along each ray's path. This forms the basis for rendering 3D scenes onto a 2D plane.
 
 ## Key Concepts
 
@@ -47,11 +51,15 @@ The renderer employs the **linear algebra intersection** to efficiently calculat
 ## Rendering Pipeline
 
 ### 1. Scene Setup
-- Define the **camera**:
-  - Position: The origin point of the rays.
-  - Orientation: Determines the direction of the rays.
-- Add objects to the scene:
-  - Represent objects as collections of triangles, each with specified vertices and colors.
+Define objects using triangles and configure the camera:
+
+```cpp
+// Define a triangle with three vertices
+Triangle triangle({{0, 0, 0}, {1, 0, 0}, {0, 1, 0}}, Color(255, 0, 0)); 
+
+// Set up the camera
+Camera camera(Point(0, 0, -5), Vec3(0, 0, 1), 90.0);
+```
 
 ### 2. Ray Casting
 - Rays are generated for each pixel in the image grid.
@@ -70,36 +78,54 @@ The renderer employs the **linear algebra intersection** to efficiently calculat
 - Combine all pixel data to generate the final 2D image.
 - Save the rendered image in formats like PNG or PPM.
 
-3. **Additional Requirement**: 
-   This project requires **ImageMagick** installed and linked to your system's path. 
-   Specifically, the project uses the following command to convert the PPM file to PNG format:
-   
-   `std::string convertCommand = "magick convert " + filePath + " " + pngFile;`
-   
-   Ensure that **ImageMagick** is installed and its executable is available in your system's PATH for this to work correctly.
+
+### Simple Geometries
+- Low-resolution and high-resolution renders of basic shapes like cubes.
+
+```cpp
+// Render a cube at low resolution
+Image image(128, 128);
+Renderer renderer(scene, camera);
+renderer.render(image);
+image.save("low_res_cube.png");
+```
+### Complex Geometries
+- High-detail renders of models like the Dahlia flower and Suzanne.
+
+```cpp
+// Load and render a complex model
+MeshReader reader;
+Scene scene = reader.load("dahlia.obj");
+Image image(1920, 1080);
+Renderer renderer(scene, camera);
+renderer.render(image);
+image.save("dahlia_render.png");
+
+```
+
+
+## Additional Requirements
+
+This project requires **ImageMagick** installed and linked to your system's path. Specifically, the project uses the following command to convert the PPM file to PNG format:
+
+`std::string convertCommand = "magick convert " + filePath + " " + pngFile;`
+
+Ensure that **ImageMagick** is installed and its executable is available in your system's PATH for this to work correctly.
 
 
 ## Installation
 
-### Prerequisites
-- **Compiler**: A C++ compiler supporting C++11 or later.
-- **ImageMagick**: Ensure ImageMagick is installed and added to your system path. The renderer relies on `magick convert` for output image processing.
+### Dependencies:
+1. **ImageMagick**:
+   - Required for image format conversion (e.g., PPM to PNG).
+   - Ensure it is installed and accessible in the system's PATH.
+   - Example usage:
+     ```cpp
+     std::string convertCommand = "magick convert " + filePath + " " + pngFile;
+     ```
 
-
-## Usage
-
-1. Scene Setup:
-   Define a scene with objects:
-   Scene scene;
-   scene.add_object(Triangle({{0, 0, 0}, {1, 0, 0}, {0, 1, 0}}, "red"));
-
-2. Rendering:
-   Create a renderer and generate the output:
-   ImageRenderer renderer(scene);
-   renderer.render("output.png", 800, 600);
-
-3. View Results:
-   Check the output image (e.g., output.png) in your directory.
+2. **C++ Compiler**:
+   - Supports C++11 or later.
 
 ## Theory Behind the Renderer
 
@@ -116,7 +142,7 @@ Each triangle is assigned a unique color. When a ray hits a triangle, the pixel 
 - No Advanced Lighting: No shadows, reflections, or refractions.
 - Scene Complexity: Performance drops with many triangles.
 - Basic Output: Limited to simple color-based rendering.
-- No direct way to color triangles
+- No direct way to color triangles.
 
 ## License
 
