@@ -19,13 +19,21 @@
  */
 class vec3 {
     private:
-    double components[3]; // Declaration
+    double components[3]={0,0,0}; // Declaration
 
     public:
     // Constructor
-    vec3() :  vec3(0, 0, 0) {} 
+    vec3() {
+        components[0]=0;
+        components[1]=0;
+        components[2]=0;
+    } 
+    vec3(double x, double y, double z)  {
+        components[0]=x;
+        components[1]=y;
+        components[2]=z;
+    } 
     vec3(const double val[3]) : vec3(val[0], val[1], val[2]) {} 
-    vec3(double x, double y, double z) : components{x, y, z} {} 
     vec3(vec3 p , vec3 q) {
         vec3 result = q - p;
         components[0] = result.x();
@@ -66,12 +74,13 @@ class vec3 {
     }
 
 
-    // copy constructor
+    // Copy constructor
     vec3(const vec3& other) {
         for (int i = 0; i < 3; ++i) {
             components[i] = other.components[i];
         }
     }
+
 
     // Getter
     double x() const { return components[0]; }
@@ -200,12 +209,11 @@ class vec3 {
 
     // overload operator=
     vec3& operator=(const vec3& other) {
-        if (this != &other) {
-            for (int i = 0; i < 3; ++i) {
-                components[i] = other.components[i];
-            }
+        if (this != &other) { // Check for self-assignment
+            std::copy(std::begin(other.components), std::end(other.components), std::begin(components));
         }
         return *this;
     }
+
 };
 #endif // VEC3_H

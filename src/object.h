@@ -12,6 +12,7 @@
 #include "point.h"
 #include "color.h"
 #include "vec3.h"
+#include "texture.h"
 
 using namespace std;
 
@@ -28,6 +29,7 @@ public:
     point globallRotation;
     vec3 locallRotation;
     object* parent;
+    texture tex;
 
     // 2D vector of pixels representing the object's graphical data.
     vector<vector<point>> vertices;
@@ -37,12 +39,16 @@ public:
     // Constructs a new Object.
     object()
     {
-        parent = nullptr;
+        parent=nullptr;
+        tex=texture();
+    }
+    object(const vector<vector<point>>& v){
+        vertices = v;
+        parent =nullptr;
+        tex=texture();
 
     }
-    object(const vector<vector<point>> v) : vertices(v) {
-        parent = nullptr;
-    }
+
 
     static object Cube(double scaling, point offset) {
     const vector<point> cubeVertices = {

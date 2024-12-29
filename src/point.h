@@ -19,10 +19,13 @@
 class point : public vec3 {
 public:
     // Default constructor (origin point)
-    point() : vec3(0, 0, 0) {}
-    point(double x, double y, double z) : vec3(x, y, z) {} // Constructor with x, y, z
+    point(double x=0, double y=0, double z=0) : vec3(x, y, z) {}
     point(std::string str) : vec3(str) {}           // String parsing delegated to vec3
-
+    point(const point& other) {
+        set_x(other.x());
+        set_y(other.y());
+        set_z(other.z());
+    }
 
 
     // Getter for x, y, z coordinates (inherited from vec3)
@@ -81,6 +84,18 @@ public:
 
     friend point operator/(const point& p, double t) {
         return point(p.x() / t, p.y() / t, p.z() / t);
+    }
+
+    point& operator=(const point& other) {
+        if (this == &other) { // Check for self-assignment
+            return *this;
+        }
+
+        // Copy data members
+        set_x(other.get_x());
+        set_y(other.get_y());
+        set_z(other.get_z());  
+        return *this;
     }
 };
 

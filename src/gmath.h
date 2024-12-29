@@ -6,9 +6,10 @@
 #define GMATH_H
 
 #include <cmath>
-#include "vec3.h" // Ensure this is included before using vec3
-#include "point.h" // Ensure this is included before using vec3
-#include "ray.h" // Ensure this is included before using vec3
+#include <vector>
+#include "vec3.h" 
+#include "point.h"
+#include "ray.h" 
 
 /**
  * @class gmath
@@ -47,7 +48,8 @@ public:
     static point* intersectLocation(const ray& r1, const ray& r2) ;
     static point* intersect3d1(const ray& r1, const point arr[3]) ;
     static point* intersect3d2(const ray& r1, const point arr[4]) ;
-
+    // project 3d triangle into 2d triangle
+    static std::vector<point> projectTriangle(const point& a, const point& b, const point& c);
     // absolute value
     static double abs(double a) {
         return a < 0 ? -a : a;

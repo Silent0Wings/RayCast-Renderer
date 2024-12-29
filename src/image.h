@@ -40,17 +40,64 @@ public:
             pixels=vector<vector<color>>();
         }else   
         {
+            this->width = static_cast<unsigned int> (w);
+            this->height  = static_cast<unsigned int> (h);
+            pixels.resize(height);
+            for (unsigned int i = 0; i < width; ++i) {
+                pixels[i].resize(width);
+            }
+        }
+    }
+    image(const int w , const int h,vector<vector<color>> img) {
 
+        if (w < 0 || h < 0)
+        {
+            throw std::invalid_argument("Width and height must be non-negative");
+        }
+        if (w==0 && h == 0)
+        {
+            width=0;
+            height=0;
+            pixels=vector<vector<color>>();
+        }else   
+        {
             this->width = static_cast<unsigned int> (w);
             this->height  = static_cast<unsigned int> (h);
             pixels.resize(static_cast<size_t> (h));
-            for (unsigned int i = 0; i < static_cast<size_t> (w); ++i) {
+            for (unsigned int i = 0; i < height; ++i) {
+                //cout << i << endl ;
                 pixels[i].resize(width);
+            }
+            for (size_t i = 0; i < pixels.size(); i++)
+            {
+                for (size_t j = 0; j < pixels.at(i).size(); j++)
+                {
+                    pixels[i][j] = img.at(i).at(j);
+                }
             }
         }
     }
     image(const int w , const int h , vector<vector<image>> images) : image(w, h) {
         imageConstruct(images);
+    }
+
+    size_t size()
+    {   
+        if ((width == 0 && height==0) && pixels.size()==0)
+        {
+            return 0;
+        }
+        
+        if (pixels.empty() || pixels.at(0).empty() || pixels.size() * pixels.at(0).size() != width * height)
+        {
+            throw std::invalid_argument("size of pixels isn't the same as dimension: ");
+        }
+        return width * height;
+    }
+
+    // empty function
+    bool empty() const {
+        return pixels.empty();
     }
 
     // construct image from a vector of vectors of cameras
@@ -148,12 +195,20 @@ public:
         if (new_width == 0 || new_height == 0) {
             throw std::invalid_argument("New width and height must be non-zero");
         }
-        pixels.resize(new_height);
-        for (unsigned int i = 0; i < new_height; ++i) {
-            pixels[i].resize(new_width);
+        try
+        {
+            pixels.resize(new_height);
+            for (unsigned int i = 0; i < new_height; ++i) {
+                pixels[i].resize(new_width);
+            }
+            width = new_width;
+            height = new_height;
         }
-        width = new_width;
-        height = new_height;
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+        
     }
 
     // Overload operator<< for prunsigned inting

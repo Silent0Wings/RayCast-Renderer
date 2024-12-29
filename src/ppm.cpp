@@ -1,7 +1,6 @@
 #include "ImageRenderer.h"
 
 
-
 int main1() {
     // Define an Image object
     image img(256, 256);

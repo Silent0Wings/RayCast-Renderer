@@ -246,3 +246,17 @@ vec3 gmath::rotate(const vec3& vec, const vec3& axis, double angle) {
 vec3 gmath::scale(const vec3& vec, const vec3& factors) {
     return vec3(vec.x() * factors.x(), vec.y() * factors.y(), vec.z() * factors.z());
 }
+std::vector<point> gmath::projectTriangle(const point& a, const point& b, const point& c) {
+    // Create mutable copies of the input points
+    point a_copy = a;
+    point b_copy = b;
+    point c_copy = c;
+
+    // Set the z-coordinate of each point to 0
+    a_copy.set_z(0);
+    b_copy.set_z(0);
+    c_copy.set_z(0);
+
+    // Return a vector containing the modified points
+    return {a_copy, b_copy, c_copy};
+}

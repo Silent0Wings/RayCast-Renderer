@@ -133,16 +133,16 @@ public:
     }
     void consructRay(unsigned int height ,unsigned int width, double step, point origin ,vec3 Xdirection, vec3 Ydirection, vec3 Raydirection)
     {
-        Xdirection = gmath::normalize(Xdirection);
-        Ydirection = gmath::normalize(Ydirection);
-        Raydirection = gmath::normalize(Raydirection);
+        vec3 xd = Xdirection = gmath::normalize(Xdirection);
+        vec3 yd = Ydirection = gmath::normalize(Ydirection);
+        vec3 rd = Raydirection = gmath::normalize(Raydirection);
 
         for (unsigned i = 0; i < height; ++i) {
-            point Yposition = point(0,0,0)+ Ydirection * (i * step);    
+            point Yposition = point(0,0,0)+ yd * (i * step);    
             for (unsigned j = 0; j < width; ++j) {
                 point Xposition = point(0,0,0)+Xdirection * (j * step);
                 point Final = origin +Yposition + Xposition;
-                gridRay[i][j] = ray(Final, Raydirection);
+                gridRay[i][j] = ray(Final, rd);
             }
         }
     }
@@ -150,7 +150,7 @@ public:
 
     // Constructor with gridRay
     // Constructor with gridRay
-    camera(int width, int height, vector<vector<ray>> g): camera(width, height) {
+    camera(int w, int h, vector<vector<ray>> g): camera(w, h) {
         gridRay.clear();
         gridRay = g;
     }
@@ -238,16 +238,37 @@ public:
 
     // Clear the camera
     void cameraToImage(object obj) {
+
         for (unsigned int i = 0; i < height; ++i) {
             for (unsigned int j = 0; j < width; ++j) {
                 getPixel(i, j, obj, gridRay[i][j]);
+            }
+        }
+        return;
+
+        if (obj.tex.empty())
+        {
+            cout << "No texture" << endl;
+            for (unsigned int i = 0; i < height; ++i) {
+                for (unsigned int j = 0; j < width; ++j) {
+                    getPixel(i, j, obj, gridRay[i][j]);
+                }
+            }
+        }
+        else if (obj.colorMap.empty())
+        {
+            cout << "Texture" << endl;
+            for (unsigned int i = 0; i < height; ++i) {
+                for (unsigned int j = 0; j < width; ++j) {
+                    //getPixelTexture(i, j, obj, gridRay[i][j]);
+                }
             }
         }
     }
 
     // 
     void getPixel(unsigned int i, unsigned int j, object obj, ray r1) {
-        double distance=999999999999999999;
+        double distance = 1.0e18;
         bool triggered = false;
         // Iterate through the color map vertices
         for (auto const& x : obj.colorMap) {
@@ -264,35 +285,41 @@ public:
                 //cout << "Length: " << leng << endl;
                 //cout << "Distance: " << distance[i][j] << endl;
 
-                if(distance >= leng)
-                {
-                    distance = leng;
-                    // Debugging: Output the intersection and color
-                    //cout << "Intersection at Pixel (" << i << ", " << j << "): " << *val << endl;
-                    color temp1 = img.get(i, j);
-                    img.set(i, j, x.second);
-                    color temp2 = img.get(i, j);
-                    if (temp1 == temp2 && temp1 != x.second)
-                    {
-                        throw std::invalid_argument("Pixel color not set" + std::to_string(i) + " | " + std::to_string(j));
-                    }
-                    triggered = true;
-                    //cout << "Color: " << x.second << endl;    
-                }
+                // Check if the distance exceeds or equals the specified length
+            if (distance >= leng) {
+                // Clamp the distance to the maximum length
+                distance = leng;
+
+                // Set the color at the (i, j) position in the image to the color from x.second
+                img.set(i, j, x.second);
+
+                // Temporary variables for blending colors
+                color temp00 = x.second;              // The color to be blended (source color)
+                color temp01 = obj.tex.get(i, j);     // The existing color at the (i, j) position (destination color)
+                
+                // Blend the colors: temp02 is the result of mixing temp00 and temp01
+                color temp02 = temp00 / 10 + temp01 / 2;
+
+                // Update the color at the (i, j) position with the blended result
+                img.set(i, j, temp02);
+
+                // Indicate that the condition was triggered
+                triggered = true;
+            }
+
                 //cout << "distance: " << distance[i][j] << endl;
                 // Clean up memory and exit the loop (first valid intersection found)
             }
         }
-    // If no intersection is found, set a default color (e.g., black)
-   
-    if (!triggered)
-    {
-        img.set(i, j, defaultColor); // Default: Black
-    }
+        // If no intersection is found, set a default color (e.g., black)
     
-    // cout << "No intersection at Pixel (" << i << ", " << j << ")" << endl;
+        if (!triggered)
+        {
+            img.set(i, j, defaultColor); // Default: Black
+        }
+        
+        // cout << "No intersection at Pixel (" << i << ", " << j << ")" << endl;
     }
 
-   
-}; 
+};
 #endif // CAMERA_H

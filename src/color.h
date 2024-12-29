@@ -102,5 +102,16 @@ public:
         arr[2] = b();
         return arr;
     }
+
+    // Overload operator+
+    color operator+(const color& other) const {
+        return color(r() + other.r(), g() + other.g(), b() + other.b());
+    }
+    // Overload operator/
+    color operator/(double scalar) const {
+        if (scalar == 0) {
+            throw std::invalid_argument("Division by zero is not allowed");}
+            return color(r() / scalar, g() / scalar, b() / scalar);
+    }
 };
 #endif // COLOR_H

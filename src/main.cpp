@@ -10,8 +10,9 @@
 #include "object.h"
 #include "space.h"
 #include "ImageRenderer.h"
-#include <vector>  // Include vector header
 #include "MeshReader.h" // Include input/output stream header
+#include "texture.h"
+#include <vector>  // Include vector header
 #include <future>
 using namespace std;
 
@@ -267,9 +268,8 @@ void testSpaceCamera() {
         }
         gridRay.push_back(row);
     }
-
     // Create a camera with the grid of rays
-    camera cam(size, size, gridRay);
+    camera cam(static_cast<int>(size), static_cast<int>(size), gridRay);
 
     // Create object vertices for multiple triangles in the z = 0 plane
     std::vector<std::vector<point>> vertices = {
@@ -335,8 +335,9 @@ void testSpaceCamera() {
 
     // Trigger the camera rays
     s.triggerCameraRay();
+    s.saveImages();
 
-    
+
 
     std::cout << "________________________" << std::endl;
 }
@@ -364,8 +365,8 @@ void testSpaceCameraCube() {
     std::cout << "_________Space Test_______________" << std::endl;
 
     // Define the grid size
-    unsigned int size = 500*8;
-    double step = 0.01/8;
+    unsigned int size = 500*2;
+    double step = 0.01/2;
 
     // Create a vector of rays pointing toward the plane z = 0
     std::vector<std::vector<ray>> gridRay;
@@ -670,6 +671,7 @@ void testFileLoad()
     std::cout << "________________________" << std::endl;
 
 }
+
 void testMeshImportAndColoringSuzane()
 {
     std::cout << "_________FileLoad and Conversion Test_______________" << std::endl;
@@ -957,62 +959,45 @@ void split_rays()
 
 }
 
-void split_raysThreads()
-{
-    
+void split_raysThreads() {
     // Define the grid size and step
-    unsigned int size =400;
-    double step = 0.1/10;
+    unsigned int size = 400;
+    double step = 0.01;
     unsigned int height = size;
     unsigned int width = size;
 
+    // Camera grid dimensions
     unsigned int num_cameraX = 2;
     unsigned int num_cameraY = 2;
-    unsigned int camera_height = height / (num_cameraX );
-    unsigned int camera_width  = width  / (num_cameraY);
-    vector<vector<camera>> camerasGrid;
-    for (size_t i = 0; i < (num_cameraX); i++)
-    {
-        vector<camera> temp;
-        for (size_t i = 0; i < (num_cameraY); i++)
-        {
-            temp.push_back(camera(camera_height, camera_width));
-        }
-        //cout << endl;
+    unsigned int camera_height = height / num_cameraX;
+    unsigned int camera_width = width / num_cameraY;
 
-        camerasGrid.push_back(temp);
-        //cout << endl;
-    }
+    // Initialize cameras grid
+    vector<vector<camera>> camerasGrid(num_cameraX, vector<camera>(num_cameraY));
 
     point camOrigin(0, -2, -2);
-    vec3 camYDirection(0, 0, 1); // Pointing upward
-    vec3 camXDirection(0, 1, 0);  // pointing right 
-    vec3 rayDirection(-1, 0, 0); // Pointing downward
+    vec3 camYDirection(0, 0, 1);  // Pointing upward
+    vec3 camXDirection(0, 1, 0);  // Pointing right
+    vec3 rayDirection(-1, 0, 0);  // Pointing downward
 
-    for (size_t i = 0; i < num_cameraX; i++)
-    {
-        for (size_t j = 0; j < num_cameraY; j++)
-        {
+    // Set up individual cameras in the grid
+    for (size_t i = 0; i < num_cameraX; i++) {
+        for (size_t j = 0; j < num_cameraY; j++) {
             double shiftX = width * step * i;
             double shiftY = height * step * j;
-            point offsetPos = camOrigin + (camXDirection*shiftX + camYDirection*shiftY)/2;
-            //cout << "Offset Position: " << offsetPos << endl;
+            point offsetPos = camOrigin + (camXDirection * shiftX + camYDirection * shiftY) / 2;
 
-            camerasGrid[i][j]= camera(camera_height, camera_width, step, offsetPos, camXDirection, camYDirection, rayDirection);
-            //cout << "Camera " << i << " " << j << " " << cameras[i][j] << endl;
-
+            camerasGrid[i][j] = camera(camera_height, camera_width, step, offsetPos, camXDirection, camYDirection, rayDirection);
         }
     }
 
-
-    
-
-    std::cout << "_________FileLoad and Conversion Test_______________" << std::endl;
+    std::cout << "_________File Load and Conversion Test_______________" << std::endl;
 
     // Load the mesh file
     std::string filename = "Suzane.txt";
     MeshReader reader(filename);
     std::vector<std::vector<point>> vertices;
+
     if (!reader.convertMesh(&vertices)) {
         std::cerr << "Error: Unable to load or convert the mesh from file: " << filename << std::endl;
         return;
@@ -1022,79 +1007,209 @@ void split_raysThreads()
 
     object obj(vertices);
 
-    // Color mapping for object vertices
-    for (size_t i = 0; i < vertices.size(); i++) {
-        for (size_t j = 0; j < vertices[i].size(); j++) {
-            color temp;
-            temp.randomColor(); // Generate random color
-            obj.colorMap[{vertices[i][0],vertices[i][1],vertices[i][2]}] = temp;
-        }
+    // Assign random colors to object vertices
+    for (const auto& face : vertices) {
+        color randomColor;
+        randomColor.randomColor();  // Generate random color
+        obj.colorMap[{face[0], face[1], face[2]}] = randomColor;
     }
 
     std::cout << "________________________" << std::endl;
 
-    // Create a camera with the grid of rays
-
-    // Create a space and assign the object
+    // Create space and add object
     space s({obj});
 
-    // a grid of cameras to allows stitcing of the images
-    // Add the camera to the space
-    // and create a a grid of cameras that would output segments of what would a bigger camera with the sum of all their pixels
-    unsigned int numberOfCameras = 0;
-    
-    for (size_t j = 0; j < num_cameraY; j++) {
-        for (size_t i = 0; i < num_cameraX; i++) {
-            s.cameras.push_back(camerasGrid[i][j]); // Add cameras column by column
-            numberOfCameras++;
+    // Add cameras to the space
+    for (size_t i = 0; i < num_cameraX; i++) {
+        for (size_t j = 0; j < num_cameraY; j++) {
+            s.cameras.push_back(camerasGrid[i][j]);
         }
     }
 
-
-
-    
+    // Combine camera dimensions
     unsigned int combinedHeight = camera_height * num_cameraX;
     unsigned int combinedWidth = camera_width * num_cameraY;
 
-    // get the equivalent grid of images that links to the same grid of cameras
-    vector<vector<image>> images;
-    // Trigger the camera rays
-    //s.triggerCameraRay();
-
-  
+    // Async processing with threads
     if (s.cameras.empty() || s.obj.empty()) {
         std::cout << "No cameras or objects to process." << std::endl;
         return;
     }
 
-    // Declare a vector to store futures for asynchronous tasks
     std::vector<std::future<void>> futures;
-    // call the function containing the async behavior for now we are calling on async for each object within each camera 
-    // for our case we only have 1 object and 4 cameras so its 1 thread but we should change it to 1 thread per camera it makes more sense that way
-    // TO-DO XXX : switch thread logic
     s.threadedCameraRay(futures);
 
-    // Wait for all asynchronous tasks to complete
+    // Wait for all threads to complete
     for (auto& future : futures) {
-        future.get();  // Ensures that all tasks finish execution
+        future.get();
     }
-    // save the images
-    //s.saveImages();
 
     std::cout << "All cameras and objects have been processed asynchronously." << std::endl;
 
+    std::cout << "_________Stitching_______________" << std::endl;
 
+    // Stitch images into a single output
+    std::cout << "Combined Width: " << combinedWidth << std::endl;
+    std::cout << "Combined Height: " << combinedHeight << std::endl;
 
-    cout << endl;
-    std::cout << "_________stitching_______________" << std::endl;
-
-    cout << "combinedWidth"  << combinedWidth << endl;
-    cout << "combinedHeight"  << combinedHeight << endl;
-    image testimg(combinedWidth,combinedHeight, images);   
-
-    ImageRenderer::renderToFile(testimg, "stitched.ppm");
-    //cout << img ;
+    vector<vector<image>> images; // Placeholder for stitched images
+    image stitchedImage(combinedWidth, combinedHeight, images);
+    ImageRenderer::renderToFile(stitchedImage, "stitched.ppm");
 }
+
+
+void cubeTextureTest()
+{
+    // File paths
+    string filePathOriginal = "leopard-515509.jpg";
+    string filePath = "leopard.ppm";
+
+    // Variables
+    int width, height;
+    vector<vector<color>> pixels;
+    image img;
+    texture Leo;
+
+    cout << "read texture..." << endl;
+
+    // Read the image
+    try {
+        pixels = ImageRenderer::readPPM(filePath, width, height);
+        cout << "Image size: " << width << "x" << height << endl;
+        img = image(width, height, pixels);
+
+        // Access individual pixels for verification
+        color pixel = pixels[0][0]; // Top-left pixel
+        cout << "Top-left pixel: R=" << pixel.r() 
+             << ", G=" << pixel.g() 
+             << ", B=" << pixel.b() << endl;
+    } catch (const exception& e) {
+        cerr << "Error: " << e.what() << endl;
+        return;
+    }
+
+    std::cout << "_________Space Test_______________" << std::endl;
+
+    cout << "create camera..." << endl;
+
+    // Define the grid size
+    size_t multiplier =2 ;
+    unsigned int size = 20*multiplier;
+    double step = 0.17/static_cast<double>(multiplier);
+    // Create a vector of rays pointing toward the plane z = 0
+    std::vector<std::vector<ray>> gridRay;
+    for (unsigned i = 0; i < size; ++i) {
+        std::vector<ray> row;
+        for (unsigned j = 0; j < size; ++j) {
+            // Rays originate from above (z = 1) and point downward toward z = 0
+            point origin(i * step, j * step, 6);
+            vec3 direction(0.5, 0.5, -3);
+            row.push_back(ray(origin, direction));
+
+            // Debug: Output ray origin and direction
+            //std::cout << "Ray Origin: " << origin << " Direction: " << direction << std::endl;
+        }
+        gridRay.push_back(row);
+    }
+
+    // Create a camera with the grid of rays
+    camera cam(size, size, gridRay);
+
+    double scaling =2; 
+    point offset = point(2, 1, 1);
+    // Create object vertices for a cube
+    std::vector<point> cubeVertices = {
+        (point(0, 0, 0) * scaling + offset),  // Vertex 0
+        (point(1, 0, 0) * scaling + offset),  // Vertex 1
+        (point(1, 1, 0) * scaling + offset),  // Vertex 2
+        (point(0, 1, 0) * scaling + offset),  // Vertex 3
+        (point(0, 0, 1) * scaling + offset),  // Vertex 4
+        (point(1, 0, 1) * scaling + offset),  // Vertex 5
+        (point(1, 1, 1) * scaling + offset),  // Vertex 6
+        (point(0, 1, 1) * scaling + offset)   // Vertex 7
+    };
+    cout << "coloring faces ..." << endl;
+
+    // Create object vertices for two triangles in the z = 0 plane
+    std::vector<std::vector<point>> vertices = {
+        // Bottom face
+        {cubeVertices[0], cubeVertices[1], cubeVertices[2]},
+        {cubeVertices[0], cubeVertices[2], cubeVertices[3]},
+        
+        // Top face
+        {cubeVertices[4], cubeVertices[5], cubeVertices[6]},
+        {cubeVertices[4], cubeVertices[6], cubeVertices[7]},
+
+        // Front face
+        {cubeVertices[0], cubeVertices[1], cubeVertices[5]},
+        {cubeVertices[0], cubeVertices[5], cubeVertices[4]},
+
+        // Back face
+        {cubeVertices[2], cubeVertices[3], cubeVertices[7]},
+        {cubeVertices[2], cubeVertices[7], cubeVertices[6]},
+
+        // Left face
+        {cubeVertices[0], cubeVertices[3], cubeVertices[7]},
+        {cubeVertices[0], cubeVertices[7], cubeVertices[4]},
+
+        // Right face
+        {cubeVertices[1], cubeVertices[2], cubeVertices[6]},
+        {cubeVertices[1], cubeVertices[6], cubeVertices[5]}
+    };
+
+    // Bottom face
+    object obj(vertices);
+
+    // Create a space and assign the object
+    cout << "Setting up texture..." << endl;
+    Leo = texture(width, height, img, vertices); // assign texture to object
+    obj.tex = Leo;
+    
+
+    //add colors
+     // Bottom face
+    obj.colorMap[{cubeVertices[0], cubeVertices[1], cubeVertices[2]}] = color(255, 0, 0); // White
+    obj.colorMap[{cubeVertices[0], cubeVertices[2], cubeVertices[3]}] = color(255, 0, 0); // White
+
+    // Top face
+    obj.colorMap[{cubeVertices[4], cubeVertices[5], cubeVertices[6]}] = color(255, 0, 0); // Red
+    obj.colorMap[{cubeVertices[4], cubeVertices[6], cubeVertices[7]}] = color(255, 0, 0); // Red
+
+    // Front face
+    obj.colorMap[{cubeVertices[0], cubeVertices[1], cubeVertices[5]}] = color(0, 0, 255); // Blue
+    obj.colorMap[{cubeVertices[0], cubeVertices[5], cubeVertices[4]}] = color(0, 0, 255); // Blue
+
+    // Back face
+    obj.colorMap[{cubeVertices[2], cubeVertices[3], cubeVertices[7]}] = color(0, 255, 255); // Cyan
+    obj.colorMap[{cubeVertices[2], cubeVertices[7], cubeVertices[6]}] = color(0, 255, 255); // Cyan
+
+    // Left face
+    obj.colorMap[{cubeVertices[0], cubeVertices[3], cubeVertices[7]}] = color(255, 255, 0); // Yellow
+    obj.colorMap[{cubeVertices[0], cubeVertices[7], cubeVertices[4]}] = color(255, 255, 0); // Yellow
+
+    // Right face
+    obj.colorMap[{cubeVertices[1], cubeVertices[2], cubeVertices[6]}] = color(0, 255, 0); // Green
+    obj.colorMap[{cubeVertices[1], cubeVertices[6], cubeVertices[5]}] = color(0, 255, 0); // Green
+    space s({obj});
+
+    cout << "add camera to space..." << endl;
+
+    // Add the camera to the space
+    s.cameras.push_back(cam);
+
+    // Trigger the camera rays
+    cout << "Ray cast..." << endl;
+    s.triggerCameraRay();
+    cout << "Save image..." << endl;
+
+    s.saveImages();
+
+    
+
+    std::cout << "________________________" << std::endl;
+}
+
+
 
 int main(int argc, char const *argv[])
 {
@@ -1114,7 +1229,8 @@ int main(int argc, char const *argv[])
     //testMeshImportAndColoringDhalia();
     //testMeshImportAndColoringSuzane();
     //split_rays();
-    split_raysThreads();
+    //split_raysThreads();
+    cubeTextureTest();
 
     return 0;
 }

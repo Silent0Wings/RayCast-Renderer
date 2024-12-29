@@ -26,7 +26,7 @@ public:
 
     // Constructors and Destructor
     space(): obj(), cameras() {}
-    space(vector<object> obj) : obj(obj) {}
+    space(vector<object> temp_obj) : obj(temp_obj) {}
 
     // Add an object to the space
     void addObject(const object& o) {
@@ -75,26 +75,14 @@ public:
             cout << "No cameras or objects to process." << endl;
             return;
         }
-
         for (auto& cam : cameras) {
-
             for (auto& o : obj) { 
-
                 cam.cameraToImage(o);
-               // cout << "Processing Camera #" << &cam - &cameras[0] << endl;
-               // cout << "Processing Object #" << &o - &obj[0] << endl;
-               // cout << "Camera Image: " << endl;
-               // cout << cam.getimage() << endl;
-                // Output file path
-
-                // Render the image and save it to the file
             }
-        }
-
-        
+        }    
     }
-
     
+    // trigger async behavior
     void threadedCameraRay(std::vector<std::future<void>>& futures) {
         for (auto& cam : cameras) {
             size_t camIndex = &cam - &cameras[0];
