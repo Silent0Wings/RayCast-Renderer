@@ -1093,7 +1093,7 @@ void cubeTextureTest()
     cout << "create camera..." << endl;
 
     // Define the grid size
-    size_t multiplier =2 ;
+    size_t multiplier =5 ;
     unsigned int size = 20*multiplier;
     double step = 0.17/static_cast<double>(multiplier);
     // Create a vector of rays pointing toward the plane z = 0
@@ -1115,85 +1115,19 @@ void cubeTextureTest()
     // Create a camera with the grid of rays
     camera cam(size, size, gridRay);
 
-    double scaling =2; 
-    point offset = point(2, 1, 1);
-    // Create object vertices for a cube
-    std::vector<point> cubeVertices = {
-        (point(0, 0, 0) * scaling + offset),  // Vertex 0
-        (point(1, 0, 0) * scaling + offset),  // Vertex 1
-        (point(1, 1, 0) * scaling + offset),  // Vertex 2
-        (point(0, 1, 0) * scaling + offset),  // Vertex 3
-        (point(0, 0, 1) * scaling + offset),  // Vertex 4
-        (point(1, 0, 1) * scaling + offset),  // Vertex 5
-        (point(1, 1, 1) * scaling + offset),  // Vertex 6
-        (point(0, 1, 1) * scaling + offset)   // Vertex 7
-    };
-    cout << "coloring faces ..." << endl;
+    double scaling =1; 
+    point offset = point(2.3,2.3 , 2);
+    object obj(primitive::cube,scaling,offset);
 
-    // Create object vertices for two triangles in the z = 0 plane
-    std::vector<std::vector<point>> vertices = {
-        // Bottom face
-        {cubeVertices[0], cubeVertices[1], cubeVertices[2]},
-        {cubeVertices[0], cubeVertices[2], cubeVertices[3]},
-        
-        // Top face
-        {cubeVertices[4], cubeVertices[5], cubeVertices[6]},
-        {cubeVertices[4], cubeVertices[6], cubeVertices[7]},
-
-        // Front face
-        {cubeVertices[0], cubeVertices[1], cubeVertices[5]},
-        {cubeVertices[0], cubeVertices[5], cubeVertices[4]},
-
-        // Back face
-        {cubeVertices[2], cubeVertices[3], cubeVertices[7]},
-        {cubeVertices[2], cubeVertices[7], cubeVertices[6]},
-
-        // Left face
-        {cubeVertices[0], cubeVertices[3], cubeVertices[7]},
-        {cubeVertices[0], cubeVertices[7], cubeVertices[4]},
-
-        // Right face
-        {cubeVertices[1], cubeVertices[2], cubeVertices[6]},
-        {cubeVertices[1], cubeVertices[6], cubeVertices[5]}
-    };
-
-    // Bottom face
-    object obj(vertices);
 
     // Create a space and assign the object
     cout << "Setting up texture..." << endl;
-    Leo = texture(width, height, img, vertices); // assign texture to object
+    Leo = texture(width, height, img, obj.vertices); // assign texture to object
     obj.tex = Leo;
-    
 
-    //add colors
-     // Bottom face
-    obj.colorMap[{cubeVertices[0], cubeVertices[1], cubeVertices[2]}] = color(255, 0, 0); // White
-    obj.colorMap[{cubeVertices[0], cubeVertices[2], cubeVertices[3]}] = color(255, 0, 0); // White
-
-    // Top face
-    obj.colorMap[{cubeVertices[4], cubeVertices[5], cubeVertices[6]}] = color(255, 0, 0); // Red
-    obj.colorMap[{cubeVertices[4], cubeVertices[6], cubeVertices[7]}] = color(255, 0, 0); // Red
-
-    // Front face
-    obj.colorMap[{cubeVertices[0], cubeVertices[1], cubeVertices[5]}] = color(0, 0, 255); // Blue
-    obj.colorMap[{cubeVertices[0], cubeVertices[5], cubeVertices[4]}] = color(0, 0, 255); // Blue
-
-    // Back face
-    obj.colorMap[{cubeVertices[2], cubeVertices[3], cubeVertices[7]}] = color(0, 255, 255); // Cyan
-    obj.colorMap[{cubeVertices[2], cubeVertices[7], cubeVertices[6]}] = color(0, 255, 255); // Cyan
-
-    // Left face
-    obj.colorMap[{cubeVertices[0], cubeVertices[3], cubeVertices[7]}] = color(255, 255, 0); // Yellow
-    obj.colorMap[{cubeVertices[0], cubeVertices[7], cubeVertices[4]}] = color(255, 255, 0); // Yellow
-
-    // Right face
-    obj.colorMap[{cubeVertices[1], cubeVertices[2], cubeVertices[6]}] = color(0, 255, 0); // Green
-    obj.colorMap[{cubeVertices[1], cubeVertices[6], cubeVertices[5]}] = color(0, 255, 0); // Green
     space s({obj});
 
     cout << "add camera to space..." << endl;
-
     // Add the camera to the space
     s.cameras.push_back(cam);
 

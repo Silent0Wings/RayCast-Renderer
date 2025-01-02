@@ -239,19 +239,23 @@ public:
     // Clear the camera
     void cameraToImage(object obj) {
 
-        for (unsigned int i = 0; i < height; ++i) {
-            for (unsigned int j = 0; j < width; ++j) {
-                getPixel(i, j, obj, gridRay[i][j]);
-            }
-        }
-        return;
 
-        if (obj.tex.empty())
+        if (!obj.tex.empty() && !obj.colorMap.empty())
         {
             cout << "No texture" << endl;
             for (unsigned int i = 0; i < height; ++i) {
                 for (unsigned int j = 0; j < width; ++j) {
-                    getPixel(i, j, obj, gridRay[i][j]);
+                    getPixelCombined(i, j, obj, gridRay[i][j]);
+                }
+            }
+
+        }
+        else if (obj.tex.empty())
+        {
+            cout << "No texture" << endl;
+            for (unsigned int i = 0; i < height; ++i) {
+                for (unsigned int j = 0; j < width; ++j) {
+                    getPixelColor(i, j, obj, gridRay[i][j]);
                 }
             }
         }
@@ -260,14 +264,14 @@ public:
             cout << "Texture" << endl;
             for (unsigned int i = 0; i < height; ++i) {
                 for (unsigned int j = 0; j < width; ++j) {
-                    //getPixelTexture(i, j, obj, gridRay[i][j]);
+                    getPixelTexture(i, j, obj, gridRay[i][j]);
                 }
             }
         }
     }
 
     // 
-    void getPixel(unsigned int i, unsigned int j, object obj, ray r1) {
+    void getPixelCombined(unsigned int i, unsigned int j, object obj, ray r1) {
         double distance = 1.0e18;
         bool triggered = false;
         // Iterate through the color map vertices
@@ -302,6 +306,100 @@ public:
 
                 // Update the color at the (i, j) position with the blended result
                 img.set(i, j, temp02);
+
+                // Indicate that the condition was triggered
+                triggered = true;
+            }
+
+                //cout << "distance: " << distance[i][j] << endl;
+                // Clean up memory and exit the loop (first valid intersection found)
+            }
+        }
+        // If no intersection is found, set a default color (e.g., black)
+    
+        if (!triggered)
+        {
+            img.set(i, j, defaultColor); // Default: Black
+        }
+        
+        // cout << "No intersection at Pixel (" << i << ", " << j << ")" << endl;
+    }
+    void getPixelTexture(unsigned int i, unsigned int j, object obj, ray r1) {
+        double distance = 1.0e18;
+        bool triggered = false;
+        // Iterate through the color map vertices
+        for (auto const& x : obj.colorMap) {
+            // Get the vertices as an array
+            array<point, 3> arr = {x.first[0], x.first[1], x.first[2]};
+
+            // Check if the ray intersects with the current triangle
+            point* val = gmath::intersect3d1(r1, arr.data());
+
+            if (val != nullptr) {
+                // Set the pixel in the image
+                double leng = gmath::distance(r1.getOrigine(),*(val));
+                delete val;
+                //cout << "Length: " << leng << endl;
+                //cout << "Distance: " << distance[i][j] << endl;
+
+                // Check if the distance exceeds or equals the specified length
+            if (distance >= leng) {
+                // Clamp the distance to the maximum length
+                distance = leng;
+
+                // Set the color at the (i, j) position in the image to the color from x.second
+                img.set(i, j, x.second);
+
+                color temp01 = obj.tex.get(i, j);     
+
+                img.set(i, j, temp01);
+
+                // Indicate that the condition was triggered
+                triggered = true;
+            }
+
+                //cout << "distance: " << distance[i][j] << endl;
+                // Clean up memory and exit the loop (first valid intersection found)
+            }
+        }
+        // If no intersection is found, set a default color (e.g., black)
+    
+        if (!triggered)
+        {
+            img.set(i, j, defaultColor); // Default: Black
+        }
+        
+        // cout << "No intersection at Pixel (" << i << ", " << j << ")" << endl;
+    }
+    void getPixelColor(unsigned int i, unsigned int j, object obj, ray r1) {
+        double distance = 1.0e18;
+        bool triggered = false;
+        // Iterate through the color map vertices
+        for (auto const& x : obj.colorMap) {
+            // Get the vertices as an array
+            array<point, 3> arr = {x.first[0], x.first[1], x.first[2]};
+
+            // Check if the ray intersects with the current triangle
+            point* val = gmath::intersect3d1(r1, arr.data());
+
+            if (val != nullptr) {
+                // Set the pixel in the image
+                double leng = gmath::distance(r1.getOrigine(),*(val));
+                delete val;
+                //cout << "Length: " << leng << endl;
+                //cout << "Distance: " << distance[i][j] << endl;
+
+                // Check if the distance exceeds or equals the specified length
+            if (distance >= leng) {
+                // Clamp the distance to the maximum length
+                distance = leng;
+
+                // Set the color at the (i, j) position in the image to the color from x.second
+                img.set(i, j, x.second);
+
+                // Temporary variables for blending colors
+                color temp00 = x.second;              
+                img.set(i, j, temp00);
 
                 // Indicate that the condition was triggered
                 triggered = true;

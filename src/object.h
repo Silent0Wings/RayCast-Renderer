@@ -13,8 +13,13 @@
 #include "color.h"
 #include "vec3.h"
 #include "texture.h"
+#include "general.h"
+#include "MeshReader.h"
 
 using namespace std;
+
+
+
 
 /**
  * @class object
@@ -36,8 +41,11 @@ public:
     // Dictionary to link an array of 3 elements to a color.
     map<array<point, 3>, color> colorMap;
 
+ 
+    // Create an enum variable and assign a value to it
+
     // Constructs a new Object.
-    object()
+    object()    
     {
         parent=nullptr;
         tex=texture();
@@ -48,47 +56,163 @@ public:
         tex=texture();
 
     }
-
-
-    static object Cube(double scaling, point offset) {
-    const vector<point> cubeVertices = {
-        (point(0, 0, 0) * scaling + offset),  // Vertex 0
-        (point(1, 0, 0) * scaling + offset),  // Vertex 1
-        (point(1, 1, 0) * scaling + offset),  // Vertex 2
-        (point(0, 1, 0) * scaling + offset),  // Vertex 3
-        (point(0, 0, 1) * scaling + offset),  // Vertex 4
-        (point(1, 0, 1) * scaling + offset),  // Vertex 5
-        (point(1, 1, 1) * scaling + offset),  // Vertex 6
-        (point(0, 1, 1) * scaling + offset)   // Vertex 7
-    };
-    
-    // Create object vertices for two triangles in the z = 0 plane
-    const vector<vector<point>> vertices = {
-        // Bottom face
-        {cubeVertices[0], cubeVertices[1], cubeVertices[2]},
-        {cubeVertices[0], cubeVertices[2], cubeVertices[3]},
-        
-        // Top face
-        {cubeVertices[4], cubeVertices[5], cubeVertices[6]},
-        {cubeVertices[4], cubeVertices[6], cubeVertices[7]},
-
-        // Front face
-        {cubeVertices[0], cubeVertices[1], cubeVertices[5]},
-        {cubeVertices[0], cubeVertices[5], cubeVertices[4]},
-
-        // Back face
-        {cubeVertices[2], cubeVertices[3], cubeVertices[7]},
-        {cubeVertices[2], cubeVertices[7], cubeVertices[6]},
-
-        // Left face
-        {cubeVertices[0], cubeVertices[3], cubeVertices[7]},
-        {cubeVertices[0], cubeVertices[7], cubeVertices[4]},
-
-        // Right face
-        {cubeVertices[1], cubeVertices[2], cubeVertices[6]},
-        {cubeVertices[1], cubeVertices[6], cubeVertices[5]}
+    object(primitive prim, double scale, point offset) {
+        // Initialize the object based on the primitive type
+        switch (prim) {
+            case primitive::plane:
+                this->plane(scale, offset);
+                break;
+            case primitive::circle:
+                this->circle(scale, offset);
+                break;
+            case primitive::cone:
+                this->cone(scale, offset);
+                break;
+            case primitive::torus:
+                this->torus(scale, offset);
+                break;
+            case primitive::cube:
+                this->cube(scale, offset);
+                break;
+            case primitive::sphere:
+                this->sphere(scale, offset);
+                break;
+            case primitive::suzane:
+                this->suzane(scale, offset);
+                break;
+            default:
+                throw std::invalid_argument("Unknown primitive type");
+        }
+    }
+    void  cube(double scaling, point offset)
+    {
+        const vector<point> cubeVertices = {
+            (point(0, 0, 0) * scaling + offset),  // Vertex 0
+            (point(1, 0, 0) * scaling + offset),  // Vertex 1
+            (point(1, 1, 0) * scaling + offset),  // Vertex 2
+            (point(0, 1, 0) * scaling + offset),  // Vertex 3
+            (point(0, 0, 1) * scaling + offset),  // Vertex 4
+            (point(1, 0, 1) * scaling + offset),  // Vertex 5
+            (point(1, 1, 1) * scaling + offset),  // Vertex 6
+            (point(0, 1, 1) * scaling + offset)   // Vertex 7
         };
-        return object(vertices);
+
+        
+        // Create object vertices for two triangles in the z = 0 plane
+        const vector<vector<point>> v = {
+            // Bottom face
+            {cubeVertices[0], cubeVertices[1], cubeVertices[2]},
+            {cubeVertices[0], cubeVertices[2], cubeVertices[3]},
+            
+            // Top face
+            {cubeVertices[4], cubeVertices[5], cubeVertices[6]},
+            {cubeVertices[4], cubeVertices[6], cubeVertices[7]},
+
+            // Front face
+            {cubeVertices[0], cubeVertices[1], cubeVertices[5]},
+            {cubeVertices[0], cubeVertices[5], cubeVertices[4]},
+
+            // Back face
+            {cubeVertices[2], cubeVertices[3], cubeVertices[7]},
+            {cubeVertices[2], cubeVertices[7], cubeVertices[6]},
+
+            // Left face
+            {cubeVertices[0], cubeVertices[3], cubeVertices[7]},
+            {cubeVertices[0], cubeVertices[7], cubeVertices[4]},
+
+            // Right face
+            {cubeVertices[1], cubeVertices[2], cubeVertices[6]},
+            {cubeVertices[1], cubeVertices[6], cubeVertices[5]}
+            };
+            
+            colorMap[{cubeVertices[0], cubeVertices[1], cubeVertices[2]}] = color(255, 0, 0); // White
+            colorMap[{cubeVertices[0], cubeVertices[2], cubeVertices[3]}] = color(255, 0, 0); // White
+
+            // Top face
+            
+            colorMap[{cubeVertices[4], cubeVertices[5], cubeVertices[6]}] = color(255, 0, 0); // Red
+            colorMap[{cubeVertices[4], cubeVertices[6], cubeVertices[7]}] = color(255, 0, 0); // Red
+
+            // Front face
+            colorMap[{cubeVertices[0], cubeVertices[1], cubeVertices[5]}] = color(0, 0, 255); // Blue
+            colorMap[{cubeVertices[0], cubeVertices[5], cubeVertices[4]}] = color(0, 0, 255); // Blue
+
+            // Back face
+            colorMap[{cubeVertices[2], cubeVertices[3], cubeVertices[7]}] = color(0, 255, 255); // Cyan
+            colorMap[{cubeVertices[2], cubeVertices[7], cubeVertices[6]}] = color(0, 255, 255); // Cyan
+
+            // Left face
+            colorMap[{cubeVertices[0], cubeVertices[3], cubeVertices[7]}] = color(255, 255, 0); // Yellow
+            colorMap[{cubeVertices[0], cubeVertices[7], cubeVertices[4]}] = color(255, 255, 0); // Yellow
+
+            // Right face
+            colorMap[{cubeVertices[1], cubeVertices[2], cubeVertices[6]}] = color(0, 255, 0); // Green
+            colorMap[{cubeVertices[1], cubeVertices[6], cubeVertices[5]}] = color(0, 255, 0); // Green
+
+            vertices=v;
+    }
+
+    void  sphere(double scaling, point offset){
+
+        loadMesh("sphere.txt",scaling,offset);
+        randomColoring();
+    } 
+    void  circle(double scaling, point offset){
+
+        loadMesh("circle.txt",scaling,offset);
+        randomColoring();
+    } 
+    void  cone(double scaling, point offset){
+
+        loadMesh("cone.txt",scaling,offset);
+        randomColoring();
+    } 
+    void  torus(double scaling, point offset){
+
+        loadMesh("torus.txt",scaling,offset);
+        randomColoring();
+    } 
+    void  plane(double scaling, point offset){
+
+        loadMesh("plane.txt",scaling,offset);
+        randomColoring();
+    } 
+    void  suzane(double scaling, point offset){
+
+        loadMesh("Suzane.txt",scaling,offset);
+        randomColoring();
+    }
+    void randomColoring()
+    {
+        for (size_t i = 0; i < vertices.size(); i++) {
+            for (size_t j = 0; j < vertices[i].size(); j++) {
+                color temp;
+                temp.randomColor(); // Generate random color
+                colorMap[{vertices[i][0],vertices[i][1],vertices[i][2]}] = temp;
+            }
+        }
+    }
+    void  loadMesh(string mame, double scaling, point offset)
+    {
+        std::string filename = mame;
+        MeshReader reader(filename);
+        std::vector<std::vector<point>> v;
+        if (!reader.convertMesh(&v)) {
+            std::cerr << "Error: Unable to load or convert the mesh from file: " << filename << std::endl;
+            return;
+        }
+
+        vector<vector<point>> meshVertices ;
+        for (size_t i = 0; i < v.size(); i++)
+        {
+            vector<point> temp ;
+            for (size_t j = 0; j < v.at(i).size(); j++)
+            {
+                temp.push_back((v.at(i).at(j) * scaling + offset));
+            }
+            meshVertices.push_back(temp);
+        }
+        vertices =meshVertices;
     }
 
     // output operator
