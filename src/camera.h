@@ -28,7 +28,6 @@ private:
     unsigned int width;
     unsigned int height;
     color defaultColor;
-
     image img;
 public:
     // Copy constructor
@@ -191,8 +190,17 @@ public:
         gridRay = g;
     }
 
+    // Set the default color
     void setDefaultColor(const color& c) {
         defaultColor = c;
+    }
+    // Clear the camera
+    void clear() {
+        for (unsigned int i = 0; i < height; ++i) {
+            for (unsigned int j = 0; j < width; ++j) {
+                img.set(i, j, defaultColor);
+            }
+        }
     }
 
     // Check if a pixel is out of bounds return true if out of bounds

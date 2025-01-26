@@ -1150,7 +1150,141 @@ void cubeTextureTest()
     s.saveImages();
 }
 
+void primitiveThreadTest()
+{
+    // Define the grid size and step
+    unsigned int size = 400;
+    double step = 0.01;
+    unsigned int height = size;
+    unsigned int width = size;
 
+    // Camera grid dimensions
+    unsigned int num_cameraX = 2;
+    unsigned int num_cameraY = 2;
+    unsigned int camera_height = height / num_cameraX;
+    unsigned int camera_width = width / num_cameraY;
+
+    // Initialize cameras grid
+    vector<vector<camera>> camerasGrid(num_cameraX, vector<camera>(num_cameraY));
+
+    point camOrigin(5, 5, 5);
+    vec3 camYDirection(0, 0, 1);  // Pointing upward
+    vec3 camXDirection(0, 1, 0);  // Pointing right
+    vec3 rayDirection(-1, -1, -1);  // Pointing downward
+
+    // Set up individual cameras in the grid
+    for (size_t i = 0; i < num_cameraX; i++) {
+        for (size_t j = 0; j < num_cameraY; j++) {
+            double shiftX = width * step * i;
+            double shiftY = height * step * j;
+            point offsetPos = camOrigin + (camXDirection * shiftX + camYDirection * shiftY) / 2;
+
+            camerasGrid[i][j] = camera(camera_height, camera_width, step, offsetPos, camXDirection, camYDirection, rayDirection);
+        }
+    }
+
+    std::cout << "_________File Load and Conversion Test_______________" << std::endl;
+
+    // Load the mesh file
+    std::string filename = "Suzane.txt";
+    MeshReader reader(filename);
+    std::vector<std::vector<point>> vertices;
+
+    if (!reader.convertMesh(&vertices)) {
+        std::cerr << "Error: Unable to load or convert the mesh from file: " << filename << std::endl;
+        return;
+    }
+
+    std::cout << "_________Face Coloring_______________" << std::endl;
+
+    object obj(vertices);
+
+    // Assign random colors to object vertices
+    for (const auto& face : vertices) {
+        color randomColor;
+        randomColor.randomColor();  // Generate random color
+        obj.colorMap[{face[0], face[1], face[2]}] = randomColor;
+    }
+
+    std::cout << "________________________" << std::endl;
+
+    // Create space and add object
+    space s = space();
+    
+    // Add cameras to the space
+    for (size_t i = 0; i < num_cameraX; i++) {
+        for (size_t j = 0; j < num_cameraY; j++) {
+            s.cameras.push_back(camerasGrid[i][j]);
+        }
+    }
+
+    // Combine camera dimensions
+    unsigned int combinedHeight = camera_height * num_cameraX;
+    unsigned int combinedWidth = camera_width * num_cameraY;
+
+    // Async processing with threads
+    if (s.cameras.empty()) {
+        std::cout << "No cameras or objects to process." << std::endl;
+        return;
+    }
+
+    double scaling =.8; 
+    point offset = point(-1.25 , 1.25 , 0);
+    object obj0(primitive::cube,scaling,offset);
+    object obj1(primitive::torus,scaling,offset);
+    object obj2(primitive::sphere,scaling,offset);
+    object obj3(primitive::circle,scaling,offset);
+    object obj4(primitive::cone,scaling,offset);
+    object obj5(primitive::plane,scaling,offset);
+    object obj6(primitive::suzane,scaling,offset);
+
+
+    vector<object> objectBuffer= {obj0,obj1,obj2,obj3,obj4,obj5,obj6};
+    //objectBuffer.size()
+    for (size_t i = 0; i < objectBuffer.size(); i++)
+    {
+        s.obj.clear();
+        for (size_t i = 0; i < s.cameras.size(); i++)
+        {
+            s.cameras[i].clear();
+        }
+        s.obj.push_back(objectBuffer[i]);
+        
+        std::vector<std::future<void>> futures;
+        s.threadedCameraRay(futures);
+
+        // Wait for all threads to complete
+        for (auto& future : futures) {
+            future.get();
+        }
+
+        std::cout << "All cameras and objects have been processed asynchronously." << std::endl;
+
+        std::cout << "_________Stitching_______________" << std::endl;
+
+        // Stitch images into a single output
+        std::cout << "Combined Width: " << combinedWidth << std::endl;
+        std::cout << "Combined Height: " << combinedHeight << std::endl;
+
+        vector<vector<image>> images; // Placeholder for stitched images
+
+        for (int i = static_cast<int>(num_cameraX) - 1; i >= 0; i--) { // Outer loop iterates backward
+            vector<image> rowImages;
+            for (int j = static_cast<int>(num_cameraY) - 1; j >= 0; j--) { // Outer loop iterates backward
+                rowImages.push_back(s.cameras[i * num_cameraY + j].getimage());
+            }
+            images.push_back(rowImages);
+        }
+    
+        //swap the first and last image
+        image tempimg =images[0][0];
+        images[0][0]=images[num_cameraX-1][num_cameraY-1];
+        images[num_cameraX-1][num_cameraY-1]=tempimg;
+
+        image stitchedImage(combinedWidth, combinedHeight, images);
+        ImageRenderer::renderToFile(stitchedImage, "primitiveThreadTest"+std::to_string(i)+".ppm");    
+    }
+}
 
 int main(int argc, char const *argv[])
 {
@@ -1170,8 +1304,9 @@ int main(int argc, char const *argv[])
     //testMeshImportAndColoringDhalia();
     //testMeshImportAndColoringSuzane();
     //split_rays();
-    split_raysThreads(); 
+    //split_raysThreads(); 
     //cubeTextureTest();
+    primitiveThreadTest();
 
     return 0;
 }
