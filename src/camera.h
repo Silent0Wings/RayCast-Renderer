@@ -107,6 +107,11 @@ public:
             img = image(static_cast<unsigned int> (width), static_cast<unsigned int> (height));
         }
     }
+    // Constructor with gridRay
+    camera(int w, int h, vector<vector<ray>> g): camera(w, h) {
+        gridRay.clear();
+        gridRay = g;
+    }
     
 
     // construct the ray grid for the camera
@@ -148,12 +153,7 @@ public:
     }
    
 
-    // Constructor with gridRay
-    // Constructor with gridRay
-    camera(int w, int h, vector<vector<ray>> g): camera(w, h) {
-        gridRay.clear();
-        gridRay = g;
-    }
+   
 
     // Get the width of the camera
     unsigned int getwidth() const {
@@ -189,6 +189,10 @@ public:
     // set the ray vector
     void setRay(vector<vector<ray>> g) {
         gridRay = g;
+    }
+
+    void setDefaultColor(const color& c) {
+        defaultColor = c;
     }
 
     // Check if a pixel is out of bounds return true if out of bounds
@@ -238,8 +242,6 @@ public:
 
     // Clear the camera
     void cameraToImage(object obj) {
-
-
         if (!obj.tex.empty() && !obj.colorMap.empty())
         {
             cout << "No texture" << endl;
@@ -317,12 +319,11 @@ public:
         }
         // If no intersection is found, set a default color (e.g., black)
     
-        if (!triggered)
+        // If no intersection is found, set a default color (e.g., black)
+        if (!triggered&& img.get(i, j) != defaultColor)
         {
             img.set(i, j, defaultColor); // Default: Black
         }
-        
-        // cout << "No intersection at Pixel (" << i << ", " << j << ")" << endl;
     }
     void getPixelTexture(unsigned int i, unsigned int j, object obj, ray r1) {
         double distance = 1.0e18;
@@ -363,8 +364,7 @@ public:
             }
         }
         // If no intersection is found, set a default color (e.g., black)
-    
-        if (!triggered)
+        if (!triggered&& img.get(i, j) != defaultColor)
         {
             img.set(i, j, defaultColor); // Default: Black
         }
@@ -386,37 +386,29 @@ public:
                 // Set the pixel in the image
                 double leng = gmath::distance(r1.getOrigine(),*(val));
                 delete val;
-                //cout << "Length: " << leng << endl;
-                //cout << "Distance: " << distance[i][j] << endl;
 
                 // Check if the distance exceeds or equals the specified length
-            if (distance >= leng) {
-                // Clamp the distance to the maximum length
-                distance = leng;
+                if (distance >= leng) {
+                    // Clamp the distance to the maximum length
+                    distance = leng;
 
-                // Set the color at the (i, j) position in the image to the color from x.second
-                img.set(i, j, x.second);
+                    // Set the color at the (i, j) position in the image to the color from x.second
+                    img.set(i, j, x.second);
 
-                // Temporary variables for blending colors
-                color temp00 = x.second;              
-                img.set(i, j, temp00);
+                    // Temporary variables for blending colors
+                    color temp00 = x.second;              
+                    img.set(i, j, temp00);
 
-                // Indicate that the condition was triggered
-                triggered = true;
-            }
-
-                //cout << "distance: " << distance[i][j] << endl;
-                // Clean up memory and exit the loop (first valid intersection found)
+                    // Indicate that the condition was triggered
+                    triggered = true;
+                }
             }
         }
         // If no intersection is found, set a default color (e.g., black)
-    
-        if (!triggered)
+        if (!triggered&& img.get(i, j) == defaultColor)
         {
             img.set(i, j, defaultColor); // Default: Black
         }
-        
-        // cout << "No intersection at Pixel (" << i << ", " << j << ")" << endl;
     }
 
 };

@@ -102,11 +102,13 @@ public:
 
     // construct image from a vector of vectors of cameras
     void imageConstruct(const vector<vector<image>>& images) {
+        cout << "Image Construct" << endl;
         vector<vector<color>> newpixels;
 
         // Calculate total height and width based on the input images
         unsigned int totalHeight = 0;
         unsigned int totalWidth = 0;
+        cout << 0 << endl;
 
         for (const auto& row : images) {
             unsigned int rowHeight = 0;
@@ -120,7 +122,9 @@ public:
         }
 
         // Resize the newpixels vector
+        cout << 1 << endl;
         newpixels.resize(totalHeight, vector<color>(totalWidth));
+        cout << 2 << endl;
 
         // Construct the new image by placing sub-images at appropriate offsets
         unsigned int yOffset = 0;
@@ -142,9 +146,12 @@ public:
 
             yOffset += maxRowHeight; // Shift Y offset by the maximum row height
         }
+        cout << 3 << endl;
 
         // Assign newpixels to the class member
         pixels = newpixels;
+
+        cout << "pixels size = " << pixels.size() << endl;
     }
 
 
@@ -242,7 +249,9 @@ public:
     bool operator!=(const image& other) const {
         return !(*this == other);
     }
-
+    // Copy constructor
+    image(const image& other) 
+        : pixels(other.pixels), width(other.width), height(other.height) {}
 
 
 };

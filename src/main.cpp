@@ -753,6 +753,7 @@ void testMeshImportAndColoringSuzane()
 
     // Trigger the camera rays
     s.triggerCameraRay();
+    s.saveImages();
 }
 
 void testMeshImportAndColoringDear()
@@ -1018,7 +1019,7 @@ void split_raysThreads() {
 
     // Create space and add object
     space s({obj});
-
+    
     // Add cameras to the space
     for (size_t i = 0; i < num_cameraX; i++) {
         for (size_t j = 0; j < num_cameraY; j++) {
@@ -1053,10 +1054,23 @@ void split_raysThreads() {
     std::cout << "Combined Height: " << combinedHeight << std::endl;
 
     vector<vector<image>> images; // Placeholder for stitched images
-    image stitchedImage(combinedWidth, combinedHeight, images);
-    ImageRenderer::renderToFile(stitchedImage, "stitched.ppm");
-}
 
+    for (int i = static_cast<int>(num_cameraX) - 1; i >= 0; i--) { // Outer loop iterates backward
+        vector<image> rowImages;
+        for (int j = static_cast<int>(num_cameraY) - 1; j >= 0; j--) { // Outer loop iterates backward
+            rowImages.push_back(s.cameras[i * num_cameraY + j].getimage());
+        }
+        images.push_back(rowImages);
+    }
+  
+    //swap the first and last image
+    image tempimg =images[0][0];
+    images[0][0]=images[num_cameraX-1][num_cameraY-1];
+    images[num_cameraX-1][num_cameraY-1]=tempimg;
+
+    image stitchedImage(combinedWidth, combinedHeight, images);
+    ImageRenderer::renderToFile(stitchedImage, "stitched.ppm");    
+}
 
 void cubeTextureTest()
 {
@@ -1071,7 +1085,6 @@ void cubeTextureTest()
     texture Leo;
 
     cout << "read texture..." << endl;
-
     // Read the image
     try {
         pixels = ImageRenderer::readPPM(filePath, width, height);
@@ -1089,13 +1102,13 @@ void cubeTextureTest()
     }
 
     std::cout << "_________Space Test_______________" << std::endl;
-
     cout << "create camera..." << endl;
 
     // Define the grid size
-    size_t multiplier =5 ;
+    size_t multiplier =12 ;
     unsigned int size = 20*multiplier;
     double step = 0.17/static_cast<double>(multiplier);
+    vec3 OriginOffset = vec3(.5, .5, 0);
     // Create a vector of rays pointing toward the plane z = 0
     std::vector<std::vector<ray>> gridRay;
     for (unsigned i = 0; i < size; ++i) {
@@ -1104,28 +1117,27 @@ void cubeTextureTest()
             // Rays originate from above (z = 1) and point downward toward z = 0
             point origin(i * step, j * step, 6);
             vec3 direction(0.5, 0.5, -3);
-            row.push_back(ray(origin, direction));
-
-            // Debug: Output ray origin and direction
-            //std::cout << "Ray Origin: " << origin << " Direction: " << direction << std::endl;
+            row.push_back(ray(origin+OriginOffset, direction));
         }
         gridRay.push_back(row);
     }
 
     // Create a camera with the grid of rays
     camera cam(size, size, gridRay);
-
-    double scaling =1; 
+    cam.setDefaultColor(color(255,255,255));
+    double scaling =.5; 
     point offset = point(2.3,2.3 , 2);
     object obj(primitive::cube,scaling,offset);
-
+    object obj1(primitive::torus,scaling,offset+point(1,0.5,.5));
+    object obj2(primitive::torus,scaling/2,offset+point(.5,1,.5));
+    object obj3(primitive::suzane,scaling/2,offset+point(-1,0.5,1));
 
     // Create a space and assign the object
     cout << "Setting up texture..." << endl;
     Leo = texture(width, height, img, obj.vertices); // assign texture to object
-    obj.tex = Leo;
+    //obj.tex = Leo;
 
-    space s({obj});
+    space s({obj,obj1,obj2,obj3});
 
     cout << "add camera to space..." << endl;
     // Add the camera to the space
@@ -1135,12 +1147,7 @@ void cubeTextureTest()
     cout << "Ray cast..." << endl;
     s.triggerCameraRay();
     cout << "Save image..." << endl;
-
     s.saveImages();
-
-    
-
-    std::cout << "________________________" << std::endl;
 }
 
 
@@ -1163,8 +1170,8 @@ int main(int argc, char const *argv[])
     //testMeshImportAndColoringDhalia();
     //testMeshImportAndColoringSuzane();
     //split_rays();
-    //split_raysThreads();
-    cubeTextureTest();
+    split_raysThreads(); 
+    //cubeTextureTest();
 
     return 0;
 }

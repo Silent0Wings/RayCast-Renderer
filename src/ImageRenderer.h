@@ -48,9 +48,10 @@ public:
         return image;
     }
 
-    static void renderToFile(const image& img, const std::string& filePath) {
+    static void renderToFile(const image& img, const std::string filePath) {
         // Open the file for writing
         std::ofstream outFile(filePath);
+        cerr << "filePath: " << filePath << endl;
         if (!outFile) {
             std::cerr << "Error: Cannot open file " << filePath << " for writing.\n";
             return;
