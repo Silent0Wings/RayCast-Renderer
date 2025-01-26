@@ -145,8 +145,7 @@ Each triangle is assigned a unique color. When a ray hits a triangle, the pixel 
 
 - No Advanced Lighting: No shadows, reflections, or refractions.
 - Scene Complexity: Performance drops with many triangles.
-- Basic Output: Limited to simple color-based rendering.
-- No direct way to color triangles.
+- Basic Output: Limited to simple color-based rendering or primitive texture projection.
 
 ## License
 
