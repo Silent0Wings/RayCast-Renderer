@@ -11,6 +11,9 @@
 
 The RayCast Renderer is a lightweight 3D rendering engine that uses ray tracing principles to produce high-quality 2D images from 3D scenes. This project implements concepts such as vector mathematics, intersection logic, and parallel processing, while integrating advanced techniques like sub-camera splitting and asynchronous programming for optimized performance.
 
+The goal of this project is to create my own renderer, optimize it, and expand it with the philosophy of "make it yourself." This means I aim to limit outside inspiration to an absolute minimum, avoid using libraries as much as possible, and build features from the ground up.
+
+
 ---
 ## Key Concepts
 
@@ -142,8 +145,7 @@ Each triangle is assigned a unique color. When a ray hits a triangle, the pixel 
 
 - No Advanced Lighting: No shadows, reflections, or refractions.
 - Scene Complexity: Performance drops with many triangles.
-- Basic Output: Limited to simple color-based rendering.
-- No direct way to color triangles.
+- Basic Output: Limited to simple color-based rendering or primitive texture projection.
 
 ## License
 
