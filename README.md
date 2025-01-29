@@ -130,6 +130,16 @@ Each triangle is assigned a unique color. When a ray hits a triangle, the pixel 
 - Scene Complexity: Performance drops with many triangles.
 - Basic Output: Limited to simple color-based rendering or primitive texture projection.
 
+## Future Implementations
+
+This project is actively being developed, and several exciting features are planned for future releases:
+
+**Stereoscopic Rendering:** Implementing stereoscopic rendering with proper depth handling to create 3D images.
+**Projection Enhancements:** Expanding projection capabilities beyond the current orthographic projection to include perspective and panoramic projections.  This will allow for more realistic and immersive rendering.
+**Polygon Support:** Moving beyond triangle-only support to enable rendering of arbitrary polygons, providing greater flexibility and efficiency.
+**360 Image Capture:**  Exploring the possibility of integrating 360-degree image capture functionality.
+
+
 ## License
 
 This project is a personal project for educational purposes.
