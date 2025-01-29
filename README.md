@@ -100,16 +100,6 @@ image.save("dahlia_render.png");
 
 ```
 
-
-## Additional Requirements
-
-This project requires **ImageMagick** installed and linked to your system's path. Specifically, the project uses the following command to convert the PPM file to PNG format:
-
-`std::string convertCommand = "magick convert " + filePath + " " + pngFile;`
-
-Ensure that **ImageMagick** is installed and its executable is available in your system's PATH for this to work correctly.
-
-
 ## Installation
 
 ### Dependencies:
