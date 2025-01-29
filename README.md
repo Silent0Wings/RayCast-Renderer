@@ -16,11 +16,6 @@ This project focuses on building a 3D ray-cast renderer from the ground up, adhe
 ## Key Concepts
 
 ### What is Ray Casting?
-Ray casting is the process of tracing rays from a viewpoint (camera) into a scene to identify the closest object alaong each ray's path. This forms the basis for rendering 3D scenes onto a 2D plane.
-
-## Key Concepts
-
-### What is Ray Casting?
 Ray casting is the process of tracing rays from a viewpoint (camera) into a scene to identify the closest object along each ray's path. This forms the basis for rendering 3D scenes onto a 2D plane.
 
 **Ray Equation**:
