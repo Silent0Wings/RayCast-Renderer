@@ -9,9 +9,7 @@
 
 [Project Report](Github.pdf)
 
-The RayCast Renderer is a lightweight 3D rendering engine that uses ray tracing principles to produce high-quality 2D images from 3D scenes. This project implements concepts such as vector mathematics, intersection logic, and parallel processing, while integrating advanced techniques like sub-camera splitting and asynchronous programming for optimized performance.
-
-The goal of this project is to create my own renderer, optimize it, and expand it with the philosophy of "make it yourself." This means I aim to limit outside inspiration to an absolute minimum, avoid using libraries as much as possible, and build features from the ground up.
+This project focuses on building a 3D ray-cast renderer from the ground up, adhering to a "make it yourself" philosophy.  The goal is to create, optimize, and expand a custom rendering engine, minimizing external inspiration and library usage.  The RayCast Renderer itself is a lightweight engine that uses ray tracing to generate high-quality 2D images from 3D scenes.  The project implements core concepts like vector mathematics, intersection logic, and parallel processing, while also incorporating advanced optimization techniques such as sub-camera splitting and asynchronous programming.
 
 
 ---
