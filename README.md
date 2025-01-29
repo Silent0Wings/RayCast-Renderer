@@ -112,7 +112,7 @@ image.save("dahlia_render.png");
      ```
 
 2. **C++ Compiler**:
-   - Supports C++11 or later.
+   - Supports C++17 or later (required for multithreading).
 
 ## Theory Behind the Renderer
 
