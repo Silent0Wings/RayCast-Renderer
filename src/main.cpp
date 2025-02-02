@@ -14,6 +14,7 @@
 #include "texture.h"
 #include <vector>  // Include vector header
 #include <future>
+#include <filesystem>
 using namespace std;
 
 
@@ -671,7 +672,7 @@ void testFileLoad()
     std::cout << "________________________" << std::endl;
 
 }
-
+// testing the ability to load a mesh file and color the faces at high resolution
 void testMeshImportAndColoringSuzane()
 {
     std::cout << "_________FileLoad and Conversion Test_______________" << std::endl;
@@ -755,7 +756,7 @@ void testMeshImportAndColoringSuzane()
     s.triggerCameraRay();
     s.saveImages();
 }
-
+// testing the ability to load a mesh file and color the faces
 void testMeshImportAndColoringDear()
 {
     std::cout << "_________FileLoad and Conversion Test_______________" << std::endl;
@@ -832,7 +833,7 @@ void testMeshImportAndColoringDear()
     // Trigger the camera rays
     s.triggerCameraRay();
 }
-
+// testing the ability to load a mesh file and color the faces
 void testMeshImportAndColoringDhalia()
 {
     std::cout << "_________FileLoad and Conversion Test_______________" << std::endl;
@@ -909,7 +910,7 @@ void testMeshImportAndColoringDhalia()
     // Trigger the camera rays
     s.triggerCameraRay();
 }
-
+// testing the split rays function to split a camera into 4 cameras
 void split_rays()
 {
     
@@ -959,8 +960,8 @@ void split_rays()
 
 
 }
-
-void split_raysThreads() {
+// testing the split rays function with threads
+void split_raysThreads() { 
     // Define the grid size and step
     unsigned int size = 400;
     double step = 0.01;
@@ -1072,7 +1073,7 @@ void split_raysThreads() {
     ImageRenderer::renderToFile(stitchedImage, "stitched.ppm");    
 }
 
-void cubeTextureTest()
+void cubeTextureTest() // testing texture projection and mergin with vertex color on a cube
 {
     // File paths
     string filePathOriginal = "leopard-515509.jpg";
@@ -1150,7 +1151,7 @@ void cubeTextureTest()
     s.saveImages();
 }
 
-void primitiveThreadTest()
+void primitiveThreadTest() // output all the primitives hard coded in the code
 {
     // Define the grid size and step
     unsigned int size = 400;
@@ -1241,6 +1242,7 @@ void primitiveThreadTest()
 
     vector<object> objectBuffer= {obj0,obj1,obj2,obj3,obj4,obj5,obj6};
     //objectBuffer.size()
+    // render each object in a different thread that will be processed by the same camera
     for (size_t i = 0; i < objectBuffer.size(); i++)
     {
         s.obj.clear();
@@ -1286,6 +1288,120 @@ void primitiveThreadTest()
     }
 }
 
+void cameraConfigTest() // tests the camera rotation behavior
+{
+    std::cout << "_________Space Test_______________" << std::endl;
+
+    // Define the grid size and step
+    unsigned int size =800;
+    double step = 0.006;
+
+    point camOrigin(0, 0, 0);
+    vec3 camYDirection(0, 0, 1);  // Pointing upward
+    vec3 camXDirection(0, 1, 0);  // Pointing right
+    vec3 rayDirection(0, 0, 0);  // Pointing downward
+
+   
+    vec3 topRight  = vec3(1, 1, 0); // Pointing topRight
+    vec3 topLeft  = vec3(-1, 1, 0); // Pointing topLeft
+    vec3 bottomRight  = vec3(1, -1, 0); // Pointing bottomRight
+    vec3 bottomLeft  = vec3(-1, -1, 0); // Pointing bottomLeft
+    vec3 top = vec3(0, 1, 1); // Pointing top
+    vec3 bottom = vec3(0, 1, -1); // Pointing bottom
+    vec3 topRightBack  = vec3(1, 1, 1); // Pointing topRightBack
+    vec3 topRightFront  = vec3(1, 1, -1); // Pointing topRightFront
+    vec3 topRightUp  = vec3(1, 1, 1); // Pointing topRightUp
+    vec3 topRightDown  = vec3(1, 1, -1); // Pointing topRightDown
+    
+
+
+
+    vector<vec3> allDirections ={topRight,topLeft,bottomRight,bottomLeft,top,bottom,topRightBack,topRightFront,topRightUp,topRightDown};
+
+    for (size_t i = 0; i < allDirections.size(); i++)
+    {
+        camera cam(size, size, step, camOrigin, camXDirection, camYDirection, allDirections[i]);
+        std::cout << "_________Face Coloring_______________" << std::endl;
+        double scaling =size*step/2; 
+        point offset = point(0, size*step/2 , size*step/2);
+        object obj(primitive::cube,scaling,offset+point(0,0,0));
+        std::cout << "________________________" << std::endl;
+        // Create a space and assign the object
+        space s({obj});
+
+        // Add the camera to the space
+        s.cameras.push_back(cam);
+
+        // Trigger the camera rays
+        s.triggerCameraRay();
+        ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Room"+std::to_string(i)+".ppm");  
+              
+    }
+}
+void generateVideo() // Generate a video of the object as the camera change direction
+{
+    std::cout << "_________Space Test_______________" << std::endl;
+
+    // Define the grid size and step
+    unsigned int size =500;
+    double step = 0.002;
+
+    point camOrigin(0, 0, 0);
+    vec3 camYDirection(0, 0, 1);  // Pointing upward
+    vec3 camXDirection(0, 1, 0);  // Pointing right
+    vec3 rayDirection(0, 0, 0);  // Pointing downward
+
+    size_t frame = 100;
+    double frameStep = .1;
+  
+    double scaling =size*step/2; 
+    point offset = point(0, size*step/2 , size*step/2);
+    object obj(primitive::cone,scaling,offset+point(0,0,0));
+    space s({obj});
+
+    vec3 tempDirection= vec3(0,0,0);
+    for (size_t i = 1; i <= frame; i++)
+    {
+        double x =(tempDirection.x()+frameStep)/(double)1.4;
+        double y = (tempDirection.y()+frameStep)/(double)1.1;
+        double z = (tempDirection.z()+frameStep)/(double)1.5;
+        
+         tempDirection=(vec3(x,y,z));
+        if (tempDirection.x() >=1)
+        {
+            tempDirection = (vec3(-1,tempDirection.y(),tempDirection.z()));
+        }
+        if (tempDirection.z() >=1)
+        {
+            tempDirection = (vec3(tempDirection.x(),tempDirection.y(),-1));
+        }
+        if(tempDirection.y() >=1)
+        {
+            tempDirection = (vec3(tempDirection.x(),-1,tempDirection.z()));
+        }
+       //cout << "tempDirection: " << tempDirection << endl;
+
+        // Add the camera to the space
+        s.cameras.clear();
+        camera cam(size, size, step, camOrigin, camXDirection, camYDirection, tempDirection);
+        s.cameras.push_back(cam);
+
+        // Trigger the camera rays
+        s.triggerCameraRay();
+        std::filesystem::create_directories("Output");
+        ImageRenderer::renderToFilePPM(s.cameras.at(0).getimage(), "Output/Step" + std::to_string(i) + ".ppm");        
+    }
+    // Convert PPM to Video
+    std::string convertCommand = "ffmpeg -framerate 2 -i Output/Step%d.ppm -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p output_video.mp4";
+
+    //std::cout << "convertCommand: " << convertCommand << std::endl;
+    int convertResult = system(convertCommand.c_str());
+    if (convertResult != 0) {
+        throw std::runtime_error("Error: Failed to convert PPM to Video.");
+        return;
+    }
+}
+
 int main(int argc, char const *argv[])
 {
     //testintersection();
@@ -1306,8 +1422,9 @@ int main(int argc, char const *argv[])
     //split_rays();
     //split_raysThreads(); 
     //cubeTextureTest();
-    primitiveThreadTest();
-
+    //primitiveThreadTest();
+    //cameraConfigTest();
+    generateVideo();
     return 0;
 }
 // shortcut to collapse all : citrl + k + 0

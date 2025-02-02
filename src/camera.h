@@ -137,7 +137,7 @@ public:
     }
     void consructRay(unsigned int height ,unsigned int width, double step, point origin ,vec3 Xdirection, vec3 Ydirection, vec3 Raydirection)
     {
-        vec3 xd = Xdirection = gmath::normalize(Xdirection);
+        //vec3 xd = Xdirection = gmath::normalize(Xdirection);
         vec3 yd = Ydirection = gmath::normalize(Ydirection);
         vec3 rd = Raydirection = gmath::normalize(Raydirection);
 
@@ -151,9 +151,6 @@ public:
         }
     }
    
-
-   
-
     // Get the width of the camera
     unsigned int getwidth() const {
         return width;

@@ -13,7 +13,4 @@ sphere=6,
 suzane=7
 }; 
 
-
-
-
 #endif // GENERAL_H

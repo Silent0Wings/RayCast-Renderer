@@ -121,6 +121,46 @@ public:
             std::cerr << "Error: Failed to delete " << filePath << ".\n";
         }
     }
+
+    static void renderToFilePPM(const image& img, const std::string filePath) {
+        // Open the file for writing
+        std::ofstream outFile(filePath);
+        cerr << "filePath: " << filePath << endl;
+        if (!outFile) {
+            std::cerr << "Error: Cannot open file " << filePath << " for writing.\n";
+            return;
+        }
+
+        // Write the PPM header
+        outFile << "P3\n" << img.getwidth() << ' ' << img.getheight() << "\n255\n";
+
+      // Render the color data stored in the Image object
+        for (unsigned int i = 0; i < img.getheight(); ++i) {  // Outer loop: height (rows)
+            //std::clog << "\rScanlines remaining: " << (img.getheight() - i) << ' ' << std::flush;
+            for (unsigned int j = 0; j < img.getwidth(); ++j) {  // Inner loop: width (columns)
+                color color = img.get(i, j);  // Access color data using width (j) and height (i)
+                int r = static_cast<int>(color.r());
+                int g = static_cast<int>(color.g());
+                int b = static_cast<int>(color.b());
+                outFile << r << ' ' << g << ' ' << b << '\n';
+
+            }
+        }
+
+        outFile.close();
+        std::clog << "\rDone. Image saved to " << filePath << "                 \n";
+
+        // File conversion using ImageMagick
+        std::string pngFile = filePath;
+        size_t pos = pngFile.find_last_of('.');
+        if (pos != std::string::npos) {
+            pngFile.replace(pos, pngFile.length() - pos, ".png");
+        } else {
+            pngFile += ".png";
+        }
+
+    
+    }
 };
 
 #endif // IMAGERENDERER_H
