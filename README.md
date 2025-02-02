@@ -103,7 +103,7 @@ image.save("dahlia_render.png");
 ## Installation
 
 ### Dependencies:
-1. **ImageMagick**:
+1. **[ImageMagick](https://imagemagick.org/script/download.php)**:
    - Required for image format conversion (e.g., PPM to PNG).
    - Ensure it is installed and accessible in the system's PATH.
    - Example usage:
