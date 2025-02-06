@@ -1459,7 +1459,6 @@ void generateVideo1() // Generate a video of the object as the camera change dir
 
     std::cout << "_________Space Test_______________" << std::endl;
     size_t frame = 1440/2;
-    double frameStep = .1;
 
     double startSize = .2;
     double endSize = 3;
@@ -1467,7 +1466,6 @@ void generateVideo1() // Generate a video of the object as the camera change dir
     double currentSize = startSize;
     int direction = 1;
 
-    vec3 tempDirection= vec3(0,0,0);
     for (size_t i = 1; i <= frame; i++)
     {
         currentSize += changepSize*direction;
@@ -1598,7 +1596,6 @@ void generateVideo2() // Generate a video of the object as the camera change dir
 
     std::cout << "_________Space Test_______________" << std::endl;
     size_t frame = 1440/5;
-    double frameStep = .1;
 
     double startSize = .2;
     double endSize = 3;
@@ -1610,7 +1607,6 @@ void generateVideo2() // Generate a video of the object as the camera change dir
 
 
 
-    vec3 tempDirection= vec3(0,0,0);
     for (size_t i = 1; i <= frame; i++)
     {
         currentSize += changepSize*direction;
@@ -1784,6 +1780,98 @@ void split_raysThreadsCube() {
     ImageRenderer::renderToFile(stitchedImage, "stitched.ppm");    
 }
 
+void testPerspective()
+{
+    std::cout << "_________Space Test_______________" << std::endl;
+    // Define the grid size
+    unsigned int size = 500*2;
+    double step = 0.01/2;
+
+    // Create a vector of rays pointing toward the plane z = 0
+    std::vector<std::vector<ray>> gridRay;
+    // this is a vector of vectors of tuple of ray and pointer to the ray that point to the grad ray above 
+    std::vector<std::vector<ray>> gridRay1;
+    float perspectiveScale =50;
+    vec3 direction(0.5, 0.5, -3);
+
+    // create a grid of rays that will be used to create the camera
+    // and another grid of rays that will be used to create a difference in space between each ray
+    for (unsigned i = 0; i < size; ++i) {
+        std::vector<ray> row;
+        std::vector<ray> row1;
+        for (unsigned j = 0; j < size; ++j) {
+            // Rays originate from above (z = 1) and point downward toward z = 0
+            point origin(i * step, j * step, 6);
+            point origin1(i * step*perspectiveScale, j * step*perspectiveScale, 6);
+            ray tempRy=ray(origin, direction);
+            ray tempRy1=ray(origin1, direction+vec3(0,0,-1));
+            row.push_back(tempRy);
+            row1.push_back(tempRy1);
+        }
+        gridRay.push_back(row);
+        gridRay1.push_back(row1);
+    }
+    // we will picj the center of the camera as a reference point 
+    point centerPoint =  gridRay.at(size/2).at(size/2).getOrigine();
+    // get<0>(Tuple {1,2}) would give use 1 like so 
+    // and we get the center point of the second grid
+    point center1 =  gridRay1.at(size/2).at(size/2).getOrigine();
+    // we calcualte the position we want the second grid to be 
+    point newCordinate = gridRay.at(size/2).at(size/2).get(200);
+    if (newCordinate!=centerPoint)
+    {
+        // and then we set the center of the second grid to be at the same position as the first grid
+       gridRay1.at(size/2).at(size/2).setOrigine(newCordinate);
+    }
+    // we calculate the vector that represent how much and the direction the center of the secong
+    // grid moved to align with the center of the first grid
+    vec3 MovedVectorBetweenOldPositionAndNew = newCordinate-center1;
+    // foreach loop that will go threw grid ray
+    for (auto& row : gridRay1) {
+        for (auto& column : row) {
+            // move every
+            column.setOrigine(column.getOrigine() + MovedVectorBetweenOldPositionAndNew);
+        }
+    }
+
+    for (size_t i = 0; i < gridRay.size(); i++)
+    {
+        for (size_t j = 0; j < gridRay.at(i).size(); j++)
+        {
+            vec3 newDirection = gridRay1.at(size/2).at(size/2).getOrigine()- gridRay.at(i).at(j).getDirection();
+            newDirection= gmath::normalize(newDirection);
+            gridRay.at(i).at(j).setDirection(newDirection);
+        }
+    }
+    gridRay1.clear();
+
+    // Create a camera with the grid of rays
+    camera cam(size, size, gridRay);
+
+    double scaling =3; 
+    point offset = point(2, 1, 1);
+
+    // Bottom face
+    object obj(primitive::cube,scaling,offset);
+
+    // Create a space and assign the object
+    space s({obj});
+
+    // Add the camera to the space
+    s.cameras.push_back(cam);
+
+    // Trigger the camera rays
+    s.triggerCameraRay();
+    s.saveImages();
+
+    std::cout << "________________________" << std::endl;
+
+    //ImageRenderer::renderToFile(stitchedImage, "Step"+std::to_string(i)+".ppm");   
+    string folderName ="TestRender";
+    std::filesystem::create_directories(folderName);
+    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), folderName+"/Step" + std::to_string(123) + ".ppm");        
+}
+
 int main(int argc, char const *argv[])
 {
     //testintersection();
@@ -1809,7 +1897,8 @@ int main(int argc, char const *argv[])
     //cameraConfigTest();
     //generateVideo();
     //generateVideo1();
-    generateVideo2();
+    //generateVideo2();
+    testPerspective();
     return 0;
 }
 // shortcut to collapse all : citrl + k + 0

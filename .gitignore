@@ -1,0 +1,19 @@
+# Ignore Visual Studio specific files
+.vs/
+*.user
+*.suo
+*.cache
+*.pdb
+*.log
+*.obj
+*.tlog
+*.VC.db
+*.VC.opendb
+
+# Ignore Visual Studio Code settings
+.vscode/
+
+
+# to remove the ignore file and not have it show in my github page : git rm --cached .gitignore
+# commit the change : git commit -m "Removed .gitignore from repo but kept it locally"
+# apply the changes : git push origin main
