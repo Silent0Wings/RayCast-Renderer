@@ -9,6 +9,7 @@
 *.tlog
 *.VC.db
 *.VC.opendb
+*.exe
 
 # Ignore Visual Studio Code settings
 .vscode/
