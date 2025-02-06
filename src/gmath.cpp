@@ -136,8 +136,8 @@ point* gmath::intersectLocation(const ray& r1, const ray& r2) {
 }
 
 
-point* gmath::intersect3d1(const ray& r1, const point arr[3]) {
-    
+point* gmath::intersect3d1(const ray& r1, const point arr[3]) 
+{
     // this is a direction check to see if the ray is moving towards any of the triangle vertices or not
     int towardsTriangleVerticesCount = 0;
     for (size_t i = 0; i < 3; i++)
@@ -163,6 +163,7 @@ point* gmath::intersect3d1(const ray& r1, const point arr[3]) {
 
     if (towardsTriangleVerticesCount >=1) // if the ray is moving towards at least one of the triangle vertices, then it likely intersects
     {
+        
     } // if the ray is not moving towards any of the triangle vertices, then it likely doesnt intersect
     else {
         return nullptr;

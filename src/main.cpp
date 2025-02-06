@@ -1782,6 +1782,91 @@ void split_raysThreadsCube() {
 }
 
 void testPerspective()
+{ 
+    std::cout << "_________Space Test_______________" << std::endl;
+    // Define the grid size
+    float resolutionMultiplier = 1;
+    unsigned int size = 500*resolutionMultiplier;
+    double step = 0.01/resolutionMultiplier;
+
+    // Create a vector of rays pointing toward the plane z = 0
+    std::vector<std::vector<ray>> gridRay;
+    // this is a vector of vectors of tuple of ray and pointer to the ray that point to the grad ray above 
+    std::vector<std::vector<ray>> gridRay1;
+    float perspectiveScale =2;
+    float perspectiveForce =100;
+    vec3 direction(0, 1, 0);
+
+    // create a grid of rays that will be used to create the camera
+    // and another grid of rays that will be used to create a difference in space between each ray
+    for (unsigned i = 0; i < size; ++i) {
+        std::vector<ray> row;
+        std::vector<ray> row1;
+        for (unsigned j = 0; j < size; ++j) {
+            // Rays originate from above (z = 1) and point downward toward z = 0
+            point origin(i * step, 0.5, j * step);
+            point origin1(i * step*perspectiveScale,0.5,  j * step*perspectiveScale);
+            ray tempRy=ray(origin, direction);
+            ray tempRy1=ray(origin1, direction+vec3(0,0,-1));
+            row.push_back(tempRy);
+            row1.push_back(tempRy1);
+        }
+        gridRay.push_back(row);
+        gridRay1.push_back(row1);
+    }
+    // and we get the center point of the second grid
+    vec3 MovedVectorBetweenOldPositionAndNew = gridRay.at(size/2).at(size/2).get(perspectiveForce)-gridRay1.at(size/2).at(size/2).getOrigine() ;
+
+    // foreach loop that will go threw grid ray and add the moved vector to the direction of the ray
+    for (size_t i = 0; i < gridRay1.size(); i++)
+    {
+        for (size_t j = 0; j < gridRay1.at(i).size(); j++)
+        {
+            point current =gridRay1.at(i).at(j).getOrigine();
+            gridRay1.at(i).at(j).setOrigine(current+MovedVectorBetweenOldPositionAndNew);
+        }
+    }
+
+    for (size_t i = 0; i < gridRay.size(); i++)
+    {
+        for (size_t j = 0; j < gridRay.at(i).size(); j++)
+        {
+            vec3 newDirection = gridRay1.at(i).at(j).getOrigine()- gridRay.at(i).at(j).getDirection();
+            newDirection= gmath::normalize(newDirection);
+            gridRay.at(i).at(j).setDirection(newDirection);
+        }
+    }
+    gridRay1.clear();
+
+    // Create a camera with the grid of rays
+    camera cam(size, size, gridRay);
+
+    double scaling =10;
+    point offset = point(0, -3, 1.5);
+    object obj(primitive::cube,scaling,offset);
+
+    // Create a space and assign the object
+    space s({obj});
+
+    // Add the camera to the space
+    s.cameras.push_back(cam);
+
+    // Trigger the camera rays
+    s.triggerCameraRay();
+    s.saveImages();
+
+    std::cout << "________________________" << std::endl;
+
+    //ImageRenderer::renderToFile(stitchedImage, "Step"+std::to_string(i)+".ppm");   
+    string folderName ="TestRender";
+    std::filesystem::create_directories(folderName);
+    std::string filename = folderName + "/CubeRenderPerspectiveScale" + std::to_string((int)perspectiveScale);
+    std::replace(filename.begin(), filename.end(), '.', '_'); // Replace '.' with '_'
+
+    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), filename + ".ppm");
+}
+
+void testPerspectiveLoop()
 {
     for (float vv = 0; vv < 20; vv+=.1)
     {
@@ -1871,7 +1956,7 @@ void testPerspective()
 
         ImageRenderer::renderToFile(s.cameras.at(0).getimage(), filename + ".ppm");
     }
-    }
+}
 
 int main(int argc, char const *argv[])
 {
