@@ -1,0 +1,14 @@
+# Ignore Visual Studio specific files
+.vs/
+*.user
+*.suo
+*.cache
+*.pdb
+*.log
+*.obj
+*.tlog
+*.VC.db
+*.VC.opendb
+
+# Ignore Visual Studio Code settings
+.vscode/
