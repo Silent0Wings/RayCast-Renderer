@@ -54,8 +54,13 @@ public:
     static double abs(double a) {
         return a < 0 ? -a : a;
     }
-
-
-
+    private:
+    static constexpr long double epsilon = 1.0e-10; //  this is the smallest value that can be represented in the system 
+    /*
+    This keyword specifies that epsilon is a constant expression. 
+    A constexpr variable is evaluated at compile time,
+    which can lead to performance optimizations since the value is known and fixed during compilation.
+    It also ensures that the value of epsilon cannot be modified after its initialization.
+    */
 };
 #endif // GMATH_H

@@ -87,7 +87,7 @@ public:
         for (auto& cam : cameras) {
             //cout << "!!!!!!!!!!!!!!!!!" << endl;
             size_t camIndex = &cam - &cameras[0];
-            std::cout << "Thread N*= " << camIndex << " |started!" << std::endl;
+            //std::cout << "Thread N*= " << camIndex << " |started!" << std::endl;
             for (auto& o : obj) {
                 // Launch asynchronous task for processing each camera-object pair
                 futures.push_back(std::async(std::launch::async, [&cam, &o, camIndex]() {
@@ -101,14 +101,14 @@ public:
                     cam.cameraToImage(o);
 
                     // Save the rendered image to a file
-                    ImageRenderer::renderToFile(cam.getimage(), "output" + std::to_string(camIndex) + ".ppm");
-                    cerr << " camIndex= " << camIndex << "!" << endl;
+                    //ImageRenderer::renderToFile(cam.getimage(), "output" + std::to_string(camIndex) + ".ppm");
+                    //cerr << " camIndex= " << camIndex << "!" << endl;
 
                     // Log thread end
                 }));
                 //std::cout << "\033[2J\033[H";
             }
-            std::cout << "Thread N*= " << camIndex << " |ended!" << std::endl;
+            //std::cout << "Thread N*= " << camIndex << " |ended!" << std::endl;
         }
     }
 

@@ -137,6 +137,37 @@ point* gmath::intersectLocation(const ray& r1, const ray& r2) {
 
 
 point* gmath::intersect3d1(const ray& r1, const point arr[3]) {
+    
+    // this is a direction check to see if the ray is moving towards any of the triangle vertices or not
+    int towardsTriangleVerticesCount = 0;
+    for (size_t i = 0; i < 3; i++)
+    {
+        point p1 = arr[0];
+        point rayOrigin = r1.getOrigine();
+        point translatedRayOrigin = r1.get(epsilon*2); // using a value that is bigger than the cordinate of the object in the space wwould cause problems 
+        // say a cube is at 0,0,0 and the ray is at 0,0,0.00001, the ray would intersect the cube at 0,0,0
+
+        double distance1 = gmath::distance(rayOrigin, p1);
+        double distance2 = gmath::distance(translatedRayOrigin, p1);
+        double difference = distance1 - distance2;
+        if (difference > 0) // if the difference is positive, the ray is moving towards from the triangle
+        {
+            towardsTriangleVerticesCount++;
+            break; // since only one is enough if we need to increse to two verticies then we can remove the break
+        } else if (difference < 0) { // if the difference is negative, the ray is moving away from the triangle
+            // No action needed
+        } else { // if the difference is zero, the ray isn't moving at all
+            // No action needed
+        }   
+    }
+
+    if (towardsTriangleVerticesCount >=1) // if the ray is moving towards at least one of the triangle vertices, then it likely intersects
+    {
+    } // if the ray is not moving towards any of the triangle vertices, then it likely doesnt intersect
+    else {
+        return nullptr;
+    }
+
     // Triangle edges
     vec3 edge1 = arr[1] - arr[0]; // Edge AB
     vec3 edge2 = arr[2] - arr[0]; // Edge AC

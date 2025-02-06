@@ -1402,6 +1402,388 @@ void generateVideo() // Generate a video of the object as the camera change dire
     }
 }
 
+void generateVideo1() // Generate a video of the object as the camera change direction
+{
+
+    // Define the grid size and step
+    unsigned int size = 400;
+    double step = 0.01;
+    unsigned int height = size;
+    unsigned int width = size;
+
+    // Camera grid dimensions
+    unsigned int num_cameraX = 2;
+    unsigned int num_cameraY = 2;
+    unsigned int camera_height = height / num_cameraX;
+    unsigned int camera_width = width / num_cameraY;
+
+    // Initialize cameras grid
+    vector<vector<camera>> camerasGrid(num_cameraX, vector<camera>(num_cameraY));
+
+    point camOrigin(-3, -3, -3);
+    vec3 camYDirection(0, 0, 1);  // Pointing upward
+    vec3 camXDirection(0, 1, 0);  // Pointing right
+    vec3 rayDirection(1, 1, 1);  // Pointing downward
+
+    // Set up individual cameras in the grid
+    for (size_t i = 0; i < num_cameraX; i++) {
+        for (size_t j = 0; j < num_cameraY; j++) {
+            double shiftX = width * step * i;
+            double shiftY = height * step * j;
+            point offsetPos = camOrigin + (camXDirection * shiftX + camYDirection * shiftY) / 2;
+
+            camerasGrid[i][j] = camera(camera_height, camera_width, step, offsetPos, camXDirection, camYDirection, rayDirection);
+        }
+    }
+
+   
+    space s=space();
+    
+    // Add cameras to the space
+    for (size_t i = 0; i < num_cameraX; i++) {
+        for (size_t j = 0; j < num_cameraY; j++) {
+            s.cameras.push_back(camerasGrid[i][j]);
+        }
+    }
+
+    // Combine camera dimensions
+    unsigned int combinedHeight = camera_height * num_cameraX;
+    unsigned int combinedWidth = camera_width * num_cameraY;
+
+    
+    // Async processing with threads
+    if (s.cameras.empty() ) {
+        std::cout << "No cameras " << std::endl;
+        return;
+    }
+
+    std::cout << "_________Space Test_______________" << std::endl;
+    size_t frame = 1440/2;
+    double frameStep = .1;
+
+    double startSize = .2;
+    double endSize = 3;
+    double changepSize = .01;
+    double currentSize = startSize;
+    int direction = 1;
+
+    vec3 tempDirection= vec3(0,0,0);
+    for (size_t i = 1; i <= frame; i++)
+    {
+        currentSize += changepSize*direction;
+
+        if (currentSize >= endSize)
+        {
+            direction = -1;
+        }   else if (currentSize <= startSize)
+        {
+            direction = 1;
+        }
+        
+        // Create space and add object
+        s.cameras.at(0).clear();
+        s.cameras.at(1).clear();
+        s.cameras.at(2).clear();
+        s.cameras.at(3).clear();
+        s.obj.clear();
+        object obj(primitive::cube,currentSize,point(-2,0,0));
+        s.obj.push_back(obj);
+
+
+
+        std::vector<std::future<void>> futures;
+        s.threadedCameraRay(futures);
+
+        // Wait for all threads to complete
+        for (auto& future : futures) {
+            future.get();
+        }
+
+        std::cout << "All cameras and objects have been processed asynchronously." << std::endl;
+
+        std::cout << "_________Stitching_______________" << std::endl;
+
+        // Stitch images into a single output
+        std::cout << "Combined Width: " << combinedWidth << std::endl;
+        std::cout << "Combined Height: " << combinedHeight << std::endl;
+
+        vector<vector<image>> images; // Placeholder for stitched images
+
+        for (int i = static_cast<int>(num_cameraX) - 1; i >= 0; i--) { // Outer loop iterates backward
+            vector<image> rowImages;
+            for (int j = static_cast<int>(num_cameraY) - 1; j >= 0; j--) { // Outer loop iterates backward
+                rowImages.push_back(s.cameras[i * num_cameraY + j].getimage());
+            }
+            images.push_back(rowImages);
+        }
+    
+        //swap the first and last image
+        image tempimg =images[0][0];
+        images[0][0]=images[num_cameraX-1][num_cameraY-1];
+        images[num_cameraX-1][num_cameraY-1]=tempimg;
+
+        image stitchedImage(combinedWidth, combinedHeight, images);
+        //ImageRenderer::renderToFile(stitchedImage, "Step"+std::to_string(i)+".ppm");   
+        std::filesystem::create_directories("Output");
+        ImageRenderer::renderToFilePPM(stitchedImage, "Output/Step" + std::to_string(i) + ".ppm");        
+        
+    }
+    // Convert PPM to Video
+    //std::string convertCommand = "ffmpeg -framerate 2 -i Output/Step%d.ppm -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p output_video.mp4";
+    // for 1440 frames its better to use this :
+    std::string convertCommand = "ffmpeg -framerate 60 -i Output/Step%d.ppm -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p output_video.mp4";
+
+    //std::cout << "convertCommand: " << convertCommand << std::endl;
+    int convertResult = system(convertCommand.c_str());
+    if (convertResult != 0) {
+        throw std::runtime_error("Error: Failed to convert PPM to Video.");
+        return;
+    }
+}
+
+
+void generateVideo2() // Generate a video of the object as the camera change direction
+{
+    // Define the grid size and step
+    unsigned int size = 400;
+    double step = 0.01;
+    unsigned int height = size;
+    unsigned int width = size;
+
+    // Camera grid dimensions
+    unsigned int num_cameraX = 2;
+    unsigned int num_cameraY = 2;
+    unsigned int camera_height = height / num_cameraX;
+    unsigned int camera_width = width / num_cameraY;
+
+    // Initialize cameras grid
+    vector<vector<camera>> camerasGrid(num_cameraX, vector<camera>(num_cameraY));
+
+    point camOrigin(-3, -3, -3);
+    vec3 camYDirection(0, 0, 1);  // Pointing upward
+    vec3 camXDirection(0, 1, 0);  // Pointing right
+    vec3 rayDirection(1, 1, 1);  // Pointing downward
+
+    // Set up individual cameras in the grid
+    for (size_t i = 0; i < num_cameraX; i++) {
+        for (size_t j = 0; j < num_cameraY; j++) {
+            double shiftX = width * step * i;
+            double shiftY = height * step * j;
+            point offsetPos = camOrigin + (camXDirection * shiftX + camYDirection * shiftY) / 2;
+
+            camerasGrid[i][j] = camera(camera_height, camera_width, step, offsetPos, camXDirection, camYDirection, rayDirection);
+        }
+    }
+
+   
+    space s=space();
+    
+    // Add cameras to the space
+    for (size_t i = 0; i < num_cameraX; i++) {
+        for (size_t j = 0; j < num_cameraY; j++) {
+            s.cameras.push_back(camerasGrid[i][j]);
+        }
+    }
+
+    // Combine camera dimensions
+    unsigned int combinedHeight = camera_height * num_cameraX;
+    unsigned int combinedWidth = camera_width * num_cameraY;
+
+    
+    // Async processing with threads
+    if (s.cameras.empty() ) {
+        std::cout << "No cameras " << std::endl;
+        return;
+    }
+
+    std::cout << "_________Space Test_______________" << std::endl;
+    size_t frame = 1440/5;
+    double frameStep = .1;
+
+    double startSize = .2;
+    double endSize = 3;
+    double changepSize = .01;
+    double currentSize = startSize;
+    double currentSize1 = startSize;
+    int direction = 1;
+    int direction1 = -1;
+
+
+
+    vec3 tempDirection= vec3(0,0,0);
+    for (size_t i = 1; i <= frame; i++)
+    {
+        currentSize += changepSize*direction;
+
+        if (currentSize >= endSize)
+        {
+            direction = -1;
+        }   else if (currentSize <= startSize)
+        {
+            direction = 1;
+        }
+
+        currentSize1 += changepSize*direction1;
+
+        if (currentSize1 >= endSize)
+        {
+            direction1 = -1;
+        }   else if (currentSize1 <= startSize)
+        {
+            direction1 = 1;
+        }
+        
+        // Create space and add object
+        s.cameras.at(0).clear();
+        s.cameras.at(1).clear();
+        s.cameras.at(2).clear();
+        s.cameras.at(3).clear();
+        s.obj.clear();
+        object obj(primitive::cube,currentSize,point(-2,0,0));
+        object obj1(primitive::cone,currentSize1,point(-1.5,0,0));
+        s.obj.push_back(obj);
+        s.obj.push_back(obj1);
+
+
+
+        std::vector<std::future<void>> futures;
+        s.threadedCameraRay(futures);
+
+        // Wait for all threads to complete
+        for (auto& future : futures) {
+            future.get();
+        }
+
+        std::cout << "All cameras and objects have been processed asynchronously." << std::endl;
+
+        std::cout << "_________Stitching_______________" << std::endl;
+
+        // Stitch images into a single output
+        std::cout << "Combined Width: " << combinedWidth << std::endl;
+        std::cout << "Combined Height: " << combinedHeight << std::endl;
+
+        vector<vector<image>> images; // Placeholder for stitched images
+
+        for (int i = static_cast<int>(num_cameraX) - 1; i >= 0; i--) { // Outer loop iterates backward
+            vector<image> rowImages;
+            for (int j = static_cast<int>(num_cameraY) - 1; j >= 0; j--) { // Outer loop iterates backward
+                rowImages.push_back(s.cameras[i * num_cameraY + j].getimage());
+            }
+            images.push_back(rowImages);
+        }
+    
+        //swap the first and last image
+        image tempimg =images[0][0];
+        images[0][0]=images[num_cameraX-1][num_cameraY-1];
+        images[num_cameraX-1][num_cameraY-1]=tempimg;
+
+        image stitchedImage(combinedWidth, combinedHeight, images);
+        //ImageRenderer::renderToFile(stitchedImage, "Step"+std::to_string(i)+".ppm");   
+        std::filesystem::create_directories("Output");
+        ImageRenderer::renderToFilePPM(stitchedImage, "Output/Step" + std::to_string(i) + ".ppm");        
+        
+    }
+    // Convert PPM to Video
+    //std::string convertCommand = "ffmpeg -framerate 2 -i Output/Step%d.ppm -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p output_video.mp4";
+    // for 1440 frames its better to use this :
+    std::string convertCommand = "ffmpeg -framerate 12 -i Output/Step%d.ppm -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p output_video.mp4";
+
+    //std::cout << "convertCommand: " << convertCommand << std::endl;
+    int convertResult = system(convertCommand.c_str());
+    if (convertResult != 0) {
+        throw std::runtime_error("Error: Failed to convert PPM to Video.");
+        return;
+    }
+}
+
+// testing the split rays function with threads
+void split_raysThreadsCube() { 
+    // Define the grid size and step
+    unsigned int size = 400;
+    double step = 0.01;
+    unsigned int height = size;
+    unsigned int width = size;
+
+    // Camera grid dimensions
+    unsigned int num_cameraX = 2;
+    unsigned int num_cameraY = 2;
+    unsigned int camera_height = height / num_cameraX;
+    unsigned int camera_width = width / num_cameraY;
+
+    // Initialize cameras grid
+    vector<vector<camera>> camerasGrid(num_cameraX, vector<camera>(num_cameraY));
+
+    point camOrigin(-3, -3, -3);
+    vec3 camYDirection(0, 0, 1);  // Pointing upward
+    vec3 camXDirection(0, 1, 0);  // Pointing right
+    vec3 rayDirection(1, 1, 1);  // Pointing downward
+
+    // Set up individual cameras in the grid
+    for (size_t i = 0; i < num_cameraX; i++) {
+        for (size_t j = 0; j < num_cameraY; j++) {
+            double shiftX = width * step * i;
+            double shiftY = height * step * j;
+            point offsetPos = camOrigin + (camXDirection * shiftX + camYDirection * shiftY) / 2;
+
+            camerasGrid[i][j] = camera(camera_height, camera_width, step, offsetPos, camXDirection, camYDirection, rayDirection);
+        }
+    }
+
+    // Create space and add object
+    space s({object(primitive::cube,1,point(-2,0,0))});
+    
+    // Add cameras to the space
+    for (size_t i = 0; i < num_cameraX; i++) {
+        for (size_t j = 0; j < num_cameraY; j++) {
+            s.cameras.push_back(camerasGrid[i][j]);
+        }
+    }
+
+    // Combine camera dimensions
+    unsigned int combinedHeight = camera_height * num_cameraX;
+    unsigned int combinedWidth = camera_width * num_cameraY;
+
+    // Async processing with threads
+    if (s.cameras.empty() || s.obj.empty()) {
+        std::cout << "No cameras or objects to process." << std::endl;
+        return;
+    }
+
+    std::vector<std::future<void>> futures;
+    s.threadedCameraRay(futures);
+
+    // Wait for all threads to complete
+    for (auto& future : futures) {
+        future.get();
+    }
+
+    std::cout << "All cameras and objects have been processed asynchronously." << std::endl;
+
+    std::cout << "_________Stitching_______________" << std::endl;
+
+    // Stitch images into a single output
+    std::cout << "Combined Width: " << combinedWidth << std::endl;
+    std::cout << "Combined Height: " << combinedHeight << std::endl;
+
+    vector<vector<image>> images; // Placeholder for stitched images
+
+    for (int i = static_cast<int>(num_cameraX) - 1; i >= 0; i--) { // Outer loop iterates backward
+        vector<image> rowImages;
+        for (int j = static_cast<int>(num_cameraY) - 1; j >= 0; j--) { // Outer loop iterates backward
+            rowImages.push_back(s.cameras[i * num_cameraY + j].getimage());
+        }
+        images.push_back(rowImages);
+    }
+  
+    //swap the first and last image
+    image tempimg =images[0][0];
+    images[0][0]=images[num_cameraX-1][num_cameraY-1];
+    images[num_cameraX-1][num_cameraY-1]=tempimg;
+
+    image stitchedImage(combinedWidth, combinedHeight, images);
+    ImageRenderer::renderToFile(stitchedImage, "stitched.ppm");    
+}
+
 int main(int argc, char const *argv[])
 {
     //testintersection();
@@ -1423,8 +1805,11 @@ int main(int argc, char const *argv[])
     //split_raysThreads(); 
     //cubeTextureTest();
     //primitiveThreadTest();
+    //split_raysThreadsCube();
     //cameraConfigTest();
-    generateVideo();
+    //generateVideo();
+    //generateVideo1();
+    generateVideo2();
     return 0;
 }
 // shortcut to collapse all : citrl + k + 0
