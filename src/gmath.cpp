@@ -142,9 +142,9 @@ point* gmath::intersect3d1(const ray& r1, const point arr[3])
     int towardsTriangleVerticesCount = 0;
     for (size_t i = 0; i < 3; i++)
     {
-        point p1 = arr[0];
+        point p1 = arr[i];
         point rayOrigin = r1.getOrigine();
-        point translatedRayOrigin = r1.get(epsilon*2); // using a value that is bigger than the cordinate of the object in the space wwould cause problems 
+        point translatedRayOrigin = r1.get(epsilon); // using a value that is bigger than the cordinate of the object in the space wwould cause problems 
         // say a cube is at 0,0,0 and the ray is at 0,0,0.00001, the ray would intersect the cube at 0,0,0
 
         double distance1 = gmath::distance(rayOrigin, p1);
@@ -166,7 +166,7 @@ point* gmath::intersect3d1(const ray& r1, const point arr[3])
         
     } // if the ray is not moving towards any of the triangle vertices, then it likely doesnt intersect
     else {
-        return nullptr;
+       return nullptr;
     }
 
     // Triangle edges

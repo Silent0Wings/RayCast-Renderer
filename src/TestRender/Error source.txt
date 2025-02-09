@@ -4,7 +4,7 @@ point* gmath::intersect3d1(const ray& r1, const point arr[3])
     int towardsTriangleVerticesCount = 0;
     for (size_t i = 0; i < 3; i++)
     {
-        point p1 = arr[0];
+        point p1 = arr[0]; ///XXXXX this is the line in which the error shows i was supposed to make it i but i forgot and kept it 0
         point rayOrigin = r1.getOrigine();
         point translatedRayOrigin = r1.get(epsilon*2); // using a value that is bigger than the cordinate of the object in the space wwould cause problems 
         // say a cube is at 0,0,0 and the ray is at 0,0,0.00001, the ray would intersect the cube at 0,0,0
