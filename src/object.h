@@ -18,22 +18,20 @@
 
 using namespace std;
 
-
-
-
 /**
  * @class object
  * @brief Represent an obstract entity that holds the graphical data of an object.
  * The object class holds a 2D vector of pixels representing the object's graphical data.
  * and maps an array of 3 elements to a color. aka vertex color map.
  */
-class object { 
+class object
+{
 public:
     point globalPosition;
     vec3 globalRotation;
     point globallRotation;
     vec3 locallRotation;
-    object* parent;
+    object *parent;
     texture tex;
 
     // 2D vector of pixels representing the object's graphical data.
@@ -41,69 +39,69 @@ public:
     // Dictionary to link an array of 3 elements to a color.
     map<array<point, 3>, color> colorMap;
 
- 
     // Create an enum variable and assign a value to it
 
     // Constructs a new Object.
-    object()    
+    object()
     {
-        parent=nullptr;
-        tex=texture();
+        parent = nullptr;
+        tex = texture();
     }
-    object(const vector<vector<point>>& v){
+    object(const vector<vector<point>> &v)
+    {
         vertices = v;
-        parent =nullptr;
-        tex=texture();
-
+        parent = nullptr;
+        tex = texture();
     }
-    object(primitive prim, double scale, point offset) {
+    object(primitive prim, double scale, point offset)
+    {
         // Initialize the object based on the primitive type
-        switch (prim) {
-            case primitive::plane:
-                this->plane(scale, offset);
-                break;
-            case primitive::circle:
-                this->circle(scale, offset);
-                break;
-            case primitive::cone:
-                this->cone(scale, offset);
-                break;
-            case primitive::torus:
-                this->torus(scale, offset);
-                break;
-            case primitive::cube:
-                this->cube(scale, offset);
-                break;
-            case primitive::sphere:
-                this->sphere(scale, offset);
-                break;
-            case primitive::suzane:
-                this->suzane(scale, offset);
-                break;
-            default:
-                throw std::invalid_argument("Unknown primitive type");
+        switch (prim)
+        {
+        case primitive::plane:
+            this->plane(scale, offset);
+            break;
+        case primitive::circle:
+            this->circle(scale, offset);
+            break;
+        case primitive::cone:
+            this->cone(scale, offset);
+            break;
+        case primitive::torus:
+            this->torus(scale, offset);
+            break;
+        case primitive::cube:
+            this->cube(scale, offset);
+            break;
+        case primitive::sphere:
+            this->sphere(scale, offset);
+            break;
+        case primitive::suzane:
+            this->suzane(scale, offset);
+            break;
+        default:
+            throw std::invalid_argument("Unknown primitive type");
         }
     }
-    void  cube(double scaling, point offset)
+    void cube(double scaling, point offset)
     {
         const vector<point> cubeVertices = {
-            (point(0, 0, 0) * scaling + offset),  // Vertex 0
-            (point(1, 0, 0) * scaling + offset),  // Vertex 1
-            (point(1, 1, 0) * scaling + offset),  // Vertex 2
-            (point(0, 1, 0) * scaling + offset),  // Vertex 3
-            (point(0, 0, 1) * scaling + offset),  // Vertex 4
-            (point(1, 0, 1) * scaling + offset),  // Vertex 5
-            (point(1, 1, 1) * scaling + offset),  // Vertex 6
-            (point(0, 1, 1) * scaling + offset)   // Vertex 7
+            (point(0, 0, 0) * scaling + offset), // Vertex 0
+            (point(1, 0, 0) * scaling + offset), // Vertex 1
+            (point(1, 1, 0) * scaling + offset), // Vertex 2
+            (point(0, 1, 0) * scaling + offset), // Vertex 3
+            (point(0, 0, 1) * scaling + offset), // Vertex 4
+            (point(1, 0, 1) * scaling + offset), // Vertex 5
+            (point(1, 1, 1) * scaling + offset), // Vertex 6
+            (point(0, 1, 1) * scaling + offset)  // Vertex 7
         };
 
-        
         // Create object vertices for two triangles in the z = 0 plane
         const vector<vector<point>> v = {
             // Bottom face
             {cubeVertices[0], cubeVertices[1], cubeVertices[2]},
             {cubeVertices[0], cubeVertices[2], cubeVertices[3]},
-            
+
             // Top face
             {cubeVertices[4], cubeVertices[5], cubeVertices[6]},
             {cubeVertices[4], cubeVertices[6], cubeVertices[7]},
@@ -122,105 +120,116 @@ public:
 
             // Right face
             {cubeVertices[1], cubeVertices[2], cubeVertices[6]},
-            {cubeVertices[1], cubeVertices[6], cubeVertices[5]}
-            };
-            
-            colorMap[{cubeVertices[0], cubeVertices[1], cubeVertices[2]}] = color(255, 0, 0); // White
-            colorMap[{cubeVertices[0], cubeVertices[2], cubeVertices[3]}] = color(255, 0, 0); // White
+            {cubeVertices[1], cubeVertices[6], cubeVertices[5]}};
 
-            // Top face
-            
-            colorMap[{cubeVertices[4], cubeVertices[5], cubeVertices[6]}] = color(255, 0, 0); // Red
-            colorMap[{cubeVertices[4], cubeVertices[6], cubeVertices[7]}] = color(255, 0, 0); // Red
+        colorMap[{cubeVertices[0], cubeVertices[1], cubeVertices[2]}] = color(255, 0, 0); // White
+        colorMap[{cubeVertices[0], cubeVertices[2], cubeVertices[3]}] = color(255, 0, 0); // White
 
-            // Front face
-            colorMap[{cubeVertices[0], cubeVertices[1], cubeVertices[5]}] = color(0, 0, 255); // Blue
-            colorMap[{cubeVertices[0], cubeVertices[5], cubeVertices[4]}] = color(0, 0, 255); // Blue
+        // Top face
 
-            // Back face
-            colorMap[{cubeVertices[2], cubeVertices[3], cubeVertices[7]}] = color(0, 255, 255); // Cyan
-            colorMap[{cubeVertices[2], cubeVertices[7], cubeVertices[6]}] = color(0, 255, 255); // Cyan
+        colorMap[{cubeVertices[4], cubeVertices[5], cubeVertices[6]}] = color(255, 0, 0); // Red
+        colorMap[{cubeVertices[4], cubeVertices[6], cubeVertices[7]}] = color(255, 0, 0); // Red
 
-            // Left face
-            colorMap[{cubeVertices[0], cubeVertices[3], cubeVertices[7]}] = color(255, 255, 0); // Yellow
-            colorMap[{cubeVertices[0], cubeVertices[7], cubeVertices[4]}] = color(255, 255, 0); // Yellow
+        // Front face
+        colorMap[{cubeVertices[0], cubeVertices[1], cubeVertices[5]}] = color(0, 0, 255); // Blue
+        colorMap[{cubeVertices[0], cubeVertices[5], cubeVertices[4]}] = color(0, 0, 255); // Blue
 
-            // Right face
-            colorMap[{cubeVertices[1], cubeVertices[2], cubeVertices[6]}] = color(0, 255, 0); // Green
-            colorMap[{cubeVertices[1], cubeVertices[6], cubeVertices[5]}] = color(0, 255, 0); // Green
+        // Back face
+        colorMap[{cubeVertices[2], cubeVertices[3], cubeVertices[7]}] = color(0, 255, 255); // Cyan
+        colorMap[{cubeVertices[2], cubeVertices[7], cubeVertices[6]}] = color(0, 255, 255); // Cyan
 
-            vertices=v;
+        // Left face
+        colorMap[{cubeVertices[0], cubeVertices[3], cubeVertices[7]}] = color(255, 255, 0); // Yellow
+        colorMap[{cubeVertices[0], cubeVertices[7], cubeVertices[4]}] = color(255, 255, 0); // Yellow
+
+        // Right face
+        colorMap[{cubeVertices[1], cubeVertices[2], cubeVertices[6]}] = color(0, 255, 0); // Green
+        colorMap[{cubeVertices[1], cubeVertices[6], cubeVertices[5]}] = color(0, 255, 0); // Green
+
+        vertices = v;
     }
 
-    void  sphere(double scaling, point offset){
+    void sphere(double scaling, point offset)
+    {
 
-        loadMesh("sphere.txt",scaling,offset);
+        loadMesh("sphere.txt", scaling, offset);
         randomColoring();
-    } 
-    void  circle(double scaling, point offset){
+    }
+    void circle(double scaling, point offset)
+    {
 
-        loadMesh("circle.txt",scaling,offset);
+        loadMesh("circle.txt", scaling, offset);
         randomColoring();
-    } 
-    void  cone(double scaling, point offset){
+    }
+    void cone(double scaling, point offset)
+    {
 
-        loadMesh("cone.txt",scaling,offset);
+        loadMesh("cone.txt", scaling, offset);
         randomColoring();
-    } 
-    void  torus(double scaling, point offset){
+    }
+    void torus(double scaling, point offset)
+    {
 
-        loadMesh("torus.txt",scaling,offset);
+        loadMesh("torus.txt", scaling, offset);
         randomColoring();
-    } 
-    void  plane(double scaling, point offset){
+    }
+    void plane(double scaling, point offset)
+    {
 
-        loadMesh("plane.txt",scaling,offset);
+        loadMesh("plane.txt", scaling, offset);
         randomColoring();
-    } 
-    void  suzane(double scaling, point offset){
+    }
+    void suzane(double scaling, point offset)
+    {
 
-        loadMesh("Suzane.txt",scaling,offset);
+        loadMesh("Suzane.txt", scaling, offset);
         randomColoring();
     }
     void randomColoring()
     {
-        for (size_t i = 0; i < vertices.size(); i++) {
-            for (size_t j = 0; j < vertices[i].size(); j++) {
+        for (size_t i = 0; i < vertices.size(); i++)
+        {
+            for (size_t j = 0; j < vertices[i].size(); j++)
+            {
                 color temp;
                 temp.randomColor(); // Generate random color
-                colorMap[{vertices[i][0],vertices[i][1],vertices[i][2]}] = temp;
+                colorMap[{vertices[i][0], vertices[i][1], vertices[i][2]}] = temp;
             }
         }
     }
-    void  loadMesh(string mame, double scaling, point offset)
+    void loadMesh(string mame, double scaling, point offset)
     {
         std::string filename = mame;
         MeshReader reader(filename);
         std::vector<std::vector<point>> v;
-        if (!reader.convertMesh(&v)) {
+        if (!reader.convertMesh(&v))
+        {
             std::cerr << "Error: Unable to load or convert the mesh from file: " << filename << std::endl;
             return;
         }
 
-        vector<vector<point>> meshVertices ;
+        vector<vector<point>> meshVertices;
         for (size_t i = 0; i < v.size(); i++)
         {
-            vector<point> temp ;
+            vector<point> temp;
             for (size_t j = 0; j < v.at(i).size(); j++)
             {
                 temp.push_back((v.at(i).at(j) * scaling + offset));
             }
             meshVertices.push_back(temp);
         }
-        vertices =meshVertices;
+        vertices = meshVertices;
     }
 
     // output operator
-    friend ostream& operator<<(ostream& os, const object& obj) {
+    friend ostream &operator<<(ostream &os, const object &obj)
+    {
         os << "Object(" << obj.vertices.size() << " vertices)\n";
-        for (size_t i = 0; i < obj.vertices.size(); ++i) {
+        for (size_t i = 0; i < obj.vertices.size(); ++i)
+        {
             os << "  ";
-            for (size_t j = 0; j < obj.vertices[i].size(); ++j) {
+            for (size_t j = 0; j < obj.vertices[i].size(); ++j)
+            {
                 os << obj.vertices[i][j] << " | ";
             }
             os << "\n";
@@ -229,16 +238,22 @@ public:
     }
 
     // Equality operator
-    bool operator==(const object& other) const {
-        if (vertices.size() != other.vertices.size()) {
+    bool operator==(const object &other) const
+    {
+        if (vertices.size() != other.vertices.size())
+        {
             return false;
         }
-        for (size_t i = 0; i < vertices.size(); ++i) {
-            if (vertices[i].size() != other.vertices[i].size()) {
+        for (size_t i = 0; i < vertices.size(); ++i)
+        {
+            if (vertices[i].size() != other.vertices[i].size())
+            {
                 return false;
             }
-            for (size_t j = 0; j < vertices[i].size(); ++j) {
-                if (vertices[i][j] != other.vertices[i][j]) {
+            for (size_t j = 0; j < vertices[i].size(); ++j)
+            {
+                if (vertices[i][j] != other.vertices[i][j])
+                {
                     return false;
                 }
             }
@@ -247,7 +262,8 @@ public:
     }
 
     // Inequality operator
-    bool operator!=(const object& other) const {
+    bool operator!=(const object &other) const
+    {
         return !(*this == other);
     }
 };

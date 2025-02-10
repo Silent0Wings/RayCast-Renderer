@@ -9,18 +9,17 @@
 #include "point.h"
 #include "vec3.h"
 
-
 /**
- * @class Hit 
+ * @class Hit
  * @brief Represents a Hit  in 3D space.
- */ 
-class Hit  {
-    public:
+ */
+class Hit
+{
+public:
     point hitPoint;
     vec3 normal;
     double angle;
     vec3 incoming;
     vec3 outgoing;
-
 };
 #endif // HIT_H

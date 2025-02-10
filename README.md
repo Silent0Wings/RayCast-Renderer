@@ -1,36 +1,40 @@
 # RayCast Renderer
+
 ![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/ccea9cce6a20f92a9ce836cf03a78983156d97e4/src/img/suzane2000.png)
 ![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/0d70f502cf390c3f684a59b6940151f66277709a/src/img/dhalia%20resolution.png)
 ![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/11f97693d6eb489b350571ddb001aaaff9069bcd/src/img/suzane%20colored%20options1.png)
 ![Rendered Scene](src/img/dear2.png)
 
-
 # RayCast Renderer
 
 [Project Report](Github.pdf)
 
-This project focuses on building a 3D ray-cast renderer from the ground up, adhering to a "make it yourself" philosophy.  The goal is to create, optimize, and expand a custom rendering engine, minimizing external inspiration and library usage.  The RayCast Renderer itself is a lightweight engine that uses ray tracing to generate high-quality 2D images from 3D scenes.  The project implements core concepts like vector mathematics, intersection logic, and parallel processing, while also incorporating advanced optimization techniques such as sub-camera splitting and asynchronous programming.
-
+This project focuses on building a 3D ray-cast renderer from the ground up, adhering to a "make it yourself" philosophy. The goal is to create, optimize, and expand a custom rendering engine, minimizing external inspiration and library usage. The RayCast Renderer itself is a lightweight engine that uses ray tracing to generate high-quality 2D images from 3D scenes. The project implements core concepts like vector mathematics, intersection logic, and parallel processing, while also incorporating advanced optimization techniques such as sub-camera splitting and asynchronous programming.
 
 ---
+
 ## Key Concepts
 
 ### What is Ray Casting?
+
 Ray casting is the process of tracing rays from a viewpoint (camera) into a scene to identify the closest object along each ray's path. This forms the basis for rendering 3D scenes onto a 2D plane.
 
 **Ray Equation**:
-R(t) = O + t * D
+R(t) = O + t \* D
 
 - **O**: Ray origin, typically the camera position.
 - **D**: Ray direction, represented as a normalized 3D vector.
 - **t**: Scalar parameter, determining the point along the ray.
 
 ### Triangles as Building Blocks
+
 In this renderer, all objects are represented as collections of **triangles**—the fundamental geometric primitive. Each triangle is defined by:
+
 - **Vertices**: Three points in 3D space (v1, v2, v3).
 - **Color**: A color value that determines how the triangle will appear in the final image.
 
 ### Intersection Testing
+
 The renderer employs the **linear algebra intersection** to efficiently calculate intersections between rays and triangles. When a ray intersects a triangle, the color of the triangle is assigned to the corresponding pixel in the rendered image.
 
 ---
@@ -47,35 +51,40 @@ The renderer employs the **linear algebra intersection** to efficiently calculat
 ## Rendering Pipeline
 
 ### 1. Scene Setup
+
 Define objects using triangles and configure the camera:
 
 ```cpp
 // Define a triangle with three vertices
-Triangle triangle({{0, 0, 0}, {1, 0, 0}, {0, 1, 0}}, Color(255, 0, 0)); 
+Triangle triangle({{0, 0, 0}, {1, 0, 0}, {0, 1, 0}}, Color(255, 0, 0));
 
 // Set up the camera
 Camera camera(Point(0, 0, -5), Vec3(0, 0, 1), 90.0);
 ```
 
 ### 2. Ray Casting
+
 - Rays are generated for each pixel in the image grid.
 - Each ray is cast into the scene to test for intersections with objects.
 
 ### 3. Intersection Detection
-- The *linear algebra intercection algorithm* determines:
+
+- The _linear algebra intercection algorithm_ determines:
   - Whether a ray intersects a triangle.
   - The point of intersection.
   - The triangle closest to the ray's origin.
 
 ### 4. Color Mapping
+
 - Assign the color of the intersected triangle to the corresponding pixel on the image plane.
 
 ### 5. Image Output
+
 - Combine all pixel data to generate the final 2D image.
 - Save the rendered image in formats like PNG or PPM.
 
-
 ### Simple Geometries
+
 - Low-resolution and high-resolution renders of basic shapes like cubes.
 
 ```cpp
@@ -85,7 +94,9 @@ Renderer renderer(scene, camera);
 renderer.render(image);
 image.save("low_res_cube.png");
 ```
+
 ### Complex Geometries
+
 - High-detail renders of models like the Dahlia flower and Suzanne.
 
 ```cpp
@@ -103,7 +114,9 @@ image.save("dahlia_render.png");
 ## Installation
 
 ### Dependencies:
+
 1. **[ImageMagick](https://imagemagick.org/script/download.php)**:
+
    - Required for image format conversion (e.g., PPM to PNG).
    - Ensure it is installed and accessible in the system's PATH.
    - Example usage:
@@ -118,6 +131,7 @@ image.save("dahlia_render.png");
 
 Intersection Testing:
 The renderer solves the ray-triangle intersection problem:
+
 1. Check if the ray intersects the plane of the triangle.
 2. Confirm the intersection point lies inside the triangle bounds.
 
@@ -135,10 +149,9 @@ Each triangle is assigned a unique color. When a ray hits a triangle, the pixel 
 This project is actively being developed, and several exciting features are planned for future releases:
 
 - **Stereoscopic Rendering:** Implementing stereoscopic rendering with proper depth handling to create 3D images.
-- **Projection Enhancements:** Expanding projection capabilities beyond the current orthographic projection to include perspective and panoramic projections.  This will allow for more realistic and immersive rendering.
+- **Projection Enhancements:** Expanding projection capabilities beyond the current orthographic projection to include perspective and panoramic projections. This will allow for more realistic and immersive rendering.
 - **Polygon Support:** Moving beyond triangle-only support to enable rendering of arbitrary polygons, providing greater flexibility and efficiency.
-- **360 Image Capture:**  Exploring the possibility of integrating 360-degree image capture functionality.
-
+- **360 Image Capture:** Exploring the possibility of integrating 360-degree image capture functionality.
 
 ## License
 

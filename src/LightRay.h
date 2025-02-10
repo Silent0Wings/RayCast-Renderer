@@ -12,14 +12,14 @@
 #include "space.h"
 #include <vector>
 
-
 using namespace std;
 /**
- * @class LightRay 
+ * @class LightRay
  * @brief Represents a LightRay  in 3D space.
- */ 
-class LightRay : public ray  {
-    public:
+ */
+class LightRay : public ray
+{
+public:
     unsigned int intensity;
     unsigned int maxbounces;
     vector<Hit> Hits;

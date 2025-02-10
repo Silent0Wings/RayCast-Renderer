@@ -7,7 +7,7 @@
 
 #include <cmath>
 #include <iostream>
-#include <vector> // Import the vector library
+#include <vector>  // Import the vector library
 #include "color.h" // Assuming vec3 is implemented in vec3.h
 using namespace std;
 
@@ -17,55 +17,63 @@ using namespace std;
  * The image class encapsulates an image defined by a 2D array of pixels.
  * It provides methods to get and set these attributes, as well as to clear the image.
  * Inherits from color class.
- *  
+ *
  */
-class image {
+class image
+{
 private:
     vector<vector<color>> pixels;
     unsigned int width;
     unsigned int height;
+
 public:
     // Default constructor
     image() : image(0, 0) {}
-    image(const int w , const int h) {
+    image(const int w, const int h)
+    {
 
         if (w < 0 || h < 0)
         {
             throw std::invalid_argument("Width and height must be non-negative");
         }
-        if (w==0 && h == 0)
+        if (w == 0 && h == 0)
         {
-            width=0;
-            height=0;
-            pixels=vector<vector<color>>();
-        }else   
+            width = 0;
+            height = 0;
+            pixels = vector<vector<color>>();
+        }
+        else
         {
-            this->width = static_cast<unsigned int> (w);
-            this->height  = static_cast<unsigned int> (h);
+            this->width = static_cast<unsigned int>(w);
+            this->height = static_cast<unsigned int>(h);
             pixels.resize(height);
-            for (unsigned int i = 0; i < width; ++i) {
+            for (unsigned int i = 0; i < width; ++i)
+            {
                 pixels[i].resize(width);
             }
         }
     }
-    image(const int w , const int h,vector<vector<color>> img) {
+    image(const int w, const int h, vector<vector<color>> img)
+    {
 
         if (w < 0 || h < 0)
         {
             throw std::invalid_argument("Width and height must be non-negative");
         }
-        if (w==0 && h == 0)
+        if (w == 0 && h == 0)
         {
-            width=0;
-            height=0;
-            pixels=vector<vector<color>>();
-        }else   
+            width = 0;
+            height = 0;
+            pixels = vector<vector<color>>();
+        }
+        else
         {
-            this->width = static_cast<unsigned int> (w);
-            this->height  = static_cast<unsigned int> (h);
-            pixels.resize(static_cast<size_t> (h));
-            for (unsigned int i = 0; i < height; ++i) {
-                //cout << i << endl ;
+            this->width = static_cast<unsigned int>(w);
+            this->height = static_cast<unsigned int>(h);
+            pixels.resize(static_cast<size_t>(h));
+            for (unsigned int i = 0; i < height; ++i)
+            {
+                // cout << i << endl ;
                 pixels[i].resize(width);
             }
             for (size_t i = 0; i < pixels.size(); i++)
@@ -77,17 +85,18 @@ public:
             }
         }
     }
-    image(const int w , const int h , vector<vector<image>> images) : image(w, h) {
+    image(const int w, const int h, vector<vector<image>> images) : image(w, h)
+    {
         imageConstruct(images);
     }
 
     size_t size()
-    {   
-        if ((width == 0 && height==0) && pixels.size()==0)
+    {
+        if ((width == 0 && height == 0) && pixels.size() == 0)
         {
             return 0;
         }
-        
+
         if (pixels.empty() || pixels.at(0).empty() || pixels.size() * pixels.at(0).size() != width * height)
         {
             throw std::invalid_argument("size of pixels isn't the same as dimension: ");
@@ -96,12 +105,14 @@ public:
     }
 
     // empty function
-    bool empty() const {
+    bool empty() const
+    {
         return pixels.empty();
     }
 
     // construct image from a vector of vectors of cameras
-    void imageConstruct(const vector<vector<image>>& images) {
+    void imageConstruct(const vector<vector<image>> &images)
+    {
         cout << "Image Construct" << endl;
         vector<vector<color>> newpixels;
 
@@ -110,10 +121,12 @@ public:
         unsigned int totalWidth = 0;
         cout << 0 << endl;
 
-        for (const auto& row : images) {
+        for (const auto &row : images)
+        {
             unsigned int rowHeight = 0;
             unsigned int rowWidth = 0;
-            for (const auto& img : row) {
+            for (const auto &img : row)
+            {
                 rowWidth += img.getwidth();
                 rowHeight = max(rowHeight, img.getheight());
             }
@@ -129,13 +142,17 @@ public:
         // Construct the new image by placing sub-images at appropriate offsets
         unsigned int yOffset = 0;
 
-        for (const auto& row : images) {
+        for (const auto &row : images)
+        {
             unsigned int xOffset = 0;
             unsigned int maxRowHeight = 0;
 
-            for (const auto& img : row) {
-                for (size_t z = 0; z < img.getheight(); ++z) {
-                    for (size_t w = 0; w < img.getwidth(); ++w) {
+            for (const auto &img : row)
+            {
+                for (size_t z = 0; z < img.getheight(); ++z)
+                {
+                    for (size_t w = 0; w < img.getwidth(); ++w)
+                    {
                         newpixels[yOffset + z][xOffset + w] = img.get(z, w);
                     }
                 }
@@ -154,75 +171,89 @@ public:
         cout << "pixels size = " << pixels.size() << endl;
     }
 
-
     // Get the width of the image
-    unsigned int getwidth() const {
+    unsigned int getwidth() const
+    {
         return width;
     }
 
     // Get the height of the image
-    unsigned int getheight() const {
+    unsigned int getheight() const
+    {
         return height;
     }
 
     // Get the color of a pixel
-    const color& get(unsigned int x, unsigned int y) const {
-        //cout << " x :" << x << " y : "<< y << endl;
-        if (constrain(x,y)) {
+    const color &get(unsigned int x, unsigned int y) const
+    {
+        // cout << " x :" << x << " y : "<< y << endl;
+        if (constrain(x, y))
+        {
             throw std::invalid_argument("Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
         }
-           return pixels[x][y];
+        return pixels[x][y];
     }
 
     // Set the color of a pixel
     // x is the height and y is the width
-    void set(unsigned int x, unsigned int y, const color& c) {
-        if (constrain(x,y)) {
+    void set(unsigned int x, unsigned int y, const color &c)
+    {
+        if (constrain(x, y))
+        {
             throw std::invalid_argument("Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
         }
         pixels[x][y] = c;
     }
 
     // Check if a pixel is out of bounds
-    bool constrain( unsigned int& x, unsigned int& y) const{
-        return ( x >= height|| y >= width);
+    bool constrain(unsigned int &x, unsigned int &y) const
+    {
+        return (x >= height || y >= width);
     }
 
     // Clear the image
-    void clear() {
-        for (unsigned int i = 0; i < height; ++i) {
-            for (unsigned int j = 0; j < width; ++j) {
+    void clear()
+    {
+        for (unsigned int i = 0; i < height; ++i)
+        {
+            for (unsigned int j = 0; j < width; ++j)
+            {
                 pixels[i][j].setblack();
             }
         }
     }
 
     // Resize the image
-    void resize(unsigned int new_width, unsigned int new_height) {
-        if (new_width == 0 || new_height == 0) {
+    void resize(unsigned int new_width, unsigned int new_height)
+    {
+        if (new_width == 0 || new_height == 0)
+        {
             throw std::invalid_argument("New width and height must be non-zero");
         }
         try
         {
             pixels.resize(new_height);
-            for (unsigned int i = 0; i < new_height; ++i) {
+            for (unsigned int i = 0; i < new_height; ++i)
+            {
                 pixels[i].resize(new_width);
             }
             width = new_width;
             height = new_height;
         }
-        catch(const std::exception& e)
+        catch (const std::exception &e)
         {
             std::cerr << e.what() << '\n';
         }
-        
     }
 
     // Overload operator<< for prunsigned inting
-    friend std::ostream& operator<<(std::ostream& os, const image& img) {
+    friend std::ostream &operator<<(std::ostream &os, const image &img)
+    {
         os << "Image(" << img.getwidth() << ", " << img.getheight() << ")\n";
-        for (unsigned int i = 0; i < img.getheight(); ++i) {
-            for (unsigned int j = 0; j < img.getwidth(); ++j) {
+        for (unsigned int i = 0; i < img.getheight(); ++i)
+        {
+            for (unsigned int j = 0; j < img.getwidth(); ++j)
+            {
                 os << img.pixels[i][j] << " | ";
             }
             os << "\n";
@@ -231,28 +262,32 @@ public:
     }
 
     // Overload operator==
-    bool operator==(const image& other) const {
-        if (width != other.width || height != other.height) {
+    bool operator==(const image &other) const
+    {
+        if (width != other.width || height != other.height)
+        {
             return false;
         }
-        for (unsigned int i = 0; i < height; ++i) {
-            for (unsigned int j = 0; j < width; ++j) {
-                if (pixels[i][j] != other.pixels[i][j]) {
+        for (unsigned int i = 0; i < height; ++i)
+        {
+            for (unsigned int j = 0; j < width; ++j)
+            {
+                if (pixels[i][j] != other.pixels[i][j])
+                {
                     return false;
                 }
             }
         }
         return true;
     }
-    
+
     // Overload operator!=
-    bool operator!=(const image& other) const {
+    bool operator!=(const image &other) const
+    {
         return !(*this == other);
     }
     // Copy constructor
-    image(const image& other) 
+    image(const image &other)
         : pixels(other.pixels), width(other.width), height(other.height) {}
-
-
 };
 #endif // IMAGE_H
