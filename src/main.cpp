@@ -18,13 +18,6 @@
 #include <filesystem>
 using namespace std;
 
-
-// give me this command with all the warning :  g++ -o main main.cpp 
-
-
-// to do : implement the following functions
-// make sure once a ray has intersected with an object it stops checking elements behind it so a form of depth priority or culling
-
 /**
  * @brief Tests the functionality of the vec3 class.
  * 
@@ -50,7 +43,6 @@ void testvec3()
     cout<<v4<<endl;
     
 }
-
 /**
  * @brief Test function to demonstrate the usage of the color and image classes.
  * 
@@ -85,7 +77,6 @@ void testimage()
     cout<<img.get(2, 2)<<endl;
     cout<<img<<endl;
 }
-
 /**
  * @brief Function to test the ray get functionality.
  * 
@@ -115,7 +106,6 @@ void testrayget()
         cout << "________________________" << endl;
     }
 }
-
 /**
  * @brief Tests the intersection of various rays.
  * 
@@ -190,7 +180,6 @@ void testintersection()
         std::cout << "--------------------------\n";
     }
 }
-
 /**
  * @brief Tests various functionalities of the camera class.
  * 
@@ -231,7 +220,6 @@ void testCamera()
     cout << cam.getheight() << endl;
     cout << "________________________" << endl;
 }
-
 /**
  * @brief Tests the intersection of a ray with a set of triangles and outputs the intersection point and color.
  * 
@@ -343,7 +331,6 @@ void testSpaceCamera() {
 
     std::cout << "________________________" << std::endl;
 }
-
 /**
  * @brief Tests the space, camera, and cube object setup.
  * 
@@ -473,8 +460,6 @@ void testSpaceCameraCube() {
 
     std::cout << "________________________" << std::endl;
 }
-
-
 void testSpaceCameraCube1() {
     std::cout << "_________Space Test_______________" << std::endl;
 
@@ -587,7 +572,6 @@ void testSpaceCameraCube1() {
 
     std::cout << "________________________" << std::endl;
 }
-
 /**
  * @brief Test function to demonstrate the creation and manipulation of a space object.
  * 
@@ -640,7 +624,7 @@ void testSpace()
     std::cout << "________________________" << std::endl;
 
 }
-
+// testing the ability to  load the files from text
 void testFileLoad()
 {
     std::cout << "_________FileLoad and conversion Test_______________" << std::endl;
@@ -1073,8 +1057,8 @@ void split_raysThreads() {
     image stitchedImage(combinedWidth, combinedHeight, images);
     ImageRenderer::renderToFile(stitchedImage, "stitched.ppm");    
 }
-
-void cubeTextureTest() // testing texture projection and mergin with vertex color on a cube
+// testing texture projection and mergin with vertex color on a cube
+void cubeTextureTest() 
 {
     // File paths
     string filePathOriginal = "leopard-515509.jpg";
@@ -1151,8 +1135,8 @@ void cubeTextureTest() // testing texture projection and mergin with vertex colo
     cout << "Save image..." << endl;
     s.saveImages();
 }
-
-void primitiveThreadTest() // output all the primitives hard coded in the code
+// output all the primitives hard coded in the code
+void primitiveThreadTest() 
 {
     // Define the grid size and step
     unsigned int size = 400;
@@ -1288,8 +1272,8 @@ void primitiveThreadTest() // output all the primitives hard coded in the code
         ImageRenderer::renderToFile(stitchedImage, "primitiveThreadTest"+std::to_string(i)+".ppm");    
     }
 }
-
-void cameraConfigTest() // tests the camera rotation behavior
+// tests the camera rotation behavior
+void cameraConfigTest() 
 {
     std::cout << "_________Space Test_______________" << std::endl;
 
@@ -1339,7 +1323,8 @@ void cameraConfigTest() // tests the camera rotation behavior
               
     }
 }
-void generateVideo() // Generate a video of the object as the camera change direction
+// Generate a video of the object as the camera change direction
+void generateVideo() 
 {
     std::cout << "_________Space Test_______________" << std::endl;
 
@@ -1402,8 +1387,8 @@ void generateVideo() // Generate a video of the object as the camera change dire
         return;
     }
 }
-
-void generateVideo1() // Generate a video of the object as the camera change direction
+// Generate a video of the object as the camera change direction
+void generateVideo1() 
 {
 
     // Define the grid size and step
@@ -1539,9 +1524,8 @@ void generateVideo1() // Generate a video of the object as the camera change dir
         return;
     }
 }
-
-
-void generateVideo2() // Generate a video of the object as the camera change direction
+// Generate a video of the object as the camera change direction
+void generateVideo2()
 {
     // Define the grid size and step
     unsigned int size = 400;
@@ -1692,12 +1676,12 @@ void generateVideo2() // Generate a video of the object as the camera change dir
         return;
     }
 }
-
-// testing the split rays function with threads
+// testing the split rays function with threads on a cube with right resolution and a different camera orientation
 void split_raysThreadsCube() { 
     // Define the grid size and step
-    unsigned int size = 400;
-    double step = 0.01;
+    unsigned int scaleMultiplier =4;
+    unsigned int size = 400*scaleMultiplier;
+    double step = 0.01/scaleMultiplier;
     unsigned int height = size;
     unsigned int width = size;
 
@@ -1780,7 +1764,7 @@ void split_raysThreadsCube() {
     image stitchedImage(combinedWidth, combinedHeight, images);
     ImageRenderer::renderToFile(stitchedImage, "stitched.ppm");    
 }
-
+// testing the ability to make a camera have a perspective like a field of view
 void testPerspective()
 { 
     std::cout << "_________Space Test_______________" << std::endl;
@@ -1872,9 +1856,7 @@ void testPerspective()
 
     ImageRenderer::renderToFile(s.cameras.at(0).getimage(), filename + ".ppm");
 }
-
-
-
+// create a video of a cube in differend perspective like a field of view
 void testPerspectiveLoop()
 {
     for (float vv = 0; vv < 20; vv+=.1)
@@ -1966,10 +1948,7 @@ void testPerspectiveLoop()
         ImageRenderer::renderToFile(s.cameras.at(0).getimage(), filename + ".ppm");
     }
 }
-
-
-
-
+// also create a video of a cube in differend perspective like a field of view
 void testPerspectiveLoop1()
 { 
     int increment=0;
@@ -2075,8 +2054,6 @@ void testPerspectiveLoop1()
         throw std::runtime_error("Error: Failed to convert PPM to Video.");
         return;
     }
-
-    
 }
 
 int main(int argc, char const *argv[])
@@ -2100,14 +2077,14 @@ int main(int argc, char const *argv[])
     //split_raysThreads(); 
     //cubeTextureTest();
     //primitiveThreadTest();
-    //split_raysThreadsCube();
+    split_raysThreadsCube();
     //cameraConfigTest();
     //generateVideo();
     //generateVideo1();
     //generateVideo2();
     //testPerspective();
     //testPerspectiveLoop();
-    testPerspectiveLoop1();
+    //testPerspectiveLoop1();
     return 0;
 }
 // shortcut to collapse all : citrl + k + 0
