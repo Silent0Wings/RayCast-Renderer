@@ -2122,7 +2122,7 @@ int main(int argc, char const *argv[])
     // split_raysThreads();
     // cubeTextureTest();
     // primitiveThreadTest();
-    split_raysThreadsCube();
+    // split_raysThreadsCube();
     // cameraConfigTest();
     // generateVideo();
     // generateVideo1();
@@ -2130,9 +2130,9 @@ int main(int argc, char const *argv[])
     // testPerspective();
     // testPerspectiveLoop();
     // testPerspectiveLoop1();
-
     return 0;
 }
+
 // shortcut to collapse all : citrl + k + 0
 // shortcut to expand all : citrl + k + j
 // clean formating ctrl + k then -> ctrl + f
