@@ -2,7 +2,8 @@
 #include "point.h"
 #include "ray.h"
 #include "gmath.h"
-
+#include <cmath>
+#include <math.h>
 double gmath::dot(const vec3 &vec1, const vec3 &vec2)
 {
     return vec1.x() * vec2.x() + vec1.y() * vec2.y() + vec1.z() * vec2.z();
@@ -45,7 +46,11 @@ double gmath::angleBetween(const vec3 &vec1, const vec3 &vec2)
 {
     return acos(dot(vec1, vec2) / (length(vec1) * length(vec2)));
 }
-
+double gmath::angleBetweenDegree(const vec3 &vec1, const vec3 &vec2)
+{
+    double rad = acos(dot(vec1, vec2) / (length(vec1) * length(vec2)));
+    return 180 * rad / pi;
+}
 vec3 gmath::translateVec(const vec3 &vec, const vec3 &offset)
 {
     return vec3(vec.x() + offset.x(), vec.y() + offset.y(), vec.z() + offset.z());

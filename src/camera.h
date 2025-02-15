@@ -117,6 +117,35 @@ public:
             img = image(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
         }
     }
+    camera(int h, int w, double step, point origin, vec3 indexFinger, vec3 midleFinger, int thumbFinger)
+    {
+        // index finger will define the row of the camera as a direction while the midle finger while define the camera width direction
+        // the direction fo the ray will be calculated from these vectors this is the same concept of midle finger index and thumb orientation
+
+        if (w <= 0 || h <= 0 || step <= 0)
+        {
+            throw std::invalid_argument("Width and height must be non-negative");
+        }
+        if (w == 0 && h == 0 && step == 0)
+        {
+            width = 0;
+            height = 0;
+            gridRay = vector<vector<ray>>();
+            img = image();
+        }
+        else
+        {
+            this->width = static_cast<unsigned int>(w);
+            this->height = static_cast<unsigned int>(h);
+            gridRay.resize(height);
+            for (unsigned int i = 0; i < (unsigned int)height; ++i)
+            {
+                gridRay[i].resize(width);
+            }
+            consructRay(height, width, step, origin, indexFinger, midleFinger, thumbFinger);
+            img = image(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
+        }
+    }
     // Constructor with gridRay
     camera(int w, int h, vector<vector<ray>> g) : camera(w, h)
     {
@@ -153,8 +182,8 @@ public:
     void consructRay(unsigned int height, unsigned int width, double step, point origin, vec3 Xdirection, vec3 Ydirection, vec3 Raydirection)
     {
         // vec3 xd = Xdirection = gmath::normalize(Xdirection);
-        vec3 yd = Ydirection = gmath::normalize(Ydirection);
-        vec3 rd = Raydirection = gmath::normalize(Raydirection);
+        vec3 yd = gmath::normalize(Ydirection);
+        vec3 rd = gmath::normalize(Raydirection);
 
         for (unsigned i = 0; i < height; ++i)
         {
@@ -168,6 +197,28 @@ public:
         }
     }
 
+    void consructRay(unsigned int height, unsigned int width, double step, point origin, vec3 indexFinger, vec3 midleFinger, int thumbFinger)
+    {
+        // vec3 xd = Xdirection = gmath::normalize(Xdirection);
+        if ((int)gmath::angleBetweenDegree(midleFinger, indexFinger) != 90)
+        {
+            throw std::invalid_argument("Engine dosent support non proportional cameras yet : " + std::to_string((int)gmath::angleBetweenDegree(midleFinger, indexFinger)));
+        }
+
+        vec3 forward = gmath::normalize(indexFinger);
+        vec3 up = gmath::normalize(midleFinger);
+        vec3 direction = gmath::normalize(gmath::cross(forward, up)) * thumbFinger;
+
+        for (size_t i = 0; i < height; i++)
+        {
+            point newRow = origin + (forward * step) * i;
+            for (size_t z = 0; z < width; z++)
+            {
+                point newcolumn = newRow + (up * step) * z;
+                gridRay[i][z] = ray(newcolumn, direction);
+            }
+        }
+    }
     // Get the width of the camera
     unsigned int getwidth() const
     {

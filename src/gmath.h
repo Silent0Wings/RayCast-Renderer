@@ -10,6 +10,7 @@
 #include "vec3.h"
 #include "point.h"
 #include "ray.h"
+#include <math.h>
 
 /**
  * @class gmath
@@ -31,8 +32,10 @@ public:
     static vec3 normalize(const vec3 &v);
     // Distance between two points
     static double distance(const vec3 &p1, const vec3 &p2);
-    // Angle between two vectors
+    // Angle between two vectors rad
     static double angleBetween(const vec3 &a, const vec3 &b);
+    // Angle between two vectors degree
+    static double angleBetweenDegree(const vec3 &vec1, const vec3 &vec2);
     // Translation
     static vec3 translateVec(const vec3 &vec, const vec3 &offset);
     // Translation of a point
@@ -65,5 +68,6 @@ private:
     which can lead to performance optimizations since the value is known and fixed during compilation.
     It also ensures that the value of epsilon cannot be modified after its initialization.
     */
+    static constexpr long double pi = 3.14159265358979323846; //  this is the smallest value that can be represented in the system
 };
 #endif // GMATH_H
