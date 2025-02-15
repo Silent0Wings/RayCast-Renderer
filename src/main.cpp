@@ -457,6 +457,7 @@ void testSpaceCameraCube()
 
     std::cout << "________________________" << std::endl;
 }
+
 void testSpaceCameraCube1()
 {
     std::cout << "_________Space Test_______________" << std::endl;
@@ -566,6 +567,41 @@ void testSpaceCameraCube1()
 
     std::cout << "________________________" << std::endl;
 }
+
+void testSpaceCameraCube2()
+{
+    std::cout << "________________________" << std::endl;
+    // Define the grid size
+    unsigned int size = 500 * 2;
+    double step = 0.01 / 2;
+
+    // Create a camera with the grid of rays
+    point origin(2, 2, 2);
+    vec3 indexFinger(1, -1, 0);
+    vec3 midleFinger(-1, -1, 1);
+
+    // index finger will define the row of the camera as a direction while the midle finger while define the camera width direction
+    // the direction fo the ray will be calculated from these vectors this is the same concept of midle finger index and thumb orientation
+    camera cam = camera(size, size, step, origin, indexFinger, midleFinger, 1);
+    double scaling = 1;
+    point offset = point(0, -3, 0);
+
+    // Create object vertices for a cube
+    object obj(primitive::cube, scaling, offset);
+
+    // Create a space and assign the object
+    space s({obj});
+
+    // Add the camera to the space
+    s.cameras.push_back(cam);
+
+    // Trigger the camera rays
+    s.triggerCameraRay();
+    s.saveImages();
+
+    std::cout << "________________________" << std::endl;
+}
+
 /**
  * @brief Test function to demonstrate the creation and manipulation of a space object.
  *
@@ -2114,6 +2150,7 @@ int main(int argc, char const *argv[])
     // testSpaceCamera();
     // testSpaceCameraCube();
     // testSpaceCameraCube1();
+    testSpaceCameraCube2();
     // testFileLoad();
     // testMeshImportAndColoringDear();
     // testMeshImportAndColoringDhalia();
