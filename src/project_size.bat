@@ -10,6 +10,7 @@ set sizeCPP=0
 
 echo Counting lines and file sizes in .h and .cpp files...
 
+echo ______________________________________________________
 :: Loop through all .h files
 for %%f in (*.h) do (
     for /f "tokens=2 delims=:" %%L in ('find /c /v "" "%%f"') do (
@@ -19,6 +20,7 @@ for %%f in (*.h) do (
     )
 )
 
+echo ______________________________________________________
 :: Loop through all .cpp files
 for %%f in (*.cpp) do (
     for /f "tokens=2 delims=:" %%L in ('find /c /v "" "%%f"') do (
@@ -27,10 +29,12 @@ for %%f in (*.cpp) do (
         echo %%f: %%L lines, %%~zf bytes
     )
 )
+echo ______________________________________________________
 
 :: Print total counts
 set /a totalLines=totalH+totalCPP
 set /a totalSize=sizeH+sizeCPP
+echo ______________________________________________________
 
 echo.
 echo Total lines in .h files: %totalH%
@@ -43,5 +47,5 @@ echo ++++++++++++++++++++++++++++++++++++++++++++++++++
 echo Total lines in .h + .cpp files: %totalLines% 
 echo ++++++++++++++++++++++++++++++++++++++++++++++++++
 echo Total size of .h + .cpp files: %totalSize% bytes
-
 pause
+cls
