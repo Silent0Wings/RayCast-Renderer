@@ -39,7 +39,9 @@ echo.
 echo Total lines in .cpp files: %totalCPP%
 echo Total size of .cpp files: %sizeCPP% bytes
 echo.
-echo Total lines in .h + .cpp files: %totalLines%
+echo ++++++++++++++++++++++++++++++++++++++++++++++++++
+echo Total lines in .h + .cpp files: %totalLines% 
+echo ++++++++++++++++++++++++++++++++++++++++++++++++++
 echo Total size of .h + .cpp files: %totalSize% bytes
 
 pause
