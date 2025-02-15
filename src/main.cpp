@@ -582,7 +582,7 @@ void testSpaceCameraCube2()
 
     // index finger will define the row of the camera as a direction while the midle finger while define the camera width direction
     // the direction fo the ray will be calculated from these vectors this is the same concept of midle finger index and thumb orientation
-    camera cam = camera(size, size, step, origin, indexFinger, midleFinger, 1);
+    camera cam = camera(size, size, step, origin, midleFinger, indexFinger, -1);
     double scaling = 2;
     point offset = point(0, -3, 0);
 
