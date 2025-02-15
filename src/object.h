@@ -152,37 +152,37 @@ public:
     void sphere(double scaling, point offset)
     {
 
-        loadMesh("sphere.txt", scaling, offset);
+        loadMesh("\\Mesh\\sphere.txt", scaling, offset);
         randomColoring();
     }
     void circle(double scaling, point offset)
     {
 
-        loadMesh("circle.txt", scaling, offset);
+        loadMesh("\\Mesh\\circle.txt", scaling, offset);
         randomColoring();
     }
     void cone(double scaling, point offset)
     {
 
-        loadMesh("cone.txt", scaling, offset);
+        loadMesh("\\Mesh\\cone.txt", scaling, offset);
         randomColoring();
     }
     void torus(double scaling, point offset)
     {
 
-        loadMesh("torus.txt", scaling, offset);
+        loadMesh("\\Mesh\\torus.txt", scaling, offset);
         randomColoring();
     }
     void plane(double scaling, point offset)
     {
 
-        loadMesh("plane.txt", scaling, offset);
+        loadMesh("\\Mesh\\plane.txt", scaling, offset);
         randomColoring();
     }
     void suzane(double scaling, point offset)
     {
 
-        loadMesh("Suzane.txt", scaling, offset);
+        loadMesh("\\Mesh\\Suzane.txt", scaling, offset);
         randomColoring();
     }
     void randomColoring()

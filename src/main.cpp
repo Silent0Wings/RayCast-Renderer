@@ -583,11 +583,18 @@ void testSpaceCameraCube2()
     // index finger will define the row of the camera as a direction while the midle finger while define the camera width direction
     // the direction fo the ray will be calculated from these vectors this is the same concept of midle finger index and thumb orientation
     camera cam = camera(size, size, step, origin, midleFinger, indexFinger, -1);
-    double scaling = 2;
+    double scaling = 1.5;
     point offset = point(0, -3, 0);
+    point offset1 = point(0, -1, 0);
+    point offset2 = point(0, -4, 0);
+    point offset3 = point(0, -4, 0);
+    object cube = object(primitive::cube, scaling, offset);
+    object cube1 = object(primitive::cube, scaling / 2, offset1);
+    object cube2 = object(primitive::cube, scaling / 2, offset2);
+    object cube3 = object(primitive::cube, scaling / 2, offset3 + vec3(1, 0, 0));
 
     // Create a space and assign the object
-    space s({object(primitive::cube, scaling, offset)});
+    space s({cube, cube1, cube2, cube3});
 
     // Add the camera to the space
     s.cameras.push_back(cam);
