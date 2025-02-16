@@ -85,7 +85,7 @@ public:
     {
         if (cameras.empty() || obj.empty())
         {
-            cout << "No cameras or objects to process." << endl;
+            cout << "Empty Space :No cameras or objects to process." << endl;
             return;
         }
         for (auto &cam : cameras)

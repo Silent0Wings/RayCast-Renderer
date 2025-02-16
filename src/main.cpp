@@ -606,6 +606,56 @@ void testSpaceCameraCube2()
     std::cout << "________________________" << std::endl;
 }
 
+void testSpaceCameraCube3()
+{
+
+    std::cout << "_________FileLoad and conversion Test_______________" << std::endl;
+
+    string filename = ".\\Experimental\\LocationScaleRotation2.txt";
+    MeshReader reader(filename);
+    vector<vector<point>> vertices;
+    reader.convertMesh(&vertices);
+
+    std::cout << "________________________" << std::endl;
+    // Define the grid size
+    unsigned int size = 500 * 2;
+    double step = 0.01 / 2;
+
+    // Create a camera with the grid of rays
+    point origin(2, 2, 2);
+    vec3 indexFinger(1, -1, 0);
+    vec3 midleFinger(-1, -1, 1);
+
+    // index finger will define the row of the camera as a direction while the midle finger while define the camera width direction
+    // the direction fo the ray will be calculated from these vectors this is the same concept of midle finger index and thumb orientation
+    camera cam = camera(size, size, step, origin, midleFinger, indexFinger, -1);
+    double scaling = 1;
+    point offset = point(0, -3, 0);
+
+    vector<object> tempVecObject;
+    // Create a space and assign the object
+    // vertices x cordinate is location , y is the scale , z is the rotation
+    // x is 0 , y is 1 , z is 2
+    for (size_t i = 0; i < vertices.size(); i++)
+    {
+        double tempObjectScale = (vertices.at(i).at(1).x() + vertices.at(i).at(1).y() + vertices.at(i).at(1).z()) / 3;
+        object tempObject(primitive::cube, tempObjectScale * scaling, offset + vertices.at(i).at(0));
+        // cout << tempObject;
+        tempVecObject.push_back(tempObject);
+    }
+
+    space s(tempVecObject);
+
+    // Add the camera to the space
+    s.cameras.push_back(cam);
+
+    // Trigger the camera rays
+    s.triggerCameraRay();
+    s.saveImages();
+
+    std::cout << "________________________" << std::endl;
+}
+
 /**
  * @brief Test function to demonstrate the creation and manipulation of a space object.
  *
@@ -2154,7 +2204,8 @@ int main(int argc, char const *argv[])
     // testSpaceCamera();
     // testSpaceCameraCube();
     // testSpaceCameraCube1();
-    testSpaceCameraCube2();
+    // testSpaceCameraCube2();
+    testSpaceCameraCube3();
     // testFileLoad();
     // testMeshImportAndColoringDear();
     // testMeshImportAndColoringDhalia();
