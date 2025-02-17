@@ -608,6 +608,7 @@ void testSpaceCameraCube2()
 
 void testSpaceCameraCube3()
 {
+    // loads info from a file in which each line containes location scale and rotation of a groupe of objects
 
     std::cout << "_________FileLoad and conversion Test_______________" << std::endl;
 
