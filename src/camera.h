@@ -237,6 +237,12 @@ public:
         return img;
     }
 
+    // Get the grid ray 2d vector
+    vector<vector<ray>> getGridRay()
+    {
+        return gridRay;
+    }
+
     // Get the color of a pixel
     ray get(unsigned int x, unsigned int y) const
     {

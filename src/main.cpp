@@ -2192,6 +2192,107 @@ void testPerspectiveLoop1()
     }
 }
 
+void splitCamera()
+{
+
+    // Define the grid size and step
+    unsigned int size = 4;
+    double step = 0.006;
+
+    point camOrigin(0, 0, 0);
+    vec3 camYDirection(0, 0, 1); // Pointing upward
+    vec3 camXDirection(0, 1, 0); // Pointing right
+    vec3 rayDirection(0, 0, 0);  // Pointing downward
+
+    camera cam(size, size, step, camOrigin, camXDirection, camYDirection, vec3(0, 0, 1));
+
+    size_t split = 2;
+
+    size_t height = cam.getheight();
+    size_t width = cam.getwidth();
+
+    cout << height / split << endl;
+
+    cout << width / split << endl;
+
+    vector<vector<ray>> gridRay = cam.getGridRay();
+    vector<vector<camera>> SplitCamera;
+    for (size_t i = 0; i < split; i++)
+    {
+        vector<camera> tempsplit;
+        for (size_t j = 0; j < split; j++)
+        {
+            camera tempcam = camera();
+            tempsplit.push_back(tempcam);
+        }
+        SplitCamera.push_back(tempsplit);
+    }
+
+    size_t split_height = height / split;
+    size_t split_width = width / split;
+
+    for (size_t k = 0; k < split; k++) // to affect the offset on the x
+    {
+        for (size_t z = 0; z < split; z++)
+        {
+            /* code */
+            size_t x = k * split_height;
+            size_t y = z * split_width;
+            vector<vector<ray>> gridRaySplit;
+
+            for (size_t i = 0; i < split_height; i++) // this loop will explore a 2d vectore based on different offsets this will be the x effect
+            {
+                vector<ray> tempgridRaySplit;
+                for (size_t j = 0; j < split_width; j++) // this will be the y effect
+                {
+                    gridRay.at(i + x).at(j + y);
+                    cout << "--(x:" << i + x << " || y:" << j + y << ")";
+                    tempgridRaySplit.push_back(gridRay.at(i + x).at(j + y));
+                }
+
+                gridRaySplit.push_back(tempgridRaySplit);
+                cout
+                    << endl;
+                cout << endl;
+            }
+
+            camera newSplitCamera = camera(split_width, split_height, gridRaySplit);
+            SplitCamera.at(k).at(z) = newSplitCamera;
+            cerr
+                << "chunk" << endl;
+            cout << endl;
+        }
+
+        cout << endl;
+        cout << endl;
+        cout << endl;
+        cout << endl;
+        cout << endl;
+        cout << endl;
+        cout << endl;
+        cout << endl;
+        cerr << "split" << endl;
+    }
+
+    /*
+    std::cout << "_________Face Coloring_______________" << std::endl;
+    double scaling = size * step / 2;
+    point offset = point(0, size * step / 2, size * step / 2);
+    object obj(primitive::cube, scaling, offset + point(0, 0, 0));
+    std::cout << "________________________" << std::endl;
+    // Create a space and assign the object
+    space s({obj});
+
+    // Add the camera to the space
+    s.cameras.push_back(cam);
+
+    // Trigger the camera rays
+    s.triggerCameraRay();
+    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Room" + std::to_string(i) + ".ppm");
+
+    */
+}
+
 int main(int argc, char const *argv[])
 {
     // testintersection();
@@ -2206,7 +2307,7 @@ int main(int argc, char const *argv[])
     // testSpaceCameraCube();
     // testSpaceCameraCube1();
     // testSpaceCameraCube2();
-    testSpaceCameraCube3();
+    // testSpaceCameraCube3();
     // testFileLoad();
     // testMeshImportAndColoringDear();
     // testMeshImportAndColoringDhalia();
@@ -2223,6 +2324,8 @@ int main(int argc, char const *argv[])
     // testPerspective();
     // testPerspectiveLoop();
     // testPerspectiveLoop1();
+    splitCamera();
+
     return 0;
 }
 
