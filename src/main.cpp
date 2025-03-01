@@ -2276,17 +2276,16 @@ vector<vector<camera>> splitCameraFunc(camera cam, size_t split)
 
 void splitCamera()
 {
-
     // Define the grid size and step
-    unsigned int size = 1000;
-    double step = 0.006;
+    unsigned int size = 400;
+    double step = 0.1;
 
-    point camOrigin(3, 3, 3);
-    vec3 camYDirection(0, 0, 1); // Pointing upward
-    vec3 camXDirection(0, 1, 0); // Pointing right
-    vec3 rayDirection(1, 1, -1); // Pointing downward
+    point camOrigin(10, 10, 10);
+    vec3 camYDirection(0, 0, -1); // Pointing upward
+    vec3 camXDirection(0, 1, 0);  // Pointing right
+    vec3 rayDirection(1, 1, -1);
 
-    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, vec3(0, 0, -1));
+    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, vec3(0, 0, 1));
 
     size_t split = 2;
 
@@ -2294,7 +2293,7 @@ void splitCamera()
 
     std::cout << "_________Face Coloring_______________" << std::endl;
     double scaling = size * step / 2;
-    point offset = point(0, size * step / 2, size * step / 2);
+    point offset = point(0, 0, 0);
     object obj(primitive::cube, scaling, offset + point(0, 0, 0));
     std::cout << "________________________" << std::endl;
     // Create a space and assign the object
@@ -2312,9 +2311,9 @@ void splitCamera()
     // Trigger the camera rays
     s.triggerCameraRay();
     ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Room" + std::to_string(0) + ".ppm");
-    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Room" + std::to_string(1) + ".ppm");
-    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Room" + std::to_string(2) + ".ppm");
-    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Room" + std::to_string(3) + ".ppm");
+    ImageRenderer::renderToFile(s.cameras.at(1).getimage(), "Room" + std::to_string(1) + ".ppm");
+    ImageRenderer::renderToFile(s.cameras.at(2).getimage(), "Room" + std::to_string(2) + ".ppm");
+    ImageRenderer::renderToFile(s.cameras.at(3).getimage(), "Room" + std::to_string(3) + ".ppm");
 }
 
 int main(int argc, char const *argv[])
