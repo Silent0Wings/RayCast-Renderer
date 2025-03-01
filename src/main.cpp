@@ -2192,22 +2192,8 @@ void testPerspectiveLoop1()
     }
 }
 
-void splitCamera()
+vector<vector<camera>> splitCameraFunc(camera cam, size_t split)
 {
-
-    // Define the grid size and step
-    unsigned int size = 4;
-    double step = 0.006;
-
-    point camOrigin(0, 0, 0);
-    vec3 camYDirection(0, 0, 1); // Pointing upward
-    vec3 camXDirection(0, 1, 0); // Pointing right
-    vec3 rayDirection(0, 0, 0);  // Pointing downward
-
-    camera cam(size, size, step, camOrigin, camXDirection, camYDirection, vec3(0, 0, 1));
-
-    size_t split = 2;
-
     size_t height = cam.getheight();
     size_t width = cam.getwidth();
 
@@ -2217,6 +2203,7 @@ void splitCamera()
 
     vector<vector<ray>> gridRay = cam.getGridRay();
     vector<vector<camera>> SplitCamera;
+
     for (size_t i = 0; i < split; i++)
     {
         vector<camera> tempsplit;
@@ -2273,6 +2260,35 @@ void splitCamera()
         cout << endl;
         cerr << "split" << endl;
     }
+
+    for (size_t i = 0; i < split; i++)
+    {
+        for (size_t j = 0; j < split; j++)
+        {
+            cout << SplitCamera.at(i).at(j) << endl;
+        }
+    }
+
+    return SplitCamera;
+}
+
+void splitCamera()
+{
+
+    // Define the grid size and step
+    unsigned int size = 4;
+    double step = 0.006;
+
+    point camOrigin(0, 0, 0);
+    vec3 camYDirection(0, 0, 1); // Pointing upward
+    vec3 camXDirection(0, 1, 0); // Pointing right
+    vec3 rayDirection(0, 0, 0);  // Pointing downward
+
+    camera cam(size, size, step, camOrigin, camXDirection, camYDirection, vec3(0, 0, 1));
+
+    size_t split = 2;
+
+    vector<vector<camera>> SplitCamera = splitCameraFunc(cam, split);
 
     /*
     std::cout << "_________Face Coloring_______________" << std::endl;
