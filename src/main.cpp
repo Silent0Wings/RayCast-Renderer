@@ -2197,9 +2197,9 @@ vector<vector<camera>> splitCameraFunc(camera cam, size_t split)
     size_t height = cam.getheight();
     size_t width = cam.getwidth();
 
-    cout << height / split << endl;
+    // cout << height / split << endl;
 
-    cout << width / split << endl;
+    // cout << width / split << endl;
 
     vector<vector<ray>> gridRay = cam.getGridRay();
     vector<vector<camera>> SplitCamera;
@@ -2233,23 +2233,26 @@ vector<vector<camera>> splitCameraFunc(camera cam, size_t split)
                 for (size_t j = 0; j < split_width; j++) // this will be the y effect
                 {
                     gridRay.at(i + x).at(j + y);
-                    cout << "--(x:" << i + x << " || y:" << j + y << ")";
+                    // cout << "--(x:" << i + x << " || y:" << j + y << ")";
                     tempgridRaySplit.push_back(gridRay.at(i + x).at(j + y));
                 }
 
                 gridRaySplit.push_back(tempgridRaySplit);
+                /*
                 cout
                     << endl;
                 cout << endl;
+
+                */
             }
 
             camera newSplitCamera = camera(split_width, split_height, gridRaySplit);
             SplitCamera.at(k).at(z) = newSplitCamera;
-            cerr
-                << "chunk" << endl;
-            cout << endl;
+            // cerr  << "chunk" << endl;
+            // cout << endl;
         }
 
+        /* cout << endl;
         cout << endl;
         cout << endl;
         cout << endl;
@@ -2257,15 +2260,14 @@ vector<vector<camera>> splitCameraFunc(camera cam, size_t split)
         cout << endl;
         cout << endl;
         cout << endl;
-        cout << endl;
-        cerr << "split" << endl;
+        cerr << "split" << endl;*/
     }
 
     for (size_t i = 0; i < split; i++)
     {
         for (size_t j = 0; j < split; j++)
         {
-            cout << SplitCamera.at(i).at(j) << endl;
+            // cout << SplitCamera.at(i).at(j) << endl;
         }
     }
 
@@ -2276,21 +2278,20 @@ void splitCamera()
 {
 
     // Define the grid size and step
-    unsigned int size = 4;
+    unsigned int size = 1000;
     double step = 0.006;
 
-    point camOrigin(0, 0, 0);
+    point camOrigin(3, 3, 3);
     vec3 camYDirection(0, 0, 1); // Pointing upward
     vec3 camXDirection(0, 1, 0); // Pointing right
-    vec3 rayDirection(0, 0, 0);  // Pointing downward
+    vec3 rayDirection(1, 1, -1); // Pointing downward
 
-    camera cam(size, size, step, camOrigin, camXDirection, camYDirection, vec3(0, 0, 1));
+    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, vec3(0, 0, -1));
 
     size_t split = 2;
 
-    vector<vector<camera>> SplitCamera = splitCameraFunc(cam, split);
+    vector<vector<camera>> SplitCamera = splitCameraFunc(cam1, split);
 
-    /*
     std::cout << "_________Face Coloring_______________" << std::endl;
     double scaling = size * step / 2;
     point offset = point(0, size * step / 2, size * step / 2);
@@ -2300,13 +2301,20 @@ void splitCamera()
     space s({obj});
 
     // Add the camera to the space
-    s.cameras.push_back(cam);
+    for (size_t i = 0; i < split; i++)
+    {
+        for (size_t j = 0; j < split; j++)
+        {
+            s.cameras.push_back(SplitCamera.at(i).at(j));
+        }
+    }
 
     // Trigger the camera rays
     s.triggerCameraRay();
-    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Room" + std::to_string(i) + ".ppm");
-
-    */
+    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Room" + std::to_string(0) + ".ppm");
+    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Room" + std::to_string(1) + ".ppm");
+    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Room" + std::to_string(2) + ".ppm");
+    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Room" + std::to_string(3) + ".ppm");
 }
 
 int main(int argc, char const *argv[])
