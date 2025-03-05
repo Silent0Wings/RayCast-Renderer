@@ -2277,6 +2277,35 @@ vector<vector<camera>> splitCameraFunc(camera cam, size_t split)
 void splitCamera()
 {
     // Define the grid size and step
+    unsigned int size = 4;
+    double step = 1;
+
+    point camOrigin(0, 0, 0);
+    vec3 camYDirection(0, 0, 1); // Pointing upward
+    vec3 camXDirection(0, 1, 0); // Pointing right
+    vec3 rayDirection(1, 1, -1);
+
+    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, vec3(0, 0, 1));
+
+    // cout << cam1 << endl;
+    size_t split = 4;
+
+    vector<vector<camera>> SplitCamera = splitCameraFunc(cam1, split);
+
+    for (size_t i = 0; i < split; i++)
+    {
+        for (size_t j = 0; j < split; j++)
+        {
+            // cout << SplitCamera.at(i).at(j) << endl;
+        }
+        cout << "_________________" << endl;
+        cout << endl;
+    }
+}
+
+void splitCamera1()
+{
+    // Define the grid size and step
     unsigned int size = 400;
     double step = 0.1;
 
@@ -2348,6 +2377,7 @@ int main(int argc, char const *argv[])
     // testPerspectiveLoop();
     // testPerspectiveLoop1();
     splitCamera();
+    // splitCamera1();
 
     return 0;
 }
