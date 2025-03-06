@@ -2345,6 +2345,70 @@ void splitCamera1()
     ImageRenderer::renderToFile(s.cameras.at(3).getimage(), "Room" + std::to_string(3) + ".ppm");
 }
 
+void splitCameraThreadingV2()
+{
+    // Define the grid size and step
+    unsigned int size = 400;
+    double step = 1;
+
+    point camOrigin(0, 0, 0);
+    vec3 camYDirection(1, 0, 0);  // Pointing upward
+    vec3 camXDirection(0, -1, 1); // Pointing right
+
+    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, 1);
+
+    // cout << cam1 << endl;
+    size_t split = 2;
+
+    vector<vector<camera>> SplitCamera = splitCameraFunc(cam1, split);
+
+    std::cout << "_________Face Coloring_______________" << std::endl;
+    double scaling = 1;
+    point offset = point(0, 0, 0);
+    object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2));
+    std::cout << "________________________" << std::endl;
+    // Create a space and assign the object
+    space s({obj});
+
+    for (size_t i = 0; i < split; i++) // push all the cameras into the camera vector of the space i want to render
+    {
+        for (size_t j = 0; j < split; j++)
+        {
+            s.cameras.push_back(SplitCamera.at(i).at(j));
+        }
+    }
+
+    std::vector<std::future<void>> futures;
+    s.threadedCameraRay(futures);
+
+    // Wait for all threads to complete
+    for (auto &future : futures)
+    {
+        future.get();
+    }
+
+    size_t increment = 0;
+
+    //  s.saveImages();
+
+    vector<vector<image>> images; // Placeholder for stitched images
+
+    increment = 0;
+    for (int i = 0; i < SplitCamera.size(); i++)
+    { // Outer loop iterates backward
+        vector<image> rowImages;
+        for (int j = 0; j < SplitCamera.at(i).size(); j++)
+        { // Outer loop iterates backward
+            rowImages.push_back(s.cameras[increment].getimage());
+            increment++;
+        }
+        images.push_back(rowImages);
+    }
+
+    image stitchedImage(size, size, images);
+    ImageRenderer::renderToFile(stitchedImage, "stitched.ppm");
+}
+
 int main(int argc, char const *argv[])
 {
     // testintersection();
@@ -2376,8 +2440,9 @@ int main(int argc, char const *argv[])
     // testPerspective();
     // testPerspectiveLoop();
     // testPerspectiveLoop1();
-    splitCamera();
+    // splitCamera();
     // splitCamera1();
+    splitCameraThreadingV2();
 
     return 0;
 }
