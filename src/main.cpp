@@ -2413,7 +2413,7 @@ void splitCameraThreadingV2()
 void testraytracing()
 {
     // Define the grid size and step
-    size_t ratio = 1;
+    size_t ratio = 10;
     unsigned int size = 400 / ratio;
     double step = .01f * ratio;
 
