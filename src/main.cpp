@@ -2413,7 +2413,7 @@ void splitCameraThreadingV2()
 void testraytracing()
 {
     // Define the grid size and step
-    size_t ratio = 10;
+    size_t ratio = 5;
     unsigned int size = 400 / ratio;
     double step = .01f * ratio;
 
@@ -2429,7 +2429,7 @@ void testraytracing()
     point offset = point(0, 0, 0);
     object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2));
 
-    object obj1(primitive::cube, 1, offset + point(1, 1, 1));
+    object obj1(primitive::cube, 2, offset + point(1.5, 1, 1));
     obj1.isEmisive = true;
 
     std::cout
@@ -2438,7 +2438,7 @@ void testraytracing()
     // Create a space and assign the object
     space s({obj, obj1});
     s.cameras.push_back(cam1);
-    s.triggerRayTrace(1);
+    s.triggerRayTrace(3);
 
     ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "XXXX.ppm");
 }

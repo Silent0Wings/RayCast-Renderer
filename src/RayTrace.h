@@ -108,7 +108,7 @@ public:
     color getPixelValue()
     {
         bool light;
-        color temp = color(0, 0, 0);
+        color temp = color(255, 255, 255);
         for (auto const &x : Path)
         {
             if (x.null)
@@ -116,7 +116,7 @@ public:
                 continue;
             }
 
-            temp = (temp + x.colorValue);
+            temp = (temp + x.colorValue) / 1.5;
             if (x.ReachedLight)
             {
                 light = true;
