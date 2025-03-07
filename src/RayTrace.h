@@ -43,20 +43,22 @@ public:
 
                 Hit currentHit = handleIntersection(objects->at(j), currentRay);
                 // cout << currentHit.colorValue;
-                cout << currentHit << endl;
+                // cout << currentHit << endl;
                 if (!currentHit.null)
                 {
                     Path.push_back(currentHit);
                     currentRay = ray(currentHit.hitPoint, currentHit.outgoing);
                     if (currentHit.ReachedLight)
                     {
+                        // cout << currentHit << endl;
+
                         break;
                     }
                 }
             }
         }
 
-        cout << "________________" << endl;
+        // cout << "________________" << endl;
     }
 
     Hit handleIntersection(const object obj, const ray r1)
@@ -87,14 +89,13 @@ public:
 
                     // Temporary variables for holding the color
                     val->null = false;
-                    finalHit = Hit(val);
-                    finalHit.colorValue = x.second;
-                    // cout << finalHit.colorValue;
-
                     if (obj.isEmisive)
                     {
                         val->ReachedLight = true;
                     }
+                    finalHit = Hit(val);
+                    finalHit.colorValue = x.second;
+                    // cout << finalHit.colorValue;
                 }
                 delete val;
             }
@@ -107,7 +108,7 @@ public:
     color getPixelValue()
     {
         bool light;
-        color temp = color(255, 255, 255);
+        color temp = color(0, 0, 0);
         for (auto const &x : Path)
         {
             if (x.null)
@@ -115,14 +116,14 @@ public:
                 continue;
             }
 
-            temp = (temp + x.colorValue) / 1.1;
+            temp = (temp + x.colorValue);
             if (x.ReachedLight)
             {
                 light = true;
             }
         }
 
-        return (light) ? temp : temp;
+        return (light) ? temp : color(0, 0, 0);
     }
 };
 

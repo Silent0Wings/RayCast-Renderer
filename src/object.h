@@ -84,6 +84,8 @@ public:
         default:
             throw std::invalid_argument("Unknown primitive type");
         }
+
+        globalPosition = offset;
     }
     void cube(double scaling, point offset)
     {
