@@ -8,6 +8,7 @@
 #include "object.h"
 #include "camera.h"
 #include "ppm.cpp"
+#include "RayTrace.h"
 
 using namespace std;
 
@@ -93,6 +94,36 @@ public:
             for (auto &o : obj)
             {
                 cam.cameraToImage(o);
+            }
+        }
+    }
+
+    // trigger the camera ray behavior
+    void triggerRayTrace(size_t bounce)
+    {
+        // for now it wil only support 1 camera
+
+        vector<vector<RayTrace>> traceGrid;
+
+        for (size_t i = 0; i < cameras.at(0).getwidth(); i++) // create a grid of raytracer rays of a size equivalent to the camera dimension
+        {
+            vector<RayTrace> tempRow;
+            for (size_t j = 0; j < cameras.at(0).getheight(); j++)
+            {
+                RayTrace newRay = RayTrace(cameras.at(0).getGridRay().at(i).at(j));
+                tempRow.push_back(newRay);
+            }
+            traceGrid.push_back(tempRow);
+        }
+
+        for (size_t i = 0; i < traceGrid.size(); i++) // trigger ray tracing one by one and assign a color in the image stored within the camera
+        {
+            for (size_t j = 0; j < traceGrid.at(i).size(); j++)
+            {
+                //    void trace(const size_t Bounce, const vector<object> *objects)
+
+                traceGrid.at(i).at(j).trace(bounce, &obj);
+                cameras.at(0).setColor(i, j, traceGrid.at(i).at(j).getPixelValue());
             }
         }
     }

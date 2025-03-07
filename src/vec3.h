@@ -91,6 +91,14 @@ public:
         }
     }
 
+    vec3(const vec3 *other)
+    {
+        for (int i = 0; i < 3; ++i)
+        {
+            components[i] = other->components[i];
+        }
+    }
+
     // Getter
     double x() const { return components[0]; }
     double y() const { return components[1]; }

@@ -2348,10 +2348,11 @@ void splitCamera1()
 void splitCameraThreadingV2()
 {
     // Define the grid size and step
-    unsigned int size = 400;
-    double step = 1;
+    size_t ratio = 4;
+    unsigned int size = 400 / ratio;
+    double step = .01f * ratio;
 
-    point camOrigin(0, 0, 0);
+    point camOrigin(0, 0, -3);
     vec3 camYDirection(1, 0, 0);  // Pointing upward
     vec3 camXDirection(0, -1, 1); // Pointing right
 
@@ -2363,7 +2364,7 @@ void splitCameraThreadingV2()
     vector<vector<camera>> SplitCamera = splitCameraFunc(cam1, split);
 
     std::cout << "_________Face Coloring_______________" << std::endl;
-    double scaling = 1;
+    double scaling = 2;
     point offset = point(0, 0, 0);
     object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2));
     std::cout << "________________________" << std::endl;
@@ -2409,6 +2410,33 @@ void splitCameraThreadingV2()
     ImageRenderer::renderToFile(stitchedImage, "stitched.ppm");
 }
 
+void testraytracing()
+{
+    // Define the grid size and step
+    unsigned int size = 400;
+    double step = .01f;
+
+    point camOrigin(0, 0, -3);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, -1, 1);
+
+    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, 1);
+
+    std::cout
+        << "_________Face Coloring_______________" << std::endl;
+    double scaling = 2;
+    point offset = point(0, 0, 0);
+    object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2));
+    std::cout << "________________________" << std::endl;
+
+    // Create a space and assign the object
+    space s({obj});
+    s.cameras.push_back(cam1);
+    s.triggerRayTrace(2);
+
+    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Room" + std::to_string(0) + ".ppm");
+}
+
 int main(int argc, char const *argv[])
 {
     // testintersection();
@@ -2442,7 +2470,8 @@ int main(int argc, char const *argv[])
     // testPerspectiveLoop1();
     // splitCamera();
     // splitCamera1();
-    splitCameraThreadingV2();
+    // splitCameraThreadingV2();
+    testraytracing();
 
     return 0;
 }

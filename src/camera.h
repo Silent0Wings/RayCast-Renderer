@@ -254,13 +254,22 @@ public:
     }
 
     // Set the color of a pixel
-    void set(unsigned int x, unsigned int y, const ray &c)
+    void set(unsigned int x, unsigned int y, const ray &r)
     {
         if (constrain(x, y))
         {
             throw std::invalid_argument("Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
         }
-        gridRay[y][x] = c;
+        gridRay[y][x] = r;
+    }
+
+    void setColor(unsigned int x, unsigned int y, const color &c)
+    {
+        if (img.constrain(x, y))
+        {
+            throw std::invalid_argument("Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
+        }
+        img.set(x, y, c);
     }
 
     // set the ray vector

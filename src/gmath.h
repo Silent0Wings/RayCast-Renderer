@@ -11,6 +11,7 @@
 #include "point.h"
 #include "ray.h"
 #include <math.h>
+#include "Hit.h"
 
 /**
  * @class gmath
@@ -51,7 +52,10 @@ public:
     // Intersection location
     static point *intersectLocation(const ray &r1, const ray &r2);
     static point *intersect3d1(const ray &r1, const point arr[3]);
+    static Hit *intersect3dHit(const ray &r1, const point arr[3]);
     static point *intersect3d2(const ray &r1, const point arr[4]);
+    static vec3 *reflectorVector(const vec3 incoming, const vec3 normal);
+
     // project 3d triangle into 2d triangle
     static std::vector<point> projectTriangle(const point &a, const point &b, const point &c);
     // absolute value
