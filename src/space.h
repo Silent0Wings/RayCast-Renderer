@@ -123,7 +123,9 @@ public:
                 //    void trace(const size_t Bounce, const vector<object> *objects)
 
                 traceGrid.at(i).at(j).trace(bounce, &obj);
-                cameras.at(0).setColor(i, j, traceGrid.at(i).at(j).getPixelValue());
+                // cout << traceGrid.at(i).at(j).getPixelValue() << endl;
+                cameras.at(0)
+                    .setColor(i, j, traceGrid.at(i).at(j).getPixelValue());
             }
         }
     }

@@ -2348,7 +2348,7 @@ void splitCamera1()
 void splitCameraThreadingV2()
 {
     // Define the grid size and step
-    size_t ratio = 4;
+    size_t ratio = 40;
     unsigned int size = 400 / ratio;
     double step = .01f * ratio;
 
@@ -2395,10 +2395,10 @@ void splitCameraThreadingV2()
     vector<vector<image>> images; // Placeholder for stitched images
 
     increment = 0;
-    for (int i = 0; i < SplitCamera.size(); i++)
+    for (size_t i = 0; i < SplitCamera.size(); i++)
     { // Outer loop iterates backward
         vector<image> rowImages;
-        for (int j = 0; j < SplitCamera.at(i).size(); j++)
+        for (size_t j = 0; j < SplitCamera.at(i).size(); j++)
         { // Outer loop iterates backward
             rowImages.push_back(s.cameras[increment].getimage());
             increment++;
@@ -2413,8 +2413,9 @@ void splitCameraThreadingV2()
 void testraytracing()
 {
     // Define the grid size and step
-    unsigned int size = 400;
-    double step = .01f;
+    size_t ratio = 20;
+    unsigned int size = 400 / ratio;
+    double step = .01f * ratio;
 
     point camOrigin(0, 0, -3);
     vec3 camYDirection(1, 0, 0);
@@ -2427,14 +2428,19 @@ void testraytracing()
     double scaling = 2;
     point offset = point(0, 0, 0);
     object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2));
-    std::cout << "________________________" << std::endl;
+
+    object obj1(primitive::cube, .1, offset + point(1, 1, 1));
+    obj1.isEmisive = true;
+
+    std::cout
+        << "________________________" << std::endl;
 
     // Create a space and assign the object
-    space s({obj});
+    space s({obj, obj1});
     s.cameras.push_back(cam1);
     s.triggerRayTrace(2);
 
-    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Room" + std::to_string(0) + ".ppm");
+    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "XXXX.ppm");
 }
 
 int main(int argc, char const *argv[])

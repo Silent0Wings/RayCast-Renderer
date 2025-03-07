@@ -39,6 +39,8 @@ public:
     // Dictionary to link an array of 3 elements to a color.
     map<array<point, 3>, color> colorMap;
 
+    bool isEmisive = false;
+
     // Create an enum variable and assign a value to it
 
     // Constructs a new Object.
