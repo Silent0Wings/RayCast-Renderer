@@ -161,6 +161,23 @@ public:
         colorMap[{cubeVertices[1], cubeVertices[6], cubeVertices[5]}] = color(0, 255, 0); // Green
 
         vertices = v;
+
+        sphereRadius = 0;
+        // creating a relative sphere at with it center the center of the mesh and its radius the farthers point from that center
+        for (size_t i = 0; i < vertices.size(); i++)
+        {
+            for (size_t j = 0; j < vertices.at(i).size(); j++)
+            {
+                double tempdistance = gmath::distance(center, vertices[i][j]);
+                cout << tempdistance;
+                if (tempdistance > sphereRadius)
+                {
+                    // sphereRadius = (tempdistance > sphereRadius) ? tempdistance : sphereRadius;
+                    sphereRadius = tempdistance;
+                }
+            }
+        }
+        sphereRadius *= 2;
     }
 
     void sphere(double scaling, point offset)
@@ -233,21 +250,31 @@ public:
         center /= div; // calculate the center of the mesh
         vertices = meshVertices;
 
+        sphereRadius = 0;
         // creating a relative sphere at with it center the center of the mesh and its radius the farthers point from that center
-        for (size_t i = 0; i < meshVertices.size(); i++)
+        for (size_t i = 0; i < vertices.size(); i++)
         {
-            for (size_t j = 0; j < meshVertices.at(i).size(); j++)
+            for (size_t j = 0; j < vertices.at(i).size(); j++)
             {
-                double tempdistance = gmath::distance(center, v.at(i).at(j) * scaling + offset);
-                sphereRadius = (tempdistance > sphereRadius) ? tempdistance : sphereRadius;
+                double tempdistance = gmath::distance(center, vertices[i][j]);
+                cout << tempdistance;
+                if (tempdistance > sphereRadius)
+                {
+                    // sphereRadius = (tempdistance > sphereRadius) ? tempdistance : sphereRadius;
+                    sphereRadius = tempdistance;
+                }
             }
         }
+        sphereRadius *= 2;
     }
 
     // output operator
     friend ostream &operator<<(ostream &os, const object &obj)
     {
         os << "Object(" << obj.vertices.size() << " vertices)\n";
+        os << "Center : " << obj.center << "\n";
+        os << "Sphere Radius : " << obj.sphereRadius << "\n";
+
         for (size_t i = 0; i < obj.vertices.size(); ++i)
         {
             os << "  ";

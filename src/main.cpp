@@ -2494,6 +2494,7 @@ void testOptimizedrender()
     double scaling = 2;
     point offset = point(0, 0, 0);
     object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2));
+    cout << obj;
 
     object obj1(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(0, 0, 8));
 
@@ -2501,7 +2502,7 @@ void testOptimizedrender()
         << "________________________" << std::endl;
 
     // Create a space and assign the object
-    space s({obj1, obj});
+    space s({obj, obj1});
     s.cameras.push_back(cam1);
     s.triggerCameraRayOptimized();
 
