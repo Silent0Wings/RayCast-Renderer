@@ -2480,7 +2480,7 @@ void testOptimizedrender()
 {
     // Define the grid size and step
     size_t ratio = 5;
-    unsigned int size = 1000 / ratio;
+    unsigned int size = 4000 / ratio;
     double step = .01f * ratio;
 
     point camOrigin(0, 0, -3);
@@ -2493,16 +2493,34 @@ void testOptimizedrender()
         << "_________Face Coloring_______________" << std::endl;
     double scaling = 2;
     point offset = point(0, 0, 0);
-    object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2));
-    cout << obj;
+    object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(0, 0, 0));
 
     object obj1(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(0, 0, 8));
+
+    object obj2(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(2, 2, 0));
+
+    object obj3(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(2, 2, 8));
+
+    object obj4(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(4, 0, 0));
+
+    object obj5(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(4, 0, 8));
+
+    vector<object> test;
+    double offsetmultiplier = 5;
+    for (size_t i = 0; i < 11; i++)
+    {
+        for (size_t j = 0; j < 11; j++)
+        {
+            object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, 0, i * offsetmultiplier));
+            test.push_back(obj);
+        }
+    }
 
     std::cout
         << "________________________" << std::endl;
 
     // Create a space and assign the object
-    space s({obj, obj1});
+    space s(test);
     s.cameras.push_back(cam1);
     s.triggerCameraRayOptimized();
 

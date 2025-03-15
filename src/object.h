@@ -169,7 +169,7 @@ public:
             for (size_t j = 0; j < vertices.at(i).size(); j++)
             {
                 double tempdistance = gmath::distance(center, vertices[i][j]);
-                cout << tempdistance;
+                // cout << tempdistance;
                 if (tempdistance > sphereRadius)
                 {
                     // sphereRadius = (tempdistance > sphereRadius) ? tempdistance : sphereRadius;
@@ -257,10 +257,8 @@ public:
             for (size_t j = 0; j < vertices.at(i).size(); j++)
             {
                 double tempdistance = gmath::distance(center, vertices[i][j]);
-                cout << tempdistance;
                 if (tempdistance > sphereRadius)
                 {
-                    // sphereRadius = (tempdistance > sphereRadius) ? tempdistance : sphereRadius;
                     sphereRadius = tempdistance;
                 }
             }
