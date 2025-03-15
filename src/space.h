@@ -99,6 +99,23 @@ public:
     }
 
     // trigger the camera ray behavior
+    void triggerCameraRayOptimized()
+    {
+        if (cameras.empty() || obj.empty())
+        {
+            cout << "Empty Space :No cameras or objects to process." << endl;
+            return;
+        }
+        for (auto &cam : cameras)
+        {
+            for (auto &o : obj)
+            {
+                cam.cameraToImageOptimized(o);
+            }
+        }
+    }
+
+    // trigger the camera ray behavior
     void triggerRayTrace(size_t bounce)
     {
         // for now it wil only support 1 camera

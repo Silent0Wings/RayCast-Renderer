@@ -227,12 +227,21 @@ public:
                 temp.push_back((v.at(i).at(j) * scaling + offset));
                 center += v.at(i).at(j) * scaling + offset; // sum all the positions
                 div++;                                      // increment the div which is the total number of verticies
-                sphereRadius = (gmath::distance(offset, v.at(i).at(j) * scaling + offset) > sphereRadius)) ?: ;
             }
             meshVertices.push_back(temp);
         }
         center /= div; // calculate the center of the mesh
         vertices = meshVertices;
+
+        // creating a relative sphere at with it center the center of the mesh and its radius the farthers point from that center
+        for (size_t i = 0; i < meshVertices.size(); i++)
+        {
+            for (size_t j = 0; j < meshVertices.at(i).size(); j++)
+            {
+                double tempdistance = gmath::distance(center, v.at(i).at(j) * scaling + offset);
+                sphereRadius = (tempdistance > sphereRadius) ? tempdistance : sphereRadius;
+            }
+        }
     }
 
     // output operator

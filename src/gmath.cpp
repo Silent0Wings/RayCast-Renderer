@@ -406,6 +406,33 @@ point *gmath::intersect3d2(const ray &r1, const point arr[4])
     }
 }
 
+bool gmath::intersectRaySphere(const ray &r1, const point center, const double radius)
+{
+
+    // (x-h)^2 +(x-k)^2+(x-l)^2= Radius^2
+    // h=x , k=y , l=z the center of the sphere
+    // now a point along the ray is p= r0+rd*t
+    // and the perpindicular projection of the origine of the sphere on the line represented by the ray is P at time  t calculared as so:
+    // t=dot(s-r0,rd))
+
+    double t = dot(center - r1.getOrigine(), r1.getDirection());
+    point P = r1.get(t);
+
+    // if the distance between t and the center of the sphere is > to the radius then it is outisde and there is no possible intersection
+    if (distance(P, center) > radius) // then the intersection never happens since the line is outside of the sphere
+    {
+        return false;
+    }
+    else if (distance(P, center) == radius) // then the intersection happens at one point
+    {
+        return true;
+    }
+    else // intersection happens at 2 points
+    {
+        return true;
+    }
+}
+
 vec3 *gmath::reflectorVector(const vec3 incoming, const vec3 normal)
 {
     vec3 n = normalize(normal);

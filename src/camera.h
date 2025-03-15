@@ -390,6 +390,24 @@ public:
         }
     }
 
+    void cameraToImageOptimized(object obj)
+    {
+        cout << "No texture" << endl;
+        for (unsigned int i = 0; i < height; ++i)
+        {
+            for (unsigned int j = 0; j < width; ++j)
+            {
+                //(const ray &r1, const point center, const double radius)
+                if (gmath::intersectRaySphere(gridRay[i][j], obj.center, obj.sphereRadius))
+                {
+                    // cout << "boum" << endl;
+
+                    getPixelColorOPtimized(i, j, obj, gridRay[i][j]);
+                }
+            }
+        }
+    }
+
     //
     void getPixelCombined(unsigned int i, unsigned int j, object obj, ray r1)
     {
@@ -538,6 +556,40 @@ public:
         if (!triggered && img.get(i, j) == defaultColor)
         {
             img.set(i, j, defaultColor); // Default: Black
+        }
+    }
+    void getPixelColorOPtimized(unsigned int i, unsigned int j, object obj, ray r1)
+    {
+        double distance = 1.0e18;
+        // Iterate through the color map vertices
+        for (auto const &x : obj.colorMap)
+        {
+            // Get the vertices as an array
+            array<point, 3> arr = {x.first[0], x.first[1], x.first[2]};
+
+            // Check if the ray intersects with the current triangle
+            point *val = gmath::intersect3d1(r1, arr.data());
+
+            if (val != nullptr)
+            {
+                // Set the pixel in the image
+                double leng = gmath::distance(r1.getOrigine(), *(val));
+                delete val;
+
+                // Check if the distance exceeds or equals the specified length
+                if (distance >= leng)
+                {
+                    // Clamp the distance to the maximum length
+                    distance = leng;
+
+                    // Set the color at the (i, j) position in the image to the color from x.second
+                    img.set(i, j, x.second);
+
+                    // Temporary variables for blending colors
+                    color temp00 = x.second;
+                    img.set(i, j, temp00);
+                }
+            }
         }
     }
 };

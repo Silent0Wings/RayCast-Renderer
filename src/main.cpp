@@ -2476,6 +2476,38 @@ void testraytracing2()
     ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "XXXX.ppm");
 }
 
+void testOptimizedrender()
+{
+    // Define the grid size and step
+    size_t ratio = 5;
+    unsigned int size = 1000 / ratio;
+    double step = .01f * ratio;
+
+    point camOrigin(0, 0, -3);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, -1, 1);
+
+    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, 1);
+
+    std::cout
+        << "_________Face Coloring_______________" << std::endl;
+    double scaling = 2;
+    point offset = point(0, 0, 0);
+    object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2));
+
+    object obj1(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(0, 0, 8));
+
+    std::cout
+        << "________________________" << std::endl;
+
+    // Create a space and assign the object
+    space s({obj1, obj});
+    s.cameras.push_back(cam1);
+    s.triggerCameraRayOptimized();
+
+    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "XXXX.ppm");
+}
+
 int main(int argc, char const *argv[])
 {
     // testintersection();
@@ -2511,7 +2543,8 @@ int main(int argc, char const *argv[])
     // splitCamera1();
     // splitCameraThreadingV2();
     // testraytracing();
-    testraytracing2();
+    // testraytracing2();
+    testOptimizedrender();
 
     return 0;
 }
