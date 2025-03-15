@@ -28,11 +28,13 @@ class object
 {
 public:
     point globalPosition;
+    point center;
     vec3 globalRotation;
     point globallRotation;
     vec3 locallRotation;
     object *parent;
     texture tex;
+    size_t sphereRadius;
 
     // 2D vector of pixels representing the object's graphical data.
     vector<vector<point>> vertices;
@@ -100,31 +102,39 @@ public:
             (point(0, 1, 1) * scaling + offset)  // Vertex 7
         };
 
+        center = point(0, 0, 0);
+        for (size_t i = 0; i < cubeVertices.size(); i++)
+        {
+            center += cubeVertices.at(i);
+        }
+        center /= cubeVertices.size();
+
         // Create object vertices for two triangles in the z = 0 plane
-        const vector<vector<point>> v = {
-            // Bottom face
-            {cubeVertices[0], cubeVertices[1], cubeVertices[2]},
-            {cubeVertices[0], cubeVertices[2], cubeVertices[3]},
+        const vector<vector<point>>
+            v = {
+                // Bottom face
+                {cubeVertices[0], cubeVertices[1], cubeVertices[2]},
+                {cubeVertices[0], cubeVertices[2], cubeVertices[3]},
 
-            // Top face
-            {cubeVertices[4], cubeVertices[5], cubeVertices[6]},
-            {cubeVertices[4], cubeVertices[6], cubeVertices[7]},
+                // Top face
+                {cubeVertices[4], cubeVertices[5], cubeVertices[6]},
+                {cubeVertices[4], cubeVertices[6], cubeVertices[7]},
 
-            // Front face
-            {cubeVertices[0], cubeVertices[1], cubeVertices[5]},
-            {cubeVertices[0], cubeVertices[5], cubeVertices[4]},
+                // Front face
+                {cubeVertices[0], cubeVertices[1], cubeVertices[5]},
+                {cubeVertices[0], cubeVertices[5], cubeVertices[4]},
 
-            // Back face
-            {cubeVertices[2], cubeVertices[3], cubeVertices[7]},
-            {cubeVertices[2], cubeVertices[7], cubeVertices[6]},
+                // Back face
+                {cubeVertices[2], cubeVertices[3], cubeVertices[7]},
+                {cubeVertices[2], cubeVertices[7], cubeVertices[6]},
 
-            // Left face
-            {cubeVertices[0], cubeVertices[3], cubeVertices[7]},
-            {cubeVertices[0], cubeVertices[7], cubeVertices[4]},
+                // Left face
+                {cubeVertices[0], cubeVertices[3], cubeVertices[7]},
+                {cubeVertices[0], cubeVertices[7], cubeVertices[4]},
 
-            // Right face
-            {cubeVertices[1], cubeVertices[2], cubeVertices[6]},
-            {cubeVertices[1], cubeVertices[6], cubeVertices[5]}};
+                // Right face
+                {cubeVertices[1], cubeVertices[2], cubeVertices[6]},
+                {cubeVertices[1], cubeVertices[6], cubeVertices[5]}};
 
         colorMap[{cubeVertices[0], cubeVertices[1], cubeVertices[2]}] = color(255, 0, 0); // White
         colorMap[{cubeVertices[0], cubeVertices[2], cubeVertices[3]}] = color(255, 0, 0); // White
@@ -155,37 +165,31 @@ public:
 
     void sphere(double scaling, point offset)
     {
-
         loadMesh("\\Mesh\\sphere.txt", scaling, offset);
         randomColoring();
     }
     void circle(double scaling, point offset)
     {
-
         loadMesh("\\Mesh\\circle.txt", scaling, offset);
         randomColoring();
     }
     void cone(double scaling, point offset)
     {
-
         loadMesh("\\Mesh\\cone.txt", scaling, offset);
         randomColoring();
     }
     void torus(double scaling, point offset)
     {
-
         loadMesh("\\Mesh\\torus.txt", scaling, offset);
         randomColoring();
     }
     void plane(double scaling, point offset)
     {
-
         loadMesh("\\Mesh\\plane.txt", scaling, offset);
         randomColoring();
     }
     void suzane(double scaling, point offset)
     {
-
         loadMesh("\\Mesh\\Suzane.txt", scaling, offset);
         randomColoring();
     }
@@ -213,15 +217,21 @@ public:
         }
 
         vector<vector<point>> meshVertices;
+        size_t div = 0; // helps calculate the total number of verticies for a later use
+
         for (size_t i = 0; i < v.size(); i++)
         {
             vector<point> temp;
             for (size_t j = 0; j < v.at(i).size(); j++)
             {
                 temp.push_back((v.at(i).at(j) * scaling + offset));
+                center += v.at(i).at(j) * scaling + offset; // sum all the positions
+                div++;                                      // increment the div which is the total number of verticies
+                sphereRadius = (gmath::distance(offset, v.at(i).at(j) * scaling + offset) > sphereRadius)) ?: ;
             }
             meshVertices.push_back(temp);
         }
+        center /= div; // calculate the center of the mesh
         vertices = meshVertices;
     }
 
