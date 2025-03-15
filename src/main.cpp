@@ -2438,7 +2438,40 @@ void testraytracing()
     // Create a space and assign the object
     space s({obj, obj1});
     s.cameras.push_back(cam1);
-    s.triggerRayTrace(3);
+    s.triggerRayTrace(2);
+
+    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "XXXX.ppm");
+}
+
+void testraytracing2()
+{
+    // Define the grid size and step
+    size_t ratio = 5;
+    unsigned int size = 400 / ratio;
+    double step = .01f * ratio;
+
+    point camOrigin(0, 0, -3);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, -1, 1);
+
+    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, 1);
+
+    std::cout
+        << "_________Face Coloring_______________" << std::endl;
+    double scaling = 2;
+    point offset = point(0, 0, 0);
+    object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2));
+
+    object obj1(primitive::cube, 2, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(0, 0, -1));
+    obj1.isEmisive = true;
+
+    std::cout
+        << "________________________" << std::endl;
+
+    // Create a space and assign the object
+    space s({obj, obj1});
+    s.cameras.push_back(cam1);
+    s.triggerRayTrace(2);
 
     ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "XXXX.ppm");
 }
@@ -2477,7 +2510,8 @@ int main(int argc, char const *argv[])
     // splitCamera();
     // splitCamera1();
     // splitCameraThreadingV2();
-    testraytracing();
+    // testraytracing();
+    testraytracing2();
 
     return 0;
 }

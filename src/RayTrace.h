@@ -36,9 +36,9 @@ public:
 
         ray currentRay = SourceRay;
 
-        for (size_t j = 0; j < objects->size(); j++)
+        for (size_t i = 0; i < Bounce; i++)
         {
-            for (size_t i = 0; i < Bounce; i++)
+            for (size_t j = 0; j < objects->size(); j++)
             {
 
                 Hit currentHit = handleIntersection(objects->at(j), currentRay);
@@ -69,13 +69,11 @@ public:
         // Iterate through the color map vertices
         for (auto const &x : obj.colorMap)
         {
-
             // Get the vertices as an array
             array<point, 3> arr = {x.first[0], x.first[1], x.first[2]};
 
             // Check if the ray intersects with the current triangle
             Hit *val = gmath::intersect3dHit(r1, arr.data());
-
             if (val != nullptr)
             {
                 // Set the pixel in the image
@@ -97,8 +95,8 @@ public:
                     finalHit.colorValue = x.second;
                     // cout << finalHit.colorValue;
                 }
-                delete val;
             }
+            delete val;
         }
         // cout << finalHit.colorValue;
 
