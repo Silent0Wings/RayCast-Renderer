@@ -65,8 +65,8 @@ public:
     {
         Hit finalHit = Hit();
         double dis = 1.0e18;
-        bool triggered = false;
-        // Iterate through the color map vertices
+        // bool triggered = false;
+        //  Iterate through the color map vertices
         for (auto const &x : obj.colorMap)
         {
             // Get the vertices as an array

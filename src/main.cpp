@@ -2232,7 +2232,8 @@ vector<vector<camera>> splitCameraFunc(camera cam, size_t split)
                 vector<ray> tempgridRaySplit;
                 for (size_t j = 0; j < split_width; j++) // this will be the y effect
                 {
-                    gridRay.at(i + x).at(j + y);
+                    // gridRay.at(i + x).at(j + y);
+                    gridRay[i + x][j + y];
                     // cout << "--(x:" << i + x << " || y:" << j + y << ")";
                     tempgridRaySplit.push_back(gridRay.at(i + x).at(j + y));
                 }
@@ -2479,7 +2480,6 @@ void testraytracing2()
 void testOptimizedrender()
 {
     time_t timestamp = time(NULL);
-    struct tm datetime = *localtime(&timestamp);
 
     // cout << "Current time: " << asctime(&datetime);
 
@@ -2532,7 +2532,6 @@ void testOptimizedrender()
     ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "XXXX.ppm");
 
     time_t timestamp1 = time(NULL);
-    struct tm datetime1 = *localtime(&timestamp1);
 
     // cout << "Time after optimized render: " << asctime(&datetime1);
 
@@ -2544,7 +2543,6 @@ void testOptimizedrender()
 void testNonOptimizedrender()
 {
     time_t timestamp = time(NULL);
-    struct tm datetime = *localtime(&timestamp);
 
     // cout << "Current time: " << asctime(&datetime);
 
@@ -2597,7 +2595,6 @@ void testNonOptimizedrender()
     ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "XXXX.ppm");
 
     time_t timestamp1 = time(NULL);
-    struct tm datetime1 = *localtime(&timestamp1);
 
     // cout << "Time after Nonoptimized render: " << asctime(&datetime1);
 
@@ -2642,10 +2639,8 @@ int main(int argc, char const *argv[])
     // splitCameraThreadingV2();
     // testraytracing();
     // testraytracing2();
-
+    // testNonOptimizedrender();
     testOptimizedrender();
-
-    testNonOptimizedrender();
 
     return 0;
 }
@@ -2653,4 +2648,4 @@ int main(int argc, char const *argv[])
 // shortcut to collapse all : citrl + k + 0
 // shortcut to expand all : citrl + k + j
 // clean formating ctrl + k then -> ctrl + f
-// clean formating ctrl + k then -> ctrl + d
+// clean formating ctrl + k then -> ctrl + k
