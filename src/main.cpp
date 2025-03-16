@@ -1,4 +1,4 @@
-
+#include <ctime>
 #include <algorithm>
 #include "vec3.h"
 #include "point.h"
@@ -2478,6 +2478,11 @@ void testraytracing2()
 
 void testOptimizedrender()
 {
+    time_t timestamp = time(NULL);
+    struct tm datetime = *localtime(&timestamp);
+
+    // cout << "Current time: " << asctime(&datetime);
+
     // Define the grid size and step
     size_t ratio = 5;
     unsigned int size = 4000 / ratio;
@@ -2525,6 +2530,80 @@ void testOptimizedrender()
     s.triggerCameraRayOptimized();
 
     ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "XXXX.ppm");
+
+    time_t timestamp1 = time(NULL);
+    struct tm datetime1 = *localtime(&timestamp1);
+
+    // cout << "Time after optimized render: " << asctime(&datetime1);
+
+    double time_difference = difftime(timestamp1, timestamp);
+
+    cout << "Time difference between events: " << time_difference << " seconds" << endl;
+}
+
+void testNonOptimizedrender()
+{
+    time_t timestamp = time(NULL);
+    struct tm datetime = *localtime(&timestamp);
+
+    // cout << "Current time: " << asctime(&datetime);
+
+    // Define the grid size and step
+    size_t ratio = 5;
+    unsigned int size = 4000 / ratio;
+    double step = .01f * ratio;
+
+    point camOrigin(0, 0, -3);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, -1, 1);
+
+    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, 1);
+
+    std::cout
+        << "_________Face Coloring_______________" << std::endl;
+    double scaling = 2;
+    point offset = point(0, 0, 0);
+    object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(0, 0, 0));
+
+    object obj1(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(0, 0, 8));
+
+    object obj2(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(2, 2, 0));
+
+    object obj3(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(2, 2, 8));
+
+    object obj4(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(4, 0, 0));
+
+    object obj5(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(4, 0, 8));
+
+    vector<object> test;
+    double offsetmultiplier = 5;
+    for (size_t i = 0; i < 11; i++)
+    {
+        for (size_t j = 0; j < 11; j++)
+        {
+            object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, 0, i * offsetmultiplier));
+            test.push_back(obj);
+        }
+    }
+
+    std::cout
+        << "________________________" << std::endl;
+
+    // Create a space and assign the object
+    space s(test);
+    s.cameras.push_back(cam1);
+    s.triggerCameraRay();
+
+    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "XXXX.ppm");
+
+    time_t timestamp1 = time(NULL);
+    struct tm datetime1 = *localtime(&timestamp1);
+
+    // cout << "Time after Nonoptimized render: " << asctime(&datetime1);
+
+    double time_difference = difftime(timestamp1, timestamp);
+
+    cout << "Time difference between events: " << time_difference << " seconds" << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -2563,7 +2642,10 @@ int main(int argc, char const *argv[])
     // splitCameraThreadingV2();
     // testraytracing();
     // testraytracing2();
+
     testOptimizedrender();
+
+    testNonOptimizedrender();
 
     return 0;
 }
