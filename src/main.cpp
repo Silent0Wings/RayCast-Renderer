@@ -2638,7 +2638,7 @@ void testRotationOnMesh()
 
     // Define the grid size and step
     size_t ratio = 5;
-    unsigned int size = 500 / ratio;
+    unsigned int size = 1000 / ratio;
     double step = .01f * ratio;
 
     point camOrigin(0, 0, -3);
@@ -2649,11 +2649,11 @@ void testRotationOnMesh()
 
     std::cout
         << "_________Face Coloring_______________" << std::endl;
-    double scaling = 2;
+    double scaling = 4;
     point offset = point(0, 0, 0);
     double angle = 20;
     vec3 axis(0, 1, 0);
-    object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(-.5f, 0, 1), angle, axis);
+    object obj(primitive::cube, scaling, offset + point(scaling, scaling, scaling) + point(-2.5, -6, 0), angle, axis);
 
     std::cout
         << "________________________" << std::endl;
@@ -2679,7 +2679,7 @@ void testRotationOnMeshVideo()
 
     // Define the grid size and step
     size_t ratio = 5;
-    unsigned int size = 500 / ratio;
+    unsigned int size = 1000 / ratio;
     double step = .01f * ratio;
 
     // camera config
@@ -2688,7 +2688,7 @@ void testRotationOnMeshVideo()
     vec3 camXDirection(0, -1, 1);
 
     // mesh datat
-    double scaling = 2;
+    double scaling = 4;
     point offset = point(0, 0, 0);
     vec3 axis(0, 1, 0);
 
@@ -2699,7 +2699,7 @@ void testRotationOnMeshVideo()
     {
         angle += step;
 
-        object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(-.5f, 0, 1), angle, axis);
+        object obj(primitive::cube, scaling, offset + point(scaling, scaling, scaling) + point(-2.5, -6, 0), angle, axis);
 
         // Create a space and assign the object
         space s({obj});
