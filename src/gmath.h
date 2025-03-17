@@ -37,6 +37,10 @@ public:
     static double angleBetween(const vec3 &a, const vec3 &b);
     // Angle between two vectors degree
     static double angleBetweenDegree(const vec3 &vec1, const vec3 &vec2);
+    // convert rad to degree
+    static double radToDegree(double rad);
+    // convert degree to rad
+    static double DegreeToRad(double deg);
     // Translation
     static vec3 translateVec(const vec3 &vec, const vec3 &offset);
     // Translation of a point

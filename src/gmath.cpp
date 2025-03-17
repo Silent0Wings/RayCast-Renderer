@@ -53,6 +53,16 @@ double gmath::angleBetweenDegree(const vec3 &vec1, const vec3 &vec2)
     double rad = acos(dot(vec1, vec2) / (length(vec1) * length(vec2)));
     return 180 * rad / pi;
 }
+double gmath::radToDegree(double rad)
+{
+    return (180.0 * rad) / pi;
+}
+
+double gmath::DegreeToRad(double deg)
+{
+    return (deg * pi) / 180.0;
+}
+
 vec3 gmath::translateVec(const vec3 &vec, const vec3 &offset)
 {
     return vec3(vec.x() + offset.x(), vec.y() + offset.y(), vec.z() + offset.z());

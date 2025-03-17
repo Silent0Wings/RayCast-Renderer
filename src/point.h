@@ -28,6 +28,12 @@ public:
         set_y(other.y());
         set_z(other.z());
     }
+    point(const vec3 &v)
+    {
+        set_x(v.x());
+        set_y(v.y());
+        set_z(v.z());
+    }
 
     // Getter for x, y, z coordinates (inherited from vec3)
     double get_x() const { return x(); }

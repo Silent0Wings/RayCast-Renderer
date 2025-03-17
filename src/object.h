@@ -12,6 +12,7 @@
 #include "point.h"
 #include "color.h"
 #include "vec3.h"
+#include "quaternion.h"
 #include "texture.h"
 #include "general.h"
 #include "MeshReader.h"
@@ -57,31 +58,31 @@ public:
         parent = nullptr;
         tex = texture();
     }
-    object(primitive prim, double scale, point offset)
+    object(primitive prim, double scale, point offset, double angle = 0, vec3 axis = vec3(0, 0, 0))
     {
         // Initialize the object based on the primitive type
         switch (prim)
         {
         case primitive::plane:
-            this->plane(scale, offset);
+            this->plane(scale, offset, axis, angle);
             break;
         case primitive::circle:
-            this->circle(scale, offset);
+            this->circle(scale, offset, axis, angle);
             break;
         case primitive::cone:
-            this->cone(scale, offset);
+            this->cone(scale, offset, axis, angle);
             break;
         case primitive::torus:
-            this->torus(scale, offset);
+            this->torus(scale, offset, axis, angle);
             break;
         case primitive::cube:
-            this->cube(scale, offset);
+            this->cube(scale, offset, axis, angle);
             break;
         case primitive::sphere:
-            this->sphere(scale, offset);
+            this->sphere(scale, offset, axis, angle);
             break;
         case primitive::suzane:
-            this->suzane(scale, offset);
+            this->suzane(scale, offset, axis, angle);
             break;
         default:
             throw std::invalid_argument("Unknown primitive type");
@@ -89,9 +90,9 @@ public:
 
         globalPosition = offset;
     }
-    void cube(double scaling, point offset)
+    void cube(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
-        const vector<point> cubeVertices = {
+        vector<point> cubeVertices = {
             (point(0, 0, 0) * scaling + offset), // Vertex 0
             (point(1, 0, 0) * scaling + offset), // Vertex 1
             (point(1, 1, 0) * scaling + offset), // Vertex 2
@@ -101,6 +102,17 @@ public:
             (point(1, 1, 1) * scaling + offset), // Vertex 6
             (point(0, 1, 1) * scaling + offset)  // Vertex 7
         };
+
+        if (angle == 0 || axis == vec3::zero())
+        {
+        }
+        else
+        {
+            for (size_t i = 0; i < cubeVertices.size(); i++)
+            {
+                cubeVertices.at(i) = quaternion::rotate(cubeVertices.at(i), angle, axis);
+            }
+        }
 
         center = point(0, 0, 0);
         for (size_t i = 0; i < cubeVertices.size(); i++)
@@ -180,34 +192,34 @@ public:
         sphereRadius *= 2;
     }
 
-    void sphere(double scaling, point offset)
+    void sphere(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
-        loadMesh("\\Mesh\\sphere.txt", scaling, offset);
+        loadMesh("\\Mesh\\sphere.txt", scaling, offset, axis, angle);
         randomColoring();
     }
-    void circle(double scaling, point offset)
+    void circle(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
-        loadMesh("\\Mesh\\circle.txt", scaling, offset);
+        loadMesh("\\Mesh\\circle.txt", scaling, offset, axis, angle);
         randomColoring();
     }
-    void cone(double scaling, point offset)
+    void cone(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
-        loadMesh("\\Mesh\\cone.txt", scaling, offset);
+        loadMesh("\\Mesh\\cone.txt", scaling, offset, axis, angle);
         randomColoring();
     }
-    void torus(double scaling, point offset)
+    void torus(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
-        loadMesh("\\Mesh\\torus.txt", scaling, offset);
+        loadMesh("\\Mesh\\torus.txt", scaling, offset, axis, angle);
         randomColoring();
     }
-    void plane(double scaling, point offset)
+    void plane(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
-        loadMesh("\\Mesh\\plane.txt", scaling, offset);
+        loadMesh("\\Mesh\\plane.txt", scaling, offset, axis, angle);
         randomColoring();
     }
-    void suzane(double scaling, point offset)
+    void suzane(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
-        loadMesh("\\Mesh\\Suzane.txt", scaling, offset);
+        loadMesh("\\Mesh\\Suzane.txt", scaling, offset, axis, angle);
         randomColoring();
     }
     void randomColoring()
@@ -222,7 +234,7 @@ public:
             }
         }
     }
-    void loadMesh(string mame, double scaling, point offset)
+    void loadMesh(string mame, double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
         std::string filename = mame;
         MeshReader reader(filename);

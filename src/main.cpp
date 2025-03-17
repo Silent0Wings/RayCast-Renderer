@@ -13,6 +13,7 @@
 #include "ImageRenderer.h"
 #include "MeshReader.h" // Include input/output stream header
 #include "texture.h"
+#include "quaternion.h"
 #include <vector> // Include vector header
 #include <future>
 #include <filesystem>
@@ -2603,6 +2604,126 @@ void testNonOptimizedrender()
     cout << "Time difference between events: " << time_difference << " seconds" << endl;
 }
 
+void testQuaternion()
+{
+    // Define a position vector and a rotation axis
+    vec3 position(0, 2, 0);
+    vec3 axis(1, 0, 0);
+
+    double angle = 100;
+    angle = angle * 3.14159 / 180; // Convert angle to radians
+
+    // Create a quaternion from the axis-angle representation
+    quaternion rotationQ = quaternion::fromAxisAngle(axis, angle);
+
+    // Compute the inverse rotation (quaternion conjugate for unit quaternions)
+    quaternion inverseRotationQ = rotationQ.conjugate();
+
+    // Convert position vector to a pure quaternion
+    quaternion positionQ(0, position.x(), position.y(), position.z());
+
+    // Apply rotation using quaternion multiplication
+    quaternion rotatedQ = rotationQ * positionQ * inverseRotationQ;
+
+    // Extract the rotated position
+    vec3 rotatedPosition = vec3(rotatedQ.x(), rotatedQ.y(), rotatedQ.z());
+
+    // Print the results
+    std::cout << "Original Position: " << position << std::endl;
+    std::cout << "Rotated Position: " << rotatedPosition << std::endl;
+}
+
+void testRotationOnMesh()
+{
+
+    // Define the grid size and step
+    size_t ratio = 5;
+    unsigned int size = 500 / ratio;
+    double step = .01f * ratio;
+
+    point camOrigin(0, 0, -3);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, -1, 1);
+
+    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, 1);
+
+    std::cout
+        << "_________Face Coloring_______________" << std::endl;
+    double scaling = 2;
+    point offset = point(0, 0, 0);
+    double angle = 20;
+    vec3 axis(0, 1, 0);
+    object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(-.5f, 0, 1), angle, axis);
+
+    std::cout
+        << "________________________" << std::endl;
+
+    // Create a space and assign the object
+    space s({obj});
+    s.cameras.push_back(cam1);
+    s.triggerCameraRay();
+
+    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "YYYY.ppm");
+}
+
+// Generate a video of the object as the camera change direction
+void testRotationOnMeshVideo()
+{
+
+    std::cout << "_________Space Test_______________" << std::endl;
+    size_t frame = 1440;
+
+    // setup for video
+    double endAngle = 360;
+    double steps = endAngle / frame;
+
+    // Define the grid size and step
+    size_t ratio = 5;
+    unsigned int size = 500 / ratio;
+    double step = .01f * ratio;
+
+    // camera config
+    point camOrigin(0, 0, -3);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, -1, 1);
+
+    // mesh datat
+    double scaling = 2;
+    point offset = point(0, 0, 0);
+    vec3 axis(0, 1, 0);
+
+    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, 1);
+
+    double angle = 0;
+    for (size_t i = 1; i <= frame; i++)
+    {
+        angle += step;
+
+        object obj(primitive::cube, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(-.5f, 0, 1), angle, axis);
+
+        // Create a space and assign the object
+        space s({obj});
+        s.cameras.push_back(cam1);
+        s.triggerCameraRay();
+
+        // ImageRenderer::renderToFile(stitchedImage, "Step"+std::to_string(i)+".ppm");
+        std::filesystem::create_directories("Output");
+        ImageRenderer::renderToFilePPM(s.cameras.at(0).getimage(), "Output/Step" + std::to_string(i) + ".ppm");
+    }
+    // Convert PPM to Video
+    // std::string convertCommand = "ffmpeg -framerate 2 -i Output/Step%d.ppm -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p output_video.mp4";
+    // for 1440 frames its better to use this :
+    std::string convertCommand = "ffmpeg -framerate 60 -i Output/Step%d.ppm -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p output_video.mp4";
+
+    // std::cout << "convertCommand: " << convertCommand << std::endl;
+    int convertResult = system(convertCommand.c_str());
+    if (convertResult != 0)
+    {
+        throw std::runtime_error("Error: Failed to convert PPM to Video.");
+        return;
+    }
+}
+
 int main(int argc, char const *argv[])
 {
     // testintersection();
@@ -2640,8 +2761,10 @@ int main(int argc, char const *argv[])
     // testraytracing();
     // testraytracing2();
     // testNonOptimizedrender();
-    testOptimizedrender();
-
+    // testOptimizedrender();
+    // testQuaternion();
+    // testRotationOnMesh();
+    testRotationOnMeshVideo();
     return 0;
 }
 
