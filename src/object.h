@@ -194,32 +194,32 @@ public:
 
     void sphere(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
-        loadMesh("\\Mesh\\sphere.txt", scaling, offset, axis, angle);
+        loadMesh(".\\Mesh\\sphere.txt", scaling, offset, axis, angle);
         randomColoring();
     }
     void circle(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
-        loadMesh("\\Mesh\\circle.txt", scaling, offset, axis, angle);
+        loadMesh(".\\Mesh\\circle.txt", scaling, offset, axis, angle);
         randomColoring();
     }
     void cone(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
-        loadMesh("\\Mesh\\cone.txt", scaling, offset, axis, angle);
+        loadMesh(".\\Mesh\\cone.txt", scaling, offset, axis, angle);
         randomColoring();
     }
     void torus(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
-        loadMesh("\\Mesh\\torus.txt", scaling, offset, axis, angle);
+        loadMesh(".\\Mesh\\torus.txt", scaling, offset, axis, angle);
         randomColoring();
     }
     void plane(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
-        loadMesh("\\Mesh\\plane.txt", scaling, offset, axis, angle);
+        loadMesh(".\\Mesh\\plane.txt", scaling, offset, axis, angle);
         randomColoring();
     }
     void suzane(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
-        loadMesh("\\Mesh\\Suzane.txt", scaling, offset, axis, angle);
+        loadMesh(".\\Mesh\\Suzane.txt", scaling, offset, axis, angle);
         randomColoring();
     }
     void randomColoring()
@@ -253,9 +253,21 @@ public:
             vector<point> temp;
             for (size_t j = 0; j < v.at(i).size(); j++)
             {
-                temp.push_back((v.at(i).at(j) * scaling + offset));
-                center += v.at(i).at(j) * scaling + offset; // sum all the positions
-                div++;                                      // increment the div which is the total number of verticies
+                point unfilteredPosition = (v.at(i).at(j) * scaling + offset);
+                point rotatedPosition;
+                if (angle == 0 || axis == vec3::zero())
+                {
+                    rotatedPosition = unfilteredPosition;
+                }
+                else
+                {
+
+                    rotatedPosition = quaternion::rotate(unfilteredPosition, angle, axis);
+                }
+
+                temp.push_back(rotatedPosition);
+                center += rotatedPosition; // sum all the positions
+                div++;                     // increment the div which is the total number of verticies
             }
             meshVertices.push_back(temp);
         }

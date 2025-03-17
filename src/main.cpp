@@ -2637,10 +2637,10 @@ void testRotationOnMesh()
 {
     // Define the grid size and step
     size_t ratio = 5;
-    unsigned int size = 2000 / ratio;
+    unsigned int size = 600 / ratio;
     double step = .01f * ratio;
 
-    point camOrigin(-6, 3, -10);
+    point camOrigin = point(-9, 3, -10) / 3;
     vec3 camYDirection(1, 0, 0);
     vec3 camXDirection(0, -1, 1);
 
@@ -2648,11 +2648,12 @@ void testRotationOnMesh()
 
     std::cout
         << "_________Face Coloring_______________" << std::endl;
-    double scaling = 8;
+    double scaling = 1.8;
     point offset = point(0, 0, 0);
-    double angle = 0;
-    vec3 axis(1, 1, 1);
-    object obj(primitive::cube, scaling, offset, angle, axis);
+    vec3 axis(0, 0, 1);
+    double angle = 90;
+    object obj(primitive::suzane, scaling, offset, angle, axis);
+    // cout << obj << endl;
 
     std::cout
         << "________________________" << std::endl;
@@ -2819,9 +2820,9 @@ int main(int argc, char const *argv[])
     // testNonOptimizedrender();
     // testOptimizedrender();
     // testQuaternion();
-    // testRotationOnMesh();
+    testRotationOnMesh();
     // testRotationOnMeshVideo();
-    testRotationOnMeshVideo1();
+    // testRotationOnMeshVideo1();
     return 0;
 }
 
