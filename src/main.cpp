@@ -2640,7 +2640,7 @@ void testRotationOnMesh()
     unsigned int size = 2000 / ratio;
     double step = .01f * ratio;
 
-    point camOrigin(-8, 3, -10);
+    point camOrigin(-6, 3, -10);
     vec3 camYDirection(1, 0, 0);
     vec3 camXDirection(0, -1, 1);
 
@@ -2648,7 +2648,7 @@ void testRotationOnMesh()
 
     std::cout
         << "_________Face Coloring_______________" << std::endl;
-    double scaling = 4;
+    double scaling = 8;
     point offset = point(0, 0, 0);
     double angle = 0;
     vec3 axis(1, 1, 1);
@@ -2740,12 +2740,12 @@ void testRotationOnMeshVideo1()
     double step = .01f * ratio;
 
     // camera config
-    point camOrigin(-8, 3, -10);
+    point camOrigin(-6, 3, -10);
     vec3 camYDirection(1, 0, 0);
     vec3 camXDirection(0, -1, 1);
 
     // mesh datat
-    double scaling = 4;
+    double scaling = 8;
     point offset = point(0, 0, 0);
     vec3 axis(1, 1, 1);
 
