@@ -2635,13 +2635,12 @@ void testQuaternion()
 
 void testRotationOnMesh()
 {
-
     // Define the grid size and step
     size_t ratio = 5;
-    unsigned int size = 1000 / ratio;
+    unsigned int size = 2000 / ratio;
     double step = .01f * ratio;
 
-    point camOrigin(0, 0, -3);
+    point camOrigin(-8, 3, -10);
     vec3 camYDirection(1, 0, 0);
     vec3 camXDirection(0, -1, 1);
 
@@ -2651,9 +2650,9 @@ void testRotationOnMesh()
         << "_________Face Coloring_______________" << std::endl;
     double scaling = 4;
     point offset = point(0, 0, 0);
-    double angle = 20;
-    vec3 axis(0, 1, 0);
-    object obj(primitive::cube, scaling, offset + point(scaling, scaling, scaling) + point(-2.5, -6, 0), angle, axis);
+    double angle = 0;
+    vec3 axis(1, 1, 1);
+    object obj(primitive::cube, scaling, offset, angle, axis);
 
     std::cout
         << "________________________" << std::endl;
@@ -2675,7 +2674,7 @@ void testRotationOnMeshVideo()
 
     // setup for video
     double endAngle = 360;
-    double steps = endAngle / frame;
+    double videoStep = endAngle / frame;
 
     // Define the grid size and step
     size_t ratio = 5;
@@ -2697,9 +2696,66 @@ void testRotationOnMeshVideo()
     double angle = 0;
     for (size_t i = 1; i <= frame; i++)
     {
-        angle += step;
+        angle += videoStep;
 
         object obj(primitive::cube, scaling, offset + point(scaling, scaling, scaling) + point(-2.5, -6, 0), angle, axis);
+
+        // Create a space and assign the object
+        space s({obj});
+        s.cameras.push_back(cam1);
+        s.triggerCameraRay();
+
+        // ImageRenderer::renderToFile(stitchedImage, "Step"+std::to_string(i)+".ppm");
+        std::filesystem::create_directories("Output");
+        ImageRenderer::renderToFilePPM(s.cameras.at(0).getimage(), "Output/Step" + std::to_string(i) + ".ppm");
+    }
+    // Convert PPM to Video
+    // std::string convertCommand = "ffmpeg -framerate 2 -i Output/Step%d.ppm -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p output_video.mp4";
+    // for 1440 frames its better to use this :
+    std::string convertCommand = "ffmpeg -framerate 60 -i Output/Step%d.ppm -c:v libx264 -crf 18 -preset slow -pix_fmt yuv420p output_video.mp4";
+
+    // std::cout << "convertCommand: " << convertCommand << std::endl;
+    int convertResult = system(convertCommand.c_str());
+    if (convertResult != 0)
+    {
+        throw std::runtime_error("Error: Failed to convert PPM to Video.");
+        return;
+    }
+}
+
+// Generate a video of the object as the camera change direction
+void testRotationOnMeshVideo1()
+{
+
+    std::cout << "_________Space Test_______________" << std::endl;
+    size_t frame = 1440;
+
+    // setup for video
+    double endAngle = 360;
+    double videoStep = endAngle / frame;
+
+    // Define the grid size and step
+    size_t ratio = 5;
+    unsigned int size = 2000 / ratio;
+    double step = .01f * ratio;
+
+    // camera config
+    point camOrigin(-8, 3, -10);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, -1, 1);
+
+    // mesh datat
+    double scaling = 4;
+    point offset = point(0, 0, 0);
+    vec3 axis(1, 1, 1);
+
+    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, 1);
+
+    double angle = 0;
+    for (size_t i = 1; i <= frame; i++)
+    {
+        angle += videoStep;
+        object obj(primitive::cube, scaling, offset, angle, axis);
 
         // Create a space and assign the object
         space s({obj});
@@ -2764,7 +2820,8 @@ int main(int argc, char const *argv[])
     // testOptimizedrender();
     // testQuaternion();
     // testRotationOnMesh();
-    testRotationOnMeshVideo();
+    // testRotationOnMeshVideo();
+    testRotationOnMeshVideo1();
     return 0;
 }
 
