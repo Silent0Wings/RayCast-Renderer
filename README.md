@@ -56,7 +56,7 @@ Define objects using triangles and configure the camera:
 
 ```cpp
 // Define a triangle with three vertices
-Triangle triangle({{0, 0, 0}, {1, 0, 0}, {0, 1, 0}}, Color(255, 0, 0));
+object obj(primitive::cube, scaling, offset, angle, axis);
 
 // Set up the camera
 Camera camera(Point(0, 0, -5), Vec3(0, 0, 1), 90.0);
