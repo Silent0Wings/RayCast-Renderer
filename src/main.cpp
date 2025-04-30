@@ -14,6 +14,7 @@
 #include "MeshReader.h" // Include input/output stream header
 #include "texture.h"
 #include "quaternion.h"
+#include "perlin.h"
 #include <vector> // Include vector header
 #include <future>
 #include <filesystem>
@@ -2781,6 +2782,17 @@ void testRotationOnMeshVideo1()
     }
 }
 
+void testPerlin()
+{
+
+    perlin p(2,2);
+    cout <<p;
+    p.buildPerlin();
+    p.Save();
+
+
+}
+
 int main(int argc, char const *argv[])
 {
     // testintersection();
@@ -2820,9 +2832,10 @@ int main(int argc, char const *argv[])
     // testNonOptimizedrender();
     // testOptimizedrender();
     // testQuaternion();
-    testRotationOnMesh();
+    // testRotationOnMesh();
     // testRotationOnMeshVideo();
     // testRotationOnMeshVideo1();
+    testPerlin();
     return 0;
 }
 
