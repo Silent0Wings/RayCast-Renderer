@@ -17,8 +17,8 @@
 class color : public vec3
 {
 private:
-    const int min = 0;
-    const int max = 255;
+    const int MIN = 0;
+    const int MAX = 255;
 
 public:
     // Default constructor
@@ -76,18 +76,9 @@ public:
     // clamp values to 0-255
     double clamp(double value) const
     {
-        if (value < min)
-        {
-            return (min);
-        }
-        else if (value > max)
-        {
-            return (max);
-        }
-        else
-        {
-            return value;
-        }
+
+        // if it is smaller than the min return the min bigger than the max return the max otherwise return the value 
+        return ( (value < MIN)? MIN : ( (value > MAX)? MAX : value )   ) ;
     }
 
     // Overload operator= for setting a color
@@ -109,10 +100,7 @@ public:
     // return an array of color values
     double *getArray() const
     {
-        double *arr = new double[3];
-        arr[0] = r();
-        arr[1] = g();
-        arr[2] = b();
+        double* arr = new double[3]{r(), g(), b()};
         return arr;
     }
 

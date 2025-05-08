@@ -261,7 +261,6 @@ public:
                 }
                 else
                 {
-
                     rotatedPosition = quaternion::rotate(unfilteredPosition, angle, axis);
                 }
 

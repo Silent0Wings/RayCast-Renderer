@@ -208,7 +208,7 @@ public:
     // Check if a pixel is out of bounds
     bool constrain(unsigned int &x, unsigned int &y) const
     {
-        return (x >= height || y >= width);
+        return (x >= height || y >= width || x <0 || y<0);
     }
 
     // Clear the image

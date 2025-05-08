@@ -31,12 +31,14 @@ public:
         }
     }
 
+    // load the info of a mesh from a files as a string 
     bool loadMesh(const std::string &filename, std::vector<std::vector<string>> *vertices)
     {
         // Open the file from filename
         std::ifstream file(filename);
         if (!file.is_open())
         {
+            cerr << "failed to open the file !" << endl;
             return false;
         }
 
@@ -59,12 +61,14 @@ public:
 
         file.close();
         return true;
-    }
-    bool convertMesh(std::vector<std::vector<point>> *vertices)
-    {
+    } 
 
+    // Convert the string that was loaded to a acceptable format 
+    bool convertMesh(vector<vector<point>> *vertices)
+    {
         if (verticesString.size() == 0)
         {
+            cerr << "failed to open the file !" << endl;
             return false;
         }
 
