@@ -35,10 +35,10 @@ public:
         }
 
         srand(time(0)); // Seed the random number generator
-        for (int i = 0; i < w; i++)
+        for (int i = 0; i < (int)w; i++)
         {
             vector<vec3> temp;
-            for (int j = 0; j < h; j++)
+            for (int j = 0; j < (int)h; j++)
             {
 
                 int x = (rand() % 101) + 1;  // generate a random number from 1 to 101

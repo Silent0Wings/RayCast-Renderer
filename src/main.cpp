@@ -15,6 +15,7 @@
 #include "texture.h"
 #include "quaternion.h"
 #include "perlin.h"
+#include "graph.h"
 #include <vector> // Include vector header
 #include <future>
 #include <filesystem>
@@ -2235,7 +2236,7 @@ vector<vector<camera>> splitCameraFunc(camera cam, size_t split)
                 for (size_t j = 0; j < split_width; j++) // this will be the y effect
                 {
                     // gridRay.at(i + x).at(j + y);
-                    gridRay[i + x][j + y];
+                    //gridRay[i + x][j + y];
                     // cout << "--(x:" << i + x << " || y:" << j + y << ")";
                     tempgridRaySplit.push_back(gridRay.at(i + x).at(j + y));
                 }
@@ -2793,6 +2794,254 @@ void testPerlin()
 
 }
 
+
+bool graphConstraing(int x, int y, size_t height , size_t width)
+{
+    return !(x < 0 || x >= (int)width || y < 0 || y >= (int)height);
+}
+void testGraph()
+{
+    size_t x=5,y=5;
+
+    vector <vector<graphNode>> gridNode;
+    int increment=0;
+    for (size_t i = 0 ; i < x ; i++)
+    {
+        vector<graphNode> temprow;
+        for (size_t z = 0 ; z < y ; z++)
+        {
+            graphNode tempNode;
+            tempNode.value=increment;
+            temprow.push_back(tempNode);
+        }   
+        increment++;
+        gridNode.push_back(temprow);
+    }
+
+
+     for (size_t i = 0 ; i < gridNode.size() ; i++)
+    {
+        for (size_t z = 0 ; z < gridNode.at(i).size() ; z++)
+        {
+            if(graphConstraing(i+1,z,y,x))
+            {
+                gridNode.at(i).at(z).children.push_back(&gridNode.at(i+1).at(z));
+            }
+             if(graphConstraing(i-1,z,y,x))
+            {
+                gridNode.at(i).at(z).children.push_back(&gridNode.at(i-1).at(z));
+            }
+             if(graphConstraing(i,z+1,y,x))
+            {
+                gridNode.at(i).at(z).children.push_back(&gridNode.at(i).at(z+1));
+            }
+             if(graphConstraing(i,z-1,y,x))
+            {
+                gridNode.at(i).at(z).children.push_back(&gridNode.at(i).at(z-1));
+            }
+        }   
+    }
+
+
+    graphNode* current = &(gridNode.at(0).at(0));
+
+    for (size_t i = 0; i < 25; i++) {
+        cout << current->value << endl;  // use -> for pointer access
+
+        if (!current->children.empty()) {
+            current = current->children.at(0);  // move to first child
+        } else {
+            cout << "no childrens found";
+            break;
+        }
+    }
+
+
+   
+
+    
+}
+
+void testGraph1()
+{
+    size_t x=10,y=10;
+
+    vector<vector<tuple<graphNode, object>>> gridNode;
+    int increment=0;
+    for (size_t i = 0 ; i < x ; i++)
+    {
+        vector<tuple<graphNode, object>> temprow;
+        for (size_t z = 0 ; z < y ; z++)
+        {
+            graphNode tempNode;
+            tempNode.value=increment;
+            tempNode.index={i,z};
+            temprow.push_back(std::make_tuple(tempNode, object{}));
+        }   
+        increment++;
+        gridNode.push_back(temprow);
+    }
+
+
+     for (size_t i = 0 ; i < gridNode.size() ; i++)
+    {
+        for (size_t z = 0 ; z < gridNode.at(i).size() ; z++)
+        {
+            if(graphConstraing(i+1,z,y,x))
+            {
+                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i+1).at(z)));
+            }
+             if(graphConstraing(i-1,z,y,x))
+            {
+                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i-1).at(z)));
+            }
+             if(graphConstraing(i,z+1,y,x))
+            {
+                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i).at(z+1)));
+            }
+             if(graphConstraing(i,z-1,y,x))
+            {
+                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i).at(z-1)));
+            }
+        }   
+    }
+
+
+   
+
+   
+    std::cout << "_________Space Test_______________" << std::endl;
+
+    // Define the grid size and step
+    size_t ratio = 5;
+    unsigned int size = 2000 / ratio;
+    double step = .01f * ratio;
+
+    // camera config
+    point camOrigin(-6, 3, -10);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, -1, 1);
+
+    // mesh datat
+    double scaling = 0.8;
+    point offset = point(-5.5, 8, 0);
+    vec3 axis(1, 1, 1);
+
+    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, 1);
+    object obj(primitive::plane, scaling, offset);
+
+    // create a grid of objects
+    vector<object> test;
+    double offsetmultiplier = 2;
+    size_t grid_sizer =10;
+    for (size_t i = 0; i < grid_sizer; i++)
+    {
+        for (size_t j = 0; j < grid_sizer; j++)
+        {
+            object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, 0, i * offsetmultiplier));
+            obj.setColor(color(255,0,0));
+            test.push_back(obj);
+            std::get<1>(gridNode[i][j]) = obj;  
+        }
+    }
+
+    
+     graphNode* current = &(get<0>(gridNode.at(0).at(0)));
+     std::vector<graphNode*> nextNodes;
+     nextNodes.push_back(current);
+
+     // Create a space and assign the object
+
+    for (size_t i = 0; i < 5; i++) {
+        cout << current->value << endl;  // use -> for pointer access
+        
+        if (!current->children.empty()) {
+            for (const auto& child : current->children) {
+                nextNodes.push_back(child);
+
+            }
+
+            int the_x=current->index[0];
+            int the_y=current->index[0];
+            get<1>(gridNode[the_x][the_y]).setColor(color(0,0,255));
+           std::vector<object> allObjects;
+            for (const auto& row : gridNode) {
+                for (const auto& cell : row) {
+                    allObjects.push_back(std::get<1>(cell));
+                }
+            }
+
+            space s(allObjects);
+            s.cameras.push_back(cam1);
+            s.triggerCameraRayOptimized();
+            // ImageRenderer::renderToFile(stitchedImage, "Step"+std::to_string(i)+".ppm");
+            std::filesystem::create_directories("Output");
+            ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Output/Step" + std::to_string(i) + ".ppm");
+            
+
+
+            current->explored=true;
+            current = current->children.at(0);  // move to first child
+        } else {
+            cout << "no childrens found";
+            break;
+        }
+    }
+
+}
+
+void tttt()
+{
+
+     std::cout << "_________Space Test_______________" << std::endl;
+
+    // Define the grid size and step
+    size_t ratio = 5;
+    unsigned int size = 2000 / ratio;
+    double step = .01f * ratio;
+
+    // camera config
+    point camOrigin(-6, 3, -10);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, -1, 1);
+
+    // mesh datat
+    double scaling = 0.8;
+    point offset = point(-5.5, 8, 0);
+    vec3 axis(1, 1, 1);
+
+    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, 1);
+    object obj(primitive::plane, scaling, offset);
+
+    // create a grid of objects
+    vector<object> test;
+    double offsetmultiplier = 2;
+    size_t grid_sizer =10;
+    for (size_t i = 0; i < grid_sizer; i++)
+    {
+        for (size_t j = 0; j < grid_sizer; j++)
+        {
+            object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, 0, i * offsetmultiplier));
+            obj.setColor(color(255,0,0));
+            test.push_back(obj);
+        }
+    }
+
+    // Create a space and assign the object
+    space s(test);
+    s.cameras.push_back(cam1);
+    s.triggerCameraRayOptimized();
+
+    // ImageRenderer::renderToFile(stitchedImage, "Step"+std::to_string(i)+".ppm");
+    std::filesystem::create_directories("Output");
+    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Output/Step" + std::to_string(0) + ".ppm");
+
+    
+
+   
+}
+
+
 int main(int argc, char const *argv[])
 {
     // testintersection();
@@ -2835,7 +3084,10 @@ int main(int argc, char const *argv[])
     // testRotationOnMesh();
     // testRotationOnMeshVideo();
     // testRotationOnMeshVideo1();
-    testPerlin();
+    // testPerlin();
+    //testGraph();
+    testGraph1();
+    //tttt();
     return 0;
 }
 

@@ -234,6 +234,17 @@ public:
             }
         }
     }
+
+    void setColor(color c)
+    {
+        for (size_t i = 0; i < vertices.size(); i++)
+        {
+            for (size_t j = 0; j < vertices[i].size(); j++)
+            {
+                colorMap[{vertices[i][0], vertices[i][1], vertices[i][2]}] = c;
+            }
+        }
+    }
     void loadMesh(string mame, double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
         std::string filename = mame;
