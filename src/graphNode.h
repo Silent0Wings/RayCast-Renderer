@@ -15,6 +15,8 @@ public:
 
     bool blocked = false;
     bool explored = false;
+    bool goal = false;
+
 
     graphNode() = default;
 };
