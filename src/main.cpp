@@ -3322,6 +3322,86 @@ void testGraph5()
 
 }
 
+void testGraph6()
+{
+    // the entended square grid
+    size_t x=10,y=10;
+    graph main_graph(x,y);
+   
+    std::cout << "_________Space Test_______________" << std::endl;
+
+    // Define the grid size and step
+    size_t ratio = 5;
+    unsigned int size = 2000 / ratio;
+    double step = .01f * ratio;
+
+    // camera config
+    point camOrigin(-6, 3, -10);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, -1, 1);
+
+    // mesh datat
+    double scaling = 0.8;
+    point offset = point(-5.5, 8, 0);
+    vec3 axis(1, 1, 1);
+
+    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, 1);
+    object obj(primitive::plane, scaling, offset);
+    
+    // create a grid of objects
+    vector<object> test;
+    double offsetmultiplier = 2;
+    size_t grid_sizer =x;
+    for (size_t i = 0; i < grid_sizer; i++)
+    {
+
+        for (size_t j = 0; j < grid_sizer; j++)
+        {
+
+            object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, 0, i * offsetmultiplier));
+            obj.setColor(color(255,0,0));
+            test.push_back(obj);
+            std::get<1>(main_graph.gridNode[i][j]) = obj;  
+        }
+    }
+
+
+     // Create a space and assign the object
+    bool trigger_next_end = false;
+    bool printOneMore = false;
+
+    for (size_t i = 0; i < x * y + 4; i++) {
+
+        if (trigger_next_end) {
+            if (printOneMore) {
+                std::cout << "Final render after trace_path()\n";
+                break;
+            }
+            main_graph.trace_path();   // update graph
+            printOneMore = true;       // allow 1 more render pass
+        } else {
+            if (main_graph.step_dfs(1)) {
+                trigger_next_end = true;
+            }
+        }
+
+        std::vector<object> allObjects = main_graph.getObjects();
+
+        space s(allObjects);
+        s.cameras.push_back(cam1);
+        s.triggerCameraRayOptimized();
+
+        std::filesystem::create_directories("Output");
+        ImageRenderer::renderToFile(
+            s.cameras.at(0).getimage(),
+            "Output/Step" + std::to_string(i) + ".ppm"
+        );
+    }
+
+    
+
+}
+
 void tttt()
 {
 
@@ -3421,7 +3501,8 @@ int main(int argc, char const *argv[])
     //testGraph2();
     //testGraph3();
     //testGraph4();
-    testGraph5();
+    //testGraph5();
+    testGraph6();
     //tttt();
     return 0;
 }

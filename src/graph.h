@@ -19,6 +19,25 @@ graph() = default;
 vector<vector<tuple<graphNode, object>>> gridNode;
 size_t Height;
 size_t Width;
+
+vector<vector<int>> directions =  {
+   {1, 0},   // down
+    {-1, 0},  // up
+    {0, 1},   // right
+    {0, -1},  // left
+
+};
+vector<vector<int>> full_directions = {
+    {1, 1},   // down-right
+    {-1, -1}, // up-left
+    {1, -1},  // down-left
+    {-1, 1},   // up-right
+   {1, 0},   // down
+    {-1, 0},  // up
+    {0, 1},   // right
+    {0, -1}  // left
+};
+
 graph(const size_t height,const size_t width)
 {
     if(width ==0 || height==0)
@@ -46,21 +65,11 @@ graph(const size_t height,const size_t width)
     {
         for (size_t z = 0 ; z < gridNode.at(i).size() ; z++)
         {
-            if(graphConstraing(i+1,z,width,height))
-            {
-                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i+1).at(z)));
-            }
-             if(graphConstraing(i-1,z,width,height))
-            {
-                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i-1).at(z)));
-            }
-             if(graphConstraing(i,z+1,width,height))
-            {
-                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i).at(z+1)));
-            }
-             if(graphConstraing(i,z-1,width,height))
-            {
-                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i).at(z-1)));
+            for (const auto& direct : directions) {
+                if(graphConstraing(i+direct[0],z+direct[1],width,height))
+                {
+                    get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i+direct[0]).at(z+direct[1])));
+                }
             }
         }   
     }
@@ -120,6 +129,44 @@ bool step_dfs(int size)
         }
     }
     return false;
+}
+
+
+void dfs(int size)
+{
+    static vector<graphNode*> stack={root};
+
+    //stack.push_back(root);
+    graphNode* current=stack.at(stack.size()-1);
+    // for(size_t i=0;i<Height*Width;i++)
+    for(size_t i=0;i<Width*Height;i++)
+    {
+        current=stack.at(stack.size()-1);
+        graphNode* next=nullptr;
+        size_t the_x=current->index[0];
+        size_t the_y=current->index[1];  
+
+        for (const auto& child : current->children) {   
+            
+            if(child->explored==false)
+            {
+                next=child;
+                break;
+            }
+        }
+        if(next!=nullptr)
+        {
+            stack.push_back(next);
+            next->parent=current;
+            next->explored=true;
+             
+            get<1>(gridNode[the_x][the_y]).setColor(color(0,0,255));
+
+        }else
+        {
+            stack.erase(stack.begin() + stack.size()-1);
+        }
+    }
 }
 
 void trace_path()
