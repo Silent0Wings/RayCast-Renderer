@@ -13,6 +13,8 @@ class graph
 {
 public:
 graphNode* root;
+graphNode* goal;
+
 graph() = default;
 vector<vector<tuple<graphNode, object>>> gridNode;
 size_t Height;
@@ -64,6 +66,7 @@ graph(const size_t height,const size_t width)
     }
     root =&(get<0>(gridNode.at(0).at(0)));;
     get<0>(gridNode.at(height-1).at(width-1)).goal = true;
+    goal=&get<0>(gridNode.at(height-1).at(width-1));
 }
 
 static bool graphConstraing(int x, int y, size_t height , size_t width)
@@ -78,7 +81,7 @@ vector<graphNode*> path ={root};
 bool step_dfs(int size)
 {
     static vector<graphNode*> stack={root};
-    
+
     //stack.push_back(root);
     graphNode* current=stack.at(stack.size()-1);
     // for(size_t i=0;i<Height*Width;i++)
@@ -87,7 +90,7 @@ bool step_dfs(int size)
         current=stack.at(stack.size()-1);
         graphNode* next=nullptr;
         size_t the_x=current->index[0];
-            size_t the_y=current->index[1];  
+        size_t the_y=current->index[1];  
 
         if(current->goal)
         {
@@ -106,6 +109,7 @@ bool step_dfs(int size)
         if(next!=nullptr)
         {
             stack.push_back(next);
+            next->parent=current;
             next->explored=true;
              
             get<1>(gridNode[the_x][the_y]).setColor(color(0,0,255));
@@ -118,6 +122,33 @@ bool step_dfs(int size)
     return false;
 }
 
+void trace_path()
+{
+    if (goal==nullptr)
+        return;
+    graphNode* current=goal->parent;
+    for(size_t i=0;i<Width*Height;i++)
+    {
+        if (current==nullptr)
+            return;
+        size_t the_x=current->index[0];
+        size_t the_y=current->index[1];  
+        get<1>(gridNode[the_x][the_y]).setColor(color(0,255,255));
+        current=current->parent;
+    }
+
+}
+
+std::vector<object> getObjects()
+{
+    std::vector<object> allObjects;
+    for (const auto& row : gridNode) {
+        for (const auto& cell : row) {
+            allObjects.push_back(std::get<1>(cell));
+        }
+    }
+    return allObjects;
+}
 
     
 };

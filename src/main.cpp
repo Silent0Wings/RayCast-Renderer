@@ -3245,7 +3245,7 @@ void testGraph4()
 void testGraph5()
 {
     // the entended square grid
-    size_t x=4,y=4;
+    size_t x=3,y=3;
     graph main_graph(x,y);
    
     std::cout << "_________Space Test_______________" << std::endl;
@@ -3285,46 +3285,39 @@ void testGraph5()
         }
     }
 
-     graphNode* current = &(get<0>(main_graph.gridNode.at(0).at(0)));
-     std::vector<graphNode*> nextNodes;
-     nextNodes.push_back(current);
 
      // Create a space and assign the object
-     bool trigger_next_end=false;
+    bool trigger_next_end = false;
+    bool printOneMore = false;
 
-    for (size_t i = 0; i < x*y; i++) {
-        if(trigger_next_end)
-        {
-            i=10000;
-            break;
-        }
-        cout << current->value << endl;  // use -> for pointer access
-        if(main_graph.step_dfs(1))
-        {
-            trigger_next_end=true;
-        }  
-        int the_x=current->index[0];
-        int the_y=current->index[1];
-        get<1>(main_graph.gridNode[the_x][the_y]).setColor(color(0,0,255));
-        std::vector<object> allObjects;
-        for (const auto& row : main_graph.gridNode) {
-            for (const auto& cell : row) {
-                allObjects.push_back(std::get<1>(cell));
+    for (size_t i = 0; i < x * y + 4; i++) {
+
+        if (trigger_next_end) {
+            if (printOneMore) {
+                std::cout << "Final render after trace_path()\n";
+                break;
+            }
+            main_graph.trace_path();   // update graph
+            printOneMore = true;       // allow 1 more render pass
+        } else {
+            if (main_graph.step_dfs(1)) {
+                trigger_next_end = true;
             }
         }
+
+        std::vector<object> allObjects = main_graph.getObjects();
 
         space s(allObjects);
         s.cameras.push_back(cam1);
         s.triggerCameraRayOptimized();
-        // ImageRenderer::renderToFile(stitchedImage, "Step"+std::to_string(i)+".ppm");
+
         std::filesystem::create_directories("Output");
-        ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Output/Step" + std::to_string(i) + ".ppm");
-        
+        ImageRenderer::renderToFile(
+            s.cameras.at(0).getimage(),
+            "Output/Step" + std::to_string(i) + ".ppm"
+        );
+    }
 
-
-        current->explored=true;
-        current = current->children.at(0);  // move to first child
-    } 
     
 
 }
