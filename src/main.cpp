@@ -3398,6 +3398,9 @@ void testGraph6()
         );
     }
 
+    // maybe run this to see it 
+    // ffmpeg -framerate 4 -i Step%d.ppm -c:v libx264 -crf 18 -preset veryslow -pix_fmt yuv420p -r 30 output_video.mp4
+
     
 
 }
