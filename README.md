@@ -5,6 +5,29 @@
 ![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/11f97693d6eb489b350571ddb001aaaff9069bcd/src/img/suzane%20colored%20options1.png)
 ![Rendered Scene](src/img/dear2.png)
 
+## DFS Traversal Visualization
+
+The following animation demonstrates a depth-first search traversal rendered by this engine:
+
+![DFS Animation](https://github.com/Silent0Wings/RayCast-Renderer/blob/8e844de49082df6220abf17d3664939468fdb728/src/DFS_782/output_video2.gif)
+
+## Animation Highlights
+
+These GIFs demonstrate the renderer's ability to animate scenes and generate videos from dynamic geometry and traversal logic.
+
+<table>
+  <tr>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/CubeCenteredRotation.gif" width="250"/></td>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/CubeRotationHigh.gif" width="250"/></td>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/CubeRotationHighFinal.gif" width="250"/></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/02b8950f58238ec8dfcf8adeef7b123af9e70946/src/NewRenderForVideo/YshiftCubeTest.gif" width="250"/></td>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/output_videoCone.gif" width="250"/></td>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/output_videoCube.gif" width="250"/></td>
+  </tr>
+</table>
+
 # RayCast Renderer
 
 [Project Report](Github.pdf)
@@ -12,6 +35,8 @@
 This project focuses on building a 3D ray-cast renderer from the ground up, adhering to a "make it yourself" philosophy. The goal is to create, optimize, and expand a custom rendering engine, minimizing external inspiration and library usage. The RayCast Renderer itself is a lightweight engine that uses ray tracing to generate high-quality 2D images from 3D scenes. The project implements core concepts like vector mathematics, intersection logic, and parallel processing, while also incorporating advanced optimization techniques such as sub-camera splitting and asynchronous programming.
 
 ---
+
+
 
 ## Key Concepts
 
