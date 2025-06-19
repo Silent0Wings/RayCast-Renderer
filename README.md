@@ -5,9 +5,9 @@
 ![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/11f97693d6eb489b350571ddb001aaaff9069bcd/src/img/suzane%20colored%20options1.png)
 ![Rendered Scene](src/img/dear2.png)
 
-## DFS Traversal Visualization
+## DFS/BFS Traversal Visualization
 
-The following animation demonstrates a depth-first search traversal rendered by this engine:
+The following animation demonstrates a Depth-First search and a Breadth-first search traversal rendered by this engine:
 
 
 DFS:
