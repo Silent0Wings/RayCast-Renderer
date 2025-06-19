@@ -132,6 +132,76 @@ public:
         return false;
     }
 
+    void bfs()
+    {
+        static vector<graphNode *> queue = {root};
+        // stack.push_back(root);
+        graphNode *current = queue.at(0);
+        // for(size_t i=0;i<Height*Width;i++)
+        for (size_t i = 0; i < Width * Height; i++)
+        {
+            current = queue.at(0);
+            graphNode *next = nullptr;
+            size_t the_x = current->index[0];
+            size_t the_y = current->index[1];
+
+            if (current->goal)
+            {
+                get<1>(gridNode[the_x][the_y]).setColor(color(0, 255, 0));
+                return;
+            }
+
+            for (const auto &child : current->children)
+            {
+                if (child->explored == false)
+                {
+                    next = child;
+                    queue.push_back(next);
+                    next->parent = current;
+                    next->explored = true;
+                    get<1>(gridNode[the_x][the_y]).setColor(color(0, 0, 255));
+                }
+            }
+
+            queue.erase(queue.begin());
+        }
+    }
+
+    bool step_bfs()
+    {
+        static vector<graphNode *> queue = {root};
+        // stack.push_back(root);
+        graphNode *current = queue.at(0);
+        // for(size_t i=0;i<Height*Width;i++)
+        for (size_t i = 0; i < 1; i++)
+        {
+            current = queue.at(0);
+            graphNode *next = nullptr;
+            size_t the_x = current->index[0];
+            size_t the_y = current->index[1];
+
+            if (current->goal)
+            {
+                get<1>(gridNode[the_x][the_y]).setColor(color(0, 255, 0));
+                return true;
+            }
+
+            for (const auto &child : current->children)
+            {
+                if (child->explored == false)
+                {
+                    next = child;
+                    queue.push_back(next);
+                    next->parent = current;
+                    next->explored = true;
+                    get<1>(gridNode[the_x][the_y]).setColor(color(0, 0, 255));
+                }
+            }
+            queue.erase(queue.begin());
+        }
+        return false;
+    }
+
     void dfs()
     {
         static vector<graphNode *> stack = {root};
