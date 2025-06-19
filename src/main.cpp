@@ -3405,13 +3405,13 @@ void testGraph7()
     double cam_step = .01f * ratio;
 
     // camera config
-    point camOrigin(-6, 3, -10);
+    point camOrigin(0, 0, 100);
     vec3 camYDirection(1, 0, 0);
-    vec3 camXDirection(0, -1, 1);
+    vec3 camXDirection(0, 1, 0);
 
     // mesh datat
     double scaling = 0.4;
-    point offset = point(-5.8, 8, 0);
+    point offset = point(0.22, 0.22, 0);
     vec3 axis(1, 1, 1);
 
     camera cam1(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1);
@@ -3423,7 +3423,7 @@ void testGraph7()
     {
         for (size_t j = 0; j < y; j++)
         {
-            object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, 0, i * offsetmultiplier));
+            object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, i * offsetmultiplier, 0));
             obj.setColor(color(255, 0, 0));
             test.push_back(obj);
             std::get<1>(main_graph.gridNode[i][j]) = obj;
@@ -3434,7 +3434,7 @@ void testGraph7()
     bool trigger_next_end = false;
     bool printOneMore = false;
     size_t loop_size = 1;
-    // loop_size = x * y + 4;
+    loop_size = x * y + 4;
 
     for (size_t i = 0; i < loop_size; i++)
     {
