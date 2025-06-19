@@ -132,7 +132,7 @@ public:
         return false;
     }
 
-    void dfs(int size)
+    void dfs()
     {
         static vector<graphNode *> stack = {root};
 
@@ -145,6 +145,12 @@ public:
             graphNode *next = nullptr;
             size_t the_x = current->index[0];
             size_t the_y = current->index[1];
+
+            if (current->goal)
+            {
+                get<1>(gridNode[the_x][the_y]).setColor(color(0, 255, 0));
+                return;
+            }
 
             for (const auto &child : current->children)
             {
@@ -184,6 +190,24 @@ public:
             get<1>(gridNode[the_x][the_y]).setColor(color(0, 255, 255));
             current = current->parent;
         }
+    }
+
+    bool step_Trace_Path()
+    {
+        if (goal == nullptr)
+            return 1;
+        static graphNode *current = goal->parent;
+
+        if (current == nullptr)
+            return 1;
+        size_t the_x = current->index[0];
+        size_t the_y = current->index[1];
+        get<1>(gridNode[the_x][the_y]).setColor(color(0, 255, 255));
+        current = current->parent;
+        if (current == root)
+            return true;
+
+        return false;
     }
 
     std::vector<object> getObjects()

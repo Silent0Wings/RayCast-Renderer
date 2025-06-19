@@ -3470,9 +3470,125 @@ void testGraph7()
     // ffmpeg -framerate 4 -i Step%d.ppm -c:v libx264 -crf 18 -preset veryslow -pix_fmt yuv420p -r 30 output_video.mp4
 }
 
+void testGraph8()
+{
+    // the entended square grid
+    size_t x = 20, y = 20;
+    graph main_graph(x, y);
+
+    std::cout << "_________Space Test_______________" << std::endl;
+
+    // Define the grid size and step
+    size_t ratio = 10;
+    unsigned int size = 2000 / ratio;
+    double cam_step = .01f * ratio;
+
+    // camera config
+    point camOrigin(0, 0, 100);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, 1, 0);
+
+    // mesh datat
+    double scaling = 0.4;
+    point offset = point(0.22, 0.22, 0);
+    vec3 axis(1, 1, 1);
+
+    camera cam1(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1);
+
+    // create a grid of objects
+    vector<object> test;
+    double offsetmultiplier = 1;
+    for (size_t i = 0; i < x; i++)
+    {
+        for (size_t j = 0; j < y; j++)
+        {
+            object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, i * offsetmultiplier, 0));
+            obj.setColor(color(255, 0, 0));
+            test.push_back(obj);
+            std::get<1>(main_graph.gridNode[i][j]) = obj;
+        }
+    }
+
+    // Create a space and assign the object
+    bool trigger_next_end = false;
+    size_t loop_size = 1;
+    loop_size = x * y + 4;
+
+    main_graph.dfs();
+    /*
+    // process the graph exploration
+    for (size_t i = 0; i < loop_size; i++)
+    {
+        if (trigger_next_end)
+        {
+            break;
+        }
+        else
+        {
+            if (main_graph.step_dfs(1))
+            {
+                trigger_next_end = true;
+            }
+        }
+
+        std::vector<object> allObjects = main_graph.getObjects();
+        space s(allObjects);
+        s.cameras.push_back(cam1);
+        s.triggerCameraRayOptimized();
+        std::filesystem::create_directories("Output");
+        ImageRenderer::renderToFile(
+            s.cameras.at(0).getimage(),
+            "Output/Step" + std::to_string(i) + ".ppm");
+    }
+
+    */
+
+    // process the path backwards
+    trigger_next_end = false;
+    for (size_t i = 0; i < loop_size; i++)
+    {
+        if (trigger_next_end)
+        {
+            break;
+        }
+        else
+        {
+            if (main_graph.step_Trace_Path())
+            {
+                trigger_next_end = true;
+            }
+        }
+
+        std::vector<object> allObjects = main_graph.getObjects();
+        space s(allObjects);
+        s.cameras.push_back(cam1);
+        s.triggerCameraRayOptimized();
+        std::filesystem::create_directories("Output");
+        ImageRenderer::renderToFile(
+            s.cameras.at(0).getimage(),
+            "Output/Step" + std::to_string(loop_size + i) + ".ppm");
+    }
+
+    // maybe run this to see it
+    // ffmpeg -framerate 4 -i Step%d.ppm -c:v libx264 -crf 18 -preset veryslow -pix_fmt yuv420p -r 30 output_video.mp4
+    // for best quality
+
+    // Reorder the files:
+    /*
+    $files = Get-ChildItem Step*.ppm | Sort-Object { [int]($_.BaseName -replace '\D', '') }
+    $i = 0
+    foreach ($file in $files) {
+        Rename-Item $file.FullName ("Step$($i).ppm")
+        $i++
+    }
+
+    */
+
+    // ffmpeg -framerate 4 -i Step%d.ppm -c:v libx264 -crf 0 -preset placebo -pix_fmt yuv444p -r 30 output_video.mp4
+}
+
 void tttt()
 {
-
     std::cout << "_________Space Test_______________" << std::endl;
 
     // Define the grid size and step
@@ -3566,7 +3682,8 @@ int main(int argc, char const *argv[])
     // testGraph4();
     // testGraph5();
     // testGraph6();
-    testGraph7();
+    // testGraph7();
+    testGraph8();
     // tttt();
     return 0;
 }

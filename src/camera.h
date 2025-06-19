@@ -357,7 +357,7 @@ public:
     {
         if (!obj.tex.empty() && !obj.colorMap.empty())
         {
-            cout << "No texture" << endl;
+            // cout << "No texture" << endl;
             for (unsigned int i = 0; i < height; ++i)
             {
                 for (unsigned int j = 0; j < width; ++j)
@@ -368,7 +368,7 @@ public:
         }
         else if (obj.tex.empty())
         {
-            cout << "No texture" << endl;
+            // cout << "No texture" << endl;
             for (unsigned int i = 0; i < height; ++i)
             {
                 for (unsigned int j = 0; j < width; ++j)
@@ -379,7 +379,7 @@ public:
         }
         else if (obj.colorMap.empty())
         {
-            cout << "Texture" << endl;
+            // cout << "Texture" << endl;
             for (unsigned int i = 0; i < height; ++i)
             {
                 for (unsigned int j = 0; j < width; ++j)
