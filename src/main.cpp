@@ -3606,7 +3606,8 @@ void testGraph9()
     vec3 camXDirection(0, 1, 0);
 
     // mesh datat
-    double scaling = 0.4;
+    double ratio_for_scale_to_offset = 1;
+    double scaling = 0.4 * ratio_for_scale_to_offset;
     point offset = point(0.22, 0.22, 0);
     vec3 axis(1, 1, 1);
 
@@ -3614,7 +3615,7 @@ void testGraph9()
 
     // create a grid of objects
     vector<object> test;
-    double offsetmultiplier = 1;
+    double offsetmultiplier = 1 * ratio_for_scale_to_offset;
     for (size_t i = 0; i < x; i++)
     {
         for (size_t j = 0; j < y; j++)
@@ -3634,6 +3635,7 @@ void testGraph9()
     // process the path backwards
     size_t shit_increment = 0;
     trigger_next_end = false;
+    // main_graph.print_connections();
     for (size_t i = 0; i < loop_size; i++)
     {
         if (trigger_next_end)
@@ -3653,9 +3655,9 @@ void testGraph9()
         s.cameras.push_back(cam1);
         s.triggerCameraRayOptimized();
         std::filesystem::create_directories("Output");
-        ImageRenderer::renderToFile(
+        ImageRenderer::renderToFilePPM(
             s.cameras.at(0).getimage(),
-            "Output/Step" + std::to_string(loop_size + i) + ".ppm");
+            "Output/Step" + std::to_string(i) + ".ppm");
         shit_increment++;
     }
 
@@ -3680,7 +3682,7 @@ void testGraph9()
         s.cameras.push_back(cam1);
         s.triggerCameraRayOptimized();
         std::filesystem::create_directories("Output");
-        ImageRenderer::renderToFile(
+        ImageRenderer::renderToFilePPM(
             s.cameras.at(0).getimage(),
             "Output/Step" + std::to_string(shit_increment + i) + ".ppm");
     }

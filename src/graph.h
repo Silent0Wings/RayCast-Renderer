@@ -66,7 +66,7 @@ public:
             {
                 for (const auto &direct : directions)
                 {
-                    if (graphConstraing(i + direct[0], z + direct[1], width, height))
+                    if (graphConstraing(i + direct[0], z + direct[1], height, Width))
                     {
                         get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i + direct[0]).at(z + direct[1])));
                     }
@@ -74,14 +74,32 @@ public:
             }
         }
         root = &(get<0>(gridNode.at(0).at(0)));
-        ;
         get<0>(gridNode.at(height - 1).at(width - 1)).goal = true;
         goal = &get<0>(gridNode.at(height - 1).at(width - 1));
     }
 
     static bool graphConstraing(int x, int y, size_t height, size_t width)
     {
-        return !(x < 0 || x >= (int)width || y < 0 || y >= (int)height);
+        return !(x < 0 || x >= (int)height || y < 0 || y >= (int)width);
+    }
+
+    void print_connections()
+    {
+        for (const auto &row : gridNode)
+        {
+            for (const auto &cell : row)
+            {
+                graphNode node = std::get<0>(cell); // Pointer to graphNode
+
+                for (const auto &child : node.children)
+                {
+                    // Print connection
+                    cout << "(" << node.index[0] << "," << node.index[1] << ")"
+                         << " -> "
+                         << "(" << child->index[0] << "," << child->index[1] << ")\n";
+                }
+            }
+        }
     }
 
     // vector<graphNode*> stack;
@@ -141,7 +159,6 @@ public:
         for (size_t i = 0; i < Width * Height; i++)
         {
             current = queue.at(0);
-            graphNode *next = nullptr;
             size_t the_x = current->index[0];
             size_t the_y = current->index[1];
 
@@ -150,19 +167,21 @@ public:
                 get<1>(gridNode[the_x][the_y]).setColor(color(0, 255, 0));
                 return;
             }
+            else
+            {
+                get<1>(gridNode[the_x][the_y]).setColor(color(0, 0, 255));
+            }
 
             for (const auto &child : current->children)
             {
                 if (child->explored == false)
                 {
-                    next = child;
-                    queue.push_back(next);
-                    next->parent = current;
-                    next->explored = true;
-                    get<1>(gridNode[the_x][the_y]).setColor(color(0, 0, 255));
+                    queue.push_back(child);
+                    child->parent = current;
+                    child->explored = true;
+                    get<1>(gridNode[child->index[0]][child->index[1]]).setColor(color(0, 125, 125));
                 }
             }
-
             queue.erase(queue.begin());
         }
     }
@@ -176,7 +195,8 @@ public:
         for (size_t i = 0; i < 1; i++)
         {
             current = queue.at(0);
-            graphNode *next = nullptr;
+            queue.erase(queue.begin());
+
             size_t the_x = current->index[0];
             size_t the_y = current->index[1];
 
@@ -185,19 +205,25 @@ public:
                 get<1>(gridNode[the_x][the_y]).setColor(color(0, 255, 0));
                 return true;
             }
+            else
+            {
+                get<1>(gridNode[the_x][the_y]).setColor(color(0, 0, 255));
+            }
 
             for (const auto &child : current->children)
             {
                 if (child->explored == false)
                 {
-                    next = child;
-                    queue.push_back(next);
-                    next->parent = current;
-                    next->explored = true;
-                    get<1>(gridNode[the_x][the_y]).setColor(color(0, 0, 255));
+                    queue.push_back(child);
+                    child->parent = current;
+                    child->explored = true;
+                    get<1>(gridNode[child->index[0]][child->index[1]]).setColor(color(0, 125, 125));
+                }
+                else
+                {
+                    continue;
                 }
             }
-            queue.erase(queue.begin());
         }
         return false;
     }

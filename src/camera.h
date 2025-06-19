@@ -392,7 +392,7 @@ public:
 
     void cameraToImageOptimized(object obj)
     {
-        cout << "No texture" << endl;
+        // cout << "No texture" << endl;
         for (unsigned int i = 0; i < height; ++i)
         {
             for (unsigned int j = 0; j < width; ++j)
@@ -408,7 +408,6 @@ public:
         }
     }
 
-    //
     void getPixelCombined(unsigned int i, unsigned int j, object obj, ray r1)
     {
         double distance = 1.0e18;

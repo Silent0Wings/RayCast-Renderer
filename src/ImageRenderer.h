@@ -55,7 +55,7 @@ public:
         return image;
     }
 
-    static void renderToFile(const image &img, const std::string filePath)
+    static void renderToFile(const image &img, const std::string filePath, bool open_image = true)
     {
         // Open the file for writing
         std::ofstream outFile(filePath);
@@ -111,7 +111,7 @@ public:
 
         std::cout << "Conversion successful: " << filePath << " -> " << pngFile << "\n";
 
-        // Open the PNG file
+// Open the PNG file
 #ifdef _WIN32
         std::string openCommand = "start " + pngFile;
 #elif __linux__
@@ -122,21 +122,26 @@ public:
         std::cerr << "Error: Opening images is not supported on this platform.\n";
         return;
 #endif
-        int openResult = system(openCommand.c_str());
-        if (openResult != 0)
+        if (open_image == 1)
         {
-            std::cerr << "Error: Failed to open " << pngFile << ".\n";
-        }
+            int openResult = system(openCommand.c_str());
+            if (openResult != 0)
+            {
+                std::cerr << "Error: Failed to open " << pngFile << ".\n";
+            }
 
-        // Delete the PPM file
-        std::string deleteCommand = "del " + filePath;
-        int deleteResult = system(deleteCommand.c_str());
-        if (deleteResult != 0)
-        {
-            std::cerr << "Error: Failed to delete " << filePath << ".\n";
+#ifdef _WIN32
+            std::string deleteCommand = "del " + filePath;
+#else
+            std::string deleteCommand = "rm " + filePath;
+#endif
+            int deleteResult = system(deleteCommand.c_str());
+            if (deleteResult != 0)
+            {
+                std::cerr << "Error: Failed to delete " << filePath << ".\n";
+            }
         }
     }
-
     static void renderToFilePPM(const image &img, const std::string filePath)
     {
         // Open the file for writing
