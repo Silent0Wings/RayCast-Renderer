@@ -59,6 +59,7 @@ public:
     static Hit *intersect3dHit(const ray &r1, const point arr[3]);
     static point *intersect3d2(const ray &r1, const point arr[4]);
     static bool intersectRaySphere(const ray &r1, const point center, const double radius);
+    static double magnitude(const vec3);
 
     static vec3 *reflectorVector(const vec3 incoming, const vec3 normal);
 

@@ -35,7 +35,7 @@ public:
     vec3 locallRotation;
     object *parent;
     texture tex;
-    size_t sphereRadius;
+    double sphereRadius;
 
     // 2D vector of pixels representing the object's graphical data.
     vector<vector<point>> vertices;
@@ -249,8 +249,8 @@ public:
     {
         std::string filename = mame;
         MeshReader reader(filename);
-        std::vector<std::vector<point>> v;
-        if (!reader.convertMesh(&v))
+        std::vector<std::vector<point>> ver;
+        if (!reader.convertMesh(&ver))
         {
             std::cerr << "Error: Unable to load or convert the mesh from file: " << filename << std::endl;
             return;
@@ -258,15 +258,16 @@ public:
 
         vector<vector<point>> meshVertices;
         size_t div = 0; // helps calculate the total number of verticies for a later use
+        center = vec3(0, 0, 0);
 
-        for (size_t i = 0; i < v.size(); i++)
+        for (size_t i = 0; i < ver.size(); i++)
         {
             vector<point> temp;
-            for (size_t j = 0; j < v.at(i).size(); j++)
+            for (size_t j = 0; j < ver.at(i).size(); j++)
             {
-                point unfilteredPosition = (v.at(i).at(j) * scaling + offset);
-                point rotatedPosition;
-                if (angle == 0 || axis == vec3::zero())
+                point unfilteredPosition = (ver.at(i).at(j) * scaling + offset);
+                point rotatedPosition = unfilteredPosition;
+                if (angle == 0 || axis == vec3::zero() || (gmath::magnitude(axis) < 1e-6))
                 {
                     rotatedPosition = unfilteredPosition;
                 }
@@ -281,7 +282,12 @@ public:
             }
             meshVertices.push_back(temp);
         }
-        center /= div; // calculate the center of the mesh
+
+        if (div == 0)
+        {
+            throw std::runtime_error("Division by zero: no vertices were processed during mesh loading.");
+        }
+        center /= div;
         vertices = meshVertices;
 
         sphereRadius = 0;
@@ -298,6 +304,7 @@ public:
             }
         }
         sphereRadius *= 2;
+        // std::cout << "Center: " << center << ", Radius: " << sphereRadius << std::endl;
     }
 
     // output operator

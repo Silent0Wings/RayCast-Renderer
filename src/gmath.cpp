@@ -443,6 +443,11 @@ bool gmath::intersectRaySphere(const ray &r1, const point center, const double r
     }
 }
 
+double gmath::magnitude(const vec3 v)
+{
+    return std::sqrt(v.x() * v.x() + v.y() * v.y() + v.z() * v.z());
+}
+
 vec3 *gmath::reflectorVector(const vec3 incoming, const vec3 normal)
 {
     vec3 n = normalize(normal);

@@ -2236,7 +2236,7 @@ vector<vector<camera>> splitCameraFunc(camera cam, size_t split)
                 for (size_t j = 0; j < split_width; j++) // this will be the y effect
                 {
                     // gridRay.at(i + x).at(j + y);
-                    //gridRay[i + x][j + y];
+                    // gridRay[i + x][j + y];
                     // cout << "--(x:" << i + x << " || y:" << j + y << ")";
                     tempgridRaySplit.push_back(gridRay.at(i + x).at(j + y));
                 }
@@ -2786,129 +2786,118 @@ void testRotationOnMeshVideo1()
 void testPerlin()
 {
 
-    perlin p(2,2);
-    cout <<p;
+    perlin p(2, 2);
+    cout << p;
     p.buildPerlin();
     p.Save();
-
-
 }
-
 
 void testGraph()
 {
-    size_t x=5,y=5;
+    size_t x = 5, y = 5;
 
-    vector <vector<graphNode>> gridNode;
-    int increment=0;
-    for (size_t i = 0 ; i < x ; i++)
+    vector<vector<graphNode>> gridNode;
+    int increment = 0;
+    for (size_t i = 0; i < x; i++)
     {
         vector<graphNode> temprow;
-        for (size_t z = 0 ; z < y ; z++)
+        for (size_t z = 0; z < y; z++)
         {
             graphNode tempNode;
-            tempNode.value=increment;
+            tempNode.value = increment;
             temprow.push_back(tempNode);
-        }   
+        }
         increment++;
         gridNode.push_back(temprow);
     }
 
-
-     for (size_t i = 0 ; i < gridNode.size() ; i++)
+    for (size_t i = 0; i < gridNode.size(); i++)
     {
-        for (size_t z = 0 ; z < gridNode.at(i).size() ; z++)
+        for (size_t z = 0; z < gridNode.at(i).size(); z++)
         {
-            if(graph::graphConstraing(i+1,z,y,x))
+            if (graph::graphConstraing(i + 1, z, y, x))
             {
-                gridNode.at(i).at(z).children.push_back(&gridNode.at(i+1).at(z));
+                gridNode.at(i).at(z).children.push_back(&gridNode.at(i + 1).at(z));
             }
-             if(graph::graphConstraing(i-1,z,y,x))
+            if (graph::graphConstraing(i - 1, z, y, x))
             {
-                gridNode.at(i).at(z).children.push_back(&gridNode.at(i-1).at(z));
+                gridNode.at(i).at(z).children.push_back(&gridNode.at(i - 1).at(z));
             }
-             if(graph::graphConstraing(i,z+1,y,x))
+            if (graph::graphConstraing(i, z + 1, y, x))
             {
-                gridNode.at(i).at(z).children.push_back(&gridNode.at(i).at(z+1));
+                gridNode.at(i).at(z).children.push_back(&gridNode.at(i).at(z + 1));
             }
-             if(graph::graphConstraing(i,z-1,y,x))
+            if (graph::graphConstraing(i, z - 1, y, x))
             {
-                gridNode.at(i).at(z).children.push_back(&gridNode.at(i).at(z-1));
+                gridNode.at(i).at(z).children.push_back(&gridNode.at(i).at(z - 1));
             }
-        }   
+        }
     }
 
+    graphNode *current = &(gridNode.at(0).at(0));
 
-    graphNode* current = &(gridNode.at(0).at(0));
+    for (size_t i = 0; i < 25; i++)
+    {
+        cout << current->value << endl; // use -> for pointer access
 
-    for (size_t i = 0; i < 25; i++) {
-        cout << current->value << endl;  // use -> for pointer access
-
-        if (!current->children.empty()) {
-            current = current->children.at(0);  // move to first child
-        } else {
+        if (!current->children.empty())
+        {
+            current = current->children.at(0); // move to first child
+        }
+        else
+        {
             cout << "no childrens found";
             break;
         }
     }
-
-
-   
-
-    
 }
 
 void testGraph1()
 {
 
     // the entended square grid
-    size_t x=10,y=10;
+    size_t x = 10, y = 10;
 
     // creating the graph like structure
     vector<vector<tuple<graphNode, object>>> gridNode;
-    int increment=0;
-    for (size_t i = 0 ; i < x ; i++)
+    int increment = 0;
+    for (size_t i = 0; i < x; i++)
     {
         vector<tuple<graphNode, object>> temprow;
-        for (size_t z = 0 ; z < y ; z++)
+        for (size_t z = 0; z < y; z++)
         {
             graphNode tempNode;
-            tempNode.value=increment;
-            tempNode.index={i,z};
+            tempNode.value = increment;
+            tempNode.index = {i, z};
             temprow.push_back(std::make_tuple(tempNode, object{}));
-        }   
+        }
         increment++;
         gridNode.push_back(temprow);
     }
 
-
-     for (size_t i = 0 ; i < gridNode.size() ; i++)
+    for (size_t i = 0; i < gridNode.size(); i++)
     {
-        for (size_t z = 0 ; z < gridNode.at(i).size() ; z++)
+        for (size_t z = 0; z < gridNode.at(i).size(); z++)
         {
-            if(graph::graphConstraing(i+1,z,y,x))
+            if (graph::graphConstraing(i + 1, z, y, x))
             {
-                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i+1).at(z)));
+                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i + 1).at(z)));
             }
-             if(graph::graphConstraing(i-1,z,y,x))
+            if (graph::graphConstraing(i - 1, z, y, x))
             {
-                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i-1).at(z)));
+                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i - 1).at(z)));
             }
-             if(graph::graphConstraing(i,z+1,y,x))
+            if (graph::graphConstraing(i, z + 1, y, x))
             {
-                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i).at(z+1)));
+                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i).at(z + 1)));
             }
-             if(graph::graphConstraing(i,z-1,y,x))
+            if (graph::graphConstraing(i, z - 1, y, x))
             {
-                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i).at(z-1)));
+                get<0>(gridNode.at(i).at(z)).children.push_back(&get<0>(gridNode.at(i).at(z - 1)));
             }
-        }   
+        }
     }
 
-
-   
-
-   
     std::cout << "_________Space Test_______________" << std::endl;
 
     // Define the grid size and step
@@ -2932,40 +2921,43 @@ void testGraph1()
     // create a grid of objects
     vector<object> test;
     double offsetmultiplier = 2;
-    size_t grid_sizer =10;
+    size_t grid_sizer = 10;
     for (size_t i = 0; i < grid_sizer; i++)
     {
         for (size_t j = 0; j < grid_sizer; j++)
         {
             object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, 0, i * offsetmultiplier));
-            obj.setColor(color(255,0,0));
+            obj.setColor(color(255, 0, 0));
             test.push_back(obj);
-            std::get<1>(gridNode[i][j]) = obj;  
+            std::get<1>(gridNode[i][j]) = obj;
         }
     }
 
-    
-     graphNode* current = &(get<0>(gridNode.at(0).at(0)));
-     std::vector<graphNode*> nextNodes;
-     nextNodes.push_back(current);
+    graphNode *current = &(get<0>(gridNode.at(0).at(0)));
+    std::vector<graphNode *> nextNodes;
+    nextNodes.push_back(current);
 
-     // Create a space and assign the object
+    // Create a space and assign the object
 
-    for (size_t i = 0; i < 5; i++) {
-        cout << current->value << endl;  // use -> for pointer access
-        
-        if (!current->children.empty()) {
-            for (const auto& child : current->children) {
+    for (size_t i = 0; i < 5; i++)
+    {
+        cout << current->value << endl; // use -> for pointer access
+
+        if (!current->children.empty())
+        {
+            for (const auto &child : current->children)
+            {
                 nextNodes.push_back(child);
-
             }
 
-            int the_x=current->index[0];
-            int the_y=current->index[0];
-            get<1>(gridNode[the_x][the_y]).setColor(color(0,0,255));
-           std::vector<object> allObjects;
-            for (const auto& row : gridNode) {
-                for (const auto& cell : row) {
+            int the_x = current->index[0];
+            int the_y = current->index[0];
+            get<1>(gridNode[the_x][the_y]).setColor(color(0, 0, 255));
+            std::vector<object> allObjects;
+            for (const auto &row : gridNode)
+            {
+                for (const auto &cell : row)
+                {
                     allObjects.push_back(std::get<1>(cell));
                 }
             }
@@ -2976,27 +2968,24 @@ void testGraph1()
             // ImageRenderer::renderToFile(stitchedImage, "Step"+std::to_string(i)+".ppm");
             std::filesystem::create_directories("Output");
             ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Output/Step" + std::to_string(i) + ".ppm");
-            
 
-
-            current->explored=true;
-            current = current->children.at(0);  // move to first child
-        } else {
+            current->explored = true;
+            current = current->children.at(0); // move to first child
+        }
+        else
+        {
             cout << "no childrens found";
             break;
         }
     }
-
 }
-
-
 
 void testGraph2()
 {
     // the entended square grid
-    size_t x=10,y=10;
-    graph main_graph(x,y);
-   
+    size_t x = 10, y = 10;
+    graph main_graph(x, y);
+
     std::cout << "_________Space Test_______________" << std::endl;
 
     // Define the grid size and step
@@ -3020,40 +3009,43 @@ void testGraph2()
     // create a grid of objects
     vector<object> test;
     double offsetmultiplier = 2;
-    size_t grid_sizer =10;
+    size_t grid_sizer = 10;
     for (size_t i = 0; i < grid_sizer; i++)
     {
         for (size_t j = 0; j < grid_sizer; j++)
         {
             object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, 0, i * offsetmultiplier));
-            obj.setColor(color(255,0,0));
+            obj.setColor(color(255, 0, 0));
             test.push_back(obj);
-            std::get<1>(main_graph.gridNode[i][j]) = obj;  
+            std::get<1>(main_graph.gridNode[i][j]) = obj;
         }
     }
 
-    
-     graphNode* current = &(get<0>(main_graph.gridNode.at(0).at(0)));
-     std::vector<graphNode*> nextNodes;
-     nextNodes.push_back(current);
+    graphNode *current = &(get<0>(main_graph.gridNode.at(0).at(0)));
+    std::vector<graphNode *> nextNodes;
+    nextNodes.push_back(current);
 
-     // Create a space and assign the object
+    // Create a space and assign the object
 
-    for (size_t i = 0; i < 5; i++) {
-        cout << current->value << endl;  // use -> for pointer access
-        
-        if (!current->children.empty()) {
-            for (const auto& child : current->children) {
+    for (size_t i = 0; i < 5; i++)
+    {
+        cout << current->value << endl; // use -> for pointer access
+
+        if (!current->children.empty())
+        {
+            for (const auto &child : current->children)
+            {
                 nextNodes.push_back(child);
-
             }
 
-            int the_x=current->index[0];
-            int the_y=current->index[0];
-            get<1>(main_graph.gridNode[the_x][the_y]).setColor(color(0,0,255));
-           std::vector<object> allObjects;
-            for (const auto& row : main_graph.gridNode) {
-                for (const auto& cell : row) {
+            int the_x = current->index[0];
+            int the_y = current->index[0];
+            get<1>(main_graph.gridNode[the_x][the_y]).setColor(color(0, 0, 255));
+            std::vector<object> allObjects;
+            for (const auto &row : main_graph.gridNode)
+            {
+                for (const auto &cell : row)
+                {
                     allObjects.push_back(std::get<1>(cell));
                 }
             }
@@ -3064,26 +3056,24 @@ void testGraph2()
             // ImageRenderer::renderToFile(stitchedImage, "Step"+std::to_string(i)+".ppm");
             std::filesystem::create_directories("Output");
             ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Output/Step" + std::to_string(i) + ".ppm");
-            
 
-
-            current->explored=true;
-            current = current->children.at(0);  // move to first child
-        } else {
+            current->explored = true;
+            current = current->children.at(0); // move to first child
+        }
+        else
+        {
             cout << "no childrens found";
             break;
         }
     }
-
 }
-
 
 void testGraph3()
 {
     // the entended square grid
-    size_t x=10,y=10;
-    graph main_graph(x,y);
-   
+    size_t x = 10, y = 10;
+    graph main_graph(x, y);
+
     std::cout << "_________Space Test_______________" << std::endl;
 
     // Define the grid size and step
@@ -3107,40 +3097,43 @@ void testGraph3()
     // create a grid of objects
     vector<object> test;
     double offsetmultiplier = 2;
-    size_t grid_sizer =10;
+    size_t grid_sizer = 10;
     for (size_t i = 0; i < grid_sizer; i++)
     {
         for (size_t j = 0; j < grid_sizer; j++)
         {
             object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, 0, i * offsetmultiplier));
-            obj.setColor(color(255,0,0));
+            obj.setColor(color(255, 0, 0));
             test.push_back(obj);
-            std::get<1>(main_graph.gridNode[i][j]) = obj;  
+            std::get<1>(main_graph.gridNode[i][j]) = obj;
         }
     }
 
-    
-     graphNode* current = &(get<0>(main_graph.gridNode.at(0).at(0)));
-     std::vector<graphNode*> nextNodes;
-     nextNodes.push_back(current);
+    graphNode *current = &(get<0>(main_graph.gridNode.at(0).at(0)));
+    std::vector<graphNode *> nextNodes;
+    nextNodes.push_back(current);
 
-     // Create a space and assign the object
+    // Create a space and assign the object
 
-    for (size_t i = 0; i < 5; i++) {
-        cout << current->value << endl;  // use -> for pointer access
-        
-        if (!current->children.empty()) {
-            for (const auto& child : current->children) {
+    for (size_t i = 0; i < 5; i++)
+    {
+        cout << current->value << endl; // use -> for pointer access
+
+        if (!current->children.empty())
+        {
+            for (const auto &child : current->children)
+            {
                 nextNodes.push_back(child);
-
             }
 
-            int the_x=current->index[0];
-            int the_y=current->index[0];
-            get<1>(main_graph.gridNode[the_x][the_y]).setColor(color(0,0,255));
-           std::vector<object> allObjects;
-            for (const auto& row : main_graph.gridNode) {
-                for (const auto& cell : row) {
+            int the_x = current->index[0];
+            int the_y = current->index[0];
+            get<1>(main_graph.gridNode[the_x][the_y]).setColor(color(0, 0, 255));
+            std::vector<object> allObjects;
+            for (const auto &row : main_graph.gridNode)
+            {
+                for (const auto &cell : row)
+                {
                     allObjects.push_back(std::get<1>(cell));
                 }
             }
@@ -3151,25 +3144,24 @@ void testGraph3()
             // ImageRenderer::renderToFile(stitchedImage, "Step"+std::to_string(i)+".ppm");
             std::filesystem::create_directories("Output");
             ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Output/Step" + std::to_string(i) + ".ppm");
-            
 
-
-            current->explored=true;
-            current = current->children.at(0);  // move to first child
-        } else {
+            current->explored = true;
+            current = current->children.at(0); // move to first child
+        }
+        else
+        {
             cout << "no childrens found";
             break;
         }
     }
-
 }
 
 void testGraph4()
 {
     // the entended square grid
-    size_t x=10,y=10;
-    graph main_graph(x,y);
-   
+    size_t x = 10, y = 10;
+    graph main_graph(x, y);
+
     std::cout << "_________Space Test_______________" << std::endl;
 
     // Define the grid size and step
@@ -3193,34 +3185,36 @@ void testGraph4()
     // create a grid of objects
     vector<object> test;
     double offsetmultiplier = 2;
-    size_t grid_sizer =10;
+    size_t grid_sizer = 10;
     for (size_t i = 0; i < grid_sizer; i++)
     {
         for (size_t j = 0; j < grid_sizer; j++)
         {
             object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, 0, i * offsetmultiplier));
-            obj.setColor(color(255,0,0));
+            obj.setColor(color(255, 0, 0));
             test.push_back(obj);
-            std::get<1>(main_graph.gridNode[i][j]) = obj;  
+            std::get<1>(main_graph.gridNode[i][j]) = obj;
         }
     }
 
-    
-     graphNode* current = &(get<0>(main_graph.gridNode.at(0).at(0)));
-     std::vector<graphNode*> nextNodes;
-     nextNodes.push_back(current);
+    graphNode *current = &(get<0>(main_graph.gridNode.at(0).at(0)));
+    std::vector<graphNode *> nextNodes;
+    nextNodes.push_back(current);
 
-     // Create a space and assign the object
+    // Create a space and assign the object
 
-    for (size_t i = 0; i < 5; i++) {
-        cout << current->value << endl;  // use -> for pointer access
-        main_graph.step_dfs(1);   
-        int the_x=current->index[0];
-        int the_y=current->index[1];
-        get<1>(main_graph.gridNode[the_x][the_y]).setColor(color(0,0,255));
+    for (size_t i = 0; i < 5; i++)
+    {
+        cout << current->value << endl; // use -> for pointer access
+        main_graph.step_dfs(1);
+        int the_x = current->index[0];
+        int the_y = current->index[1];
+        get<1>(main_graph.gridNode[the_x][the_y]).setColor(color(0, 0, 255));
         std::vector<object> allObjects;
-        for (const auto& row : main_graph.gridNode) {
-            for (const auto& cell : row) {
+        for (const auto &row : main_graph.gridNode)
+        {
+            for (const auto &cell : row)
+            {
                 allObjects.push_back(std::get<1>(cell));
             }
         }
@@ -3231,23 +3225,18 @@ void testGraph4()
         // ImageRenderer::renderToFile(stitchedImage, "Step"+std::to_string(i)+".ppm");
         std::filesystem::create_directories("Output/Pa");
         ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Output/Step" + std::to_string(i) + ".ppm");
-        
 
-
-        current->explored=true;
-        current = current->children.at(0);  // move to first child
-    } 
-    
-
+        current->explored = true;
+        current = current->children.at(0); // move to first child
+    }
 }
-
 
 void testGraph5()
 {
     // the entended square grid
-    size_t x=3,y=3;
-    graph main_graph(x,y);
-   
+    size_t x = 3, y = 3;
+    graph main_graph(x, y);
+
     std::cout << "_________Space Test_______________" << std::endl;
 
     // Define the grid size and step
@@ -3267,11 +3256,11 @@ void testGraph5()
 
     camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, 1);
     object obj(primitive::plane, scaling, offset);
-    
+
     // create a grid of objects
     vector<object> test;
     double offsetmultiplier = 2;
-    size_t grid_sizer =x;
+    size_t grid_sizer = x;
     for (size_t i = 0; i < grid_sizer; i++)
     {
 
@@ -3279,28 +3268,33 @@ void testGraph5()
         {
 
             object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, 0, i * offsetmultiplier));
-            obj.setColor(color(255,0,0));
+            obj.setColor(color(255, 0, 0));
             test.push_back(obj);
-            std::get<1>(main_graph.gridNode[i][j]) = obj;  
+            std::get<1>(main_graph.gridNode[i][j]) = obj;
         }
     }
 
-
-     // Create a space and assign the object
+    // Create a space and assign the object
     bool trigger_next_end = false;
     bool printOneMore = false;
 
-    for (size_t i = 0; i < x * y + 4; i++) {
+    for (size_t i = 0; i < x * y + 4; i++)
+    {
 
-        if (trigger_next_end) {
-            if (printOneMore) {
+        if (trigger_next_end)
+        {
+            if (printOneMore)
+            {
                 std::cout << "Final render after trace_path()\n";
                 break;
             }
-            main_graph.trace_path();   // update graph
-            printOneMore = true;       // allow 1 more render pass
-        } else {
-            if (main_graph.step_dfs(1)) {
+            main_graph.trace_path(); // update graph
+            printOneMore = true;     // allow 1 more render pass
+        }
+        else
+        {
+            if (main_graph.step_dfs(1))
+            {
                 trigger_next_end = true;
             }
         }
@@ -3314,20 +3308,171 @@ void testGraph5()
         std::filesystem::create_directories("Output");
         ImageRenderer::renderToFile(
             s.cameras.at(0).getimage(),
-            "Output/Step" + std::to_string(i) + ".ppm"
-        );
+            "Output/Step" + std::to_string(i) + ".ppm");
     }
-
-    
-
 }
 
 void testGraph6()
 {
     // the entended square grid
-    size_t x=10,y=10;
-    graph main_graph(x,y);
-   
+    size_t x = 10, y = 10;
+    graph main_graph(x, y);
+
+    std::cout << "_________Space Test_______________" << std::endl;
+
+    // Define the grid size and step
+    size_t ratio = 5;
+    unsigned int size = 2000 / ratio;
+    double step = .01f * ratio;
+
+    // camera config
+    point camOrigin(-6, 3, -10);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, -1, 1);
+
+    // mesh datat
+    double scaling = 0.2;
+    point offset = point(-5.5, 8, 0);
+    vec3 axis(1, 1, 1);
+
+    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, 1);
+
+    // create a grid of objects
+    vector<object> test;
+    double offsetmultiplier = 2;
+    for (size_t i = 0; i < x; i++)
+    {
+        for (size_t j = 0; j < y; j++)
+        {
+            object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, 0, i * offsetmultiplier));
+            obj.setColor(color(255, 0, 0));
+            test.push_back(obj);
+            std::get<1>(main_graph.gridNode[i][j]) = obj;
+        }
+    }
+
+    // Create a space and assign the object
+    bool trigger_next_end = false;
+    bool printOneMore = false;
+
+    for (size_t i = 0; i < x * y + 4; i++)
+    {
+        if (trigger_next_end)
+        {
+            if (printOneMore)
+            {
+                std::cout << "Final render after trace_path()\n";
+                break;
+            }
+            main_graph.trace_path(); // update graph
+            printOneMore = true;     // allow 1 more render pass
+        }
+        else
+        {
+            if (main_graph.step_dfs(1))
+            {
+                trigger_next_end = true;
+            }
+        }
+
+        std::vector<object> allObjects = main_graph.getObjects();
+
+        space s(allObjects);
+        s.cameras.push_back(cam1);
+        s.triggerCameraRayOptimized();
+
+        std::filesystem::create_directories("Output");
+        ImageRenderer::renderToFile(
+            s.cameras.at(0).getimage(),
+            "Output/Step" + std::to_string(i) + ".ppm");
+    }
+
+    // maybe run this to see it
+    // ffmpeg -framerate 4 -i Step%d.ppm -c:v libx264 -crf 18 -preset veryslow -pix_fmt yuv420p -r 30 output_video.mp4
+}
+
+void testGraph7()
+{
+    // the entended square grid
+    size_t x = 20, y = 20;
+    graph main_graph(x, y);
+
+    std::cout << "_________Space Test_______________" << std::endl;
+
+    // Define the grid size and step
+    size_t ratio = 10;
+    unsigned int size = 2000 / ratio;
+    double cam_step = .01f * ratio;
+
+    // camera config
+    point camOrigin(-6, 3, -10);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, -1, 1);
+
+    // mesh datat
+    double scaling = 0.4;
+    point offset = point(-5.8, 8, 0);
+    vec3 axis(1, 1, 1);
+
+    camera cam1(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1);
+
+    // create a grid of objects
+    vector<object> test;
+    double offsetmultiplier = 1;
+    for (size_t i = 0; i < x; i++)
+    {
+        for (size_t j = 0; j < y; j++)
+        {
+            object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, 0, i * offsetmultiplier));
+            obj.setColor(color(255, 0, 0));
+            test.push_back(obj);
+            std::get<1>(main_graph.gridNode[i][j]) = obj;
+        }
+    }
+
+    // Create a space and assign the object
+    bool trigger_next_end = false;
+    bool printOneMore = false;
+    size_t loop_size = 1;
+    // loop_size = x * y + 4;
+
+    for (size_t i = 0; i < loop_size; i++)
+    {
+        if (trigger_next_end)
+        {
+            if (printOneMore)
+            {
+                std::cout << "Final render after trace_path()\n";
+                break;
+            }
+            main_graph.trace_path(); // update graph
+            printOneMore = true;     // allow 1 more render pass
+        }
+        else
+        {
+            if (main_graph.step_dfs(1))
+            {
+                trigger_next_end = true;
+            }
+        }
+
+        std::vector<object> allObjects = main_graph.getObjects();
+        space s(allObjects);
+        s.cameras.push_back(cam1);
+        s.triggerCameraRayOptimized();
+        std::filesystem::create_directories("Output");
+        ImageRenderer::renderToFile(
+            s.cameras.at(0).getimage(),
+            "Output/Step" + std::to_string(i) + ".ppm");
+    }
+
+    // maybe run this to see it
+    // ffmpeg -framerate 4 -i Step%d.ppm -c:v libx264 -crf 18 -preset veryslow -pix_fmt yuv420p -r 30 output_video.mp4
+}
+
+void tttt()
+{
+
     std::cout << "_________Space Test_______________" << std::endl;
 
     // Define the grid size and step
@@ -3347,97 +3492,17 @@ void testGraph6()
 
     camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, 1);
     object obj(primitive::plane, scaling, offset);
-    
-    // create a grid of objects
-    vector<object> test;
-    double offsetmultiplier = 2;
-    size_t grid_sizer =x;
-    for (size_t i = 0; i < grid_sizer; i++)
-    {
-
-        for (size_t j = 0; j < grid_sizer; j++)
-        {
-
-            object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, 0, i * offsetmultiplier));
-            obj.setColor(color(255,0,0));
-            test.push_back(obj);
-            std::get<1>(main_graph.gridNode[i][j]) = obj;  
-        }
-    }
-
-
-     // Create a space and assign the object
-    bool trigger_next_end = false;
-    bool printOneMore = false;
-
-    for (size_t i = 0; i < x * y + 4; i++) {
-
-        if (trigger_next_end) {
-            if (printOneMore) {
-                std::cout << "Final render after trace_path()\n";
-                break;
-            }
-            main_graph.trace_path();   // update graph
-            printOneMore = true;       // allow 1 more render pass
-        } else {
-            if (main_graph.step_dfs(1)) {
-                trigger_next_end = true;
-            }
-        }
-
-        std::vector<object> allObjects = main_graph.getObjects();
-
-        space s(allObjects);
-        s.cameras.push_back(cam1);
-        s.triggerCameraRayOptimized();
-
-        std::filesystem::create_directories("Output");
-        ImageRenderer::renderToFile(
-            s.cameras.at(0).getimage(),
-            "Output/Step" + std::to_string(i) + ".ppm"
-        );
-    }
-
-    // maybe run this to see it 
-    // ffmpeg -framerate 4 -i Step%d.ppm -c:v libx264 -crf 18 -preset veryslow -pix_fmt yuv420p -r 30 output_video.mp4
-
-    
-
-}
-
-void tttt()
-{
-
-     std::cout << "_________Space Test_______________" << std::endl;
-
-    // Define the grid size and step
-    size_t ratio = 5;
-    unsigned int size = 2000 / ratio;
-    double step = .01f * ratio;
-
-    // camera config
-    point camOrigin(-6, 3, -10);
-    vec3 camYDirection(1, 0, 0);
-    vec3 camXDirection(0, -1, 1);
-
-    // mesh datat
-    double scaling = 0.8;
-    point offset = point(-5.5, 8, 0);
-    vec3 axis(1, 1, 1);
-
-    camera cam1(size, size, step, camOrigin, camXDirection, camYDirection, 1);
-    object obj(primitive::plane, scaling, offset);
 
     // create a grid of objects
     vector<object> test;
     double offsetmultiplier = 2;
-    size_t grid_sizer =10;
+    size_t grid_sizer = 10;
     for (size_t i = 0; i < grid_sizer; i++)
     {
         for (size_t j = 0; j < grid_sizer; j++)
         {
             object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, 0, i * offsetmultiplier));
-            obj.setColor(color(255,0,0));
+            obj.setColor(color(255, 0, 0));
             test.push_back(obj);
         }
     }
@@ -3450,12 +3515,7 @@ void tttt()
     // ImageRenderer::renderToFile(stitchedImage, "Step"+std::to_string(i)+".ppm");
     std::filesystem::create_directories("Output");
     ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Output/Step" + std::to_string(0) + ".ppm");
-
-    
-
-   
 }
-
 
 int main(int argc, char const *argv[])
 {
@@ -3500,13 +3560,14 @@ int main(int argc, char const *argv[])
     // testRotationOnMeshVideo();
     // testRotationOnMeshVideo1();
     // testPerlin();
-    //testGraph();
-    //testGraph2();
-    //testGraph3();
-    //testGraph4();
-    //testGraph5();
-    testGraph6();
-    //tttt();
+    // testGraph();
+    // testGraph2();
+    // testGraph3();
+    // testGraph4();
+    // testGraph5();
+    // testGraph6();
+    testGraph7();
+    // tttt();
     return 0;
 }
 
