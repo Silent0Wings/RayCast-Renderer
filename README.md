@@ -13,7 +13,7 @@ The following animation demonstrates a depth-first search traversal rendered by 
 
 ## Animation Highlights
 
-These GIFs demonstrate the renderer's ability to animate scenes and generate videos from dynamic geometry and traversal logic.
+These GIFs demonstrate the renderer's ability to animate scenes and generate videos from dynamic geometry and traversal logic, including rotation, scaling, multiple objects, and perspective shifting.
 
 <table>
   <tr>
