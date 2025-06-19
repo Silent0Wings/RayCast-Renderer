@@ -17,7 +17,7 @@ These GIFs demonstrate the renderer's ability to animate scenes and generate vid
 
 <table>
   <tr>
-    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/CubeCenteredRotation.gif" width="250"/></td>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/96ebe0298accf9018281e680fb79e39b1d66a0eb/src/CubeRenderPerspective/0001-0072.gif" width="250"/></td>
     <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/CubeRotationHigh.gif" width="250"/></td>
     <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/CubeRotationHighFinal.gif" width="250"/></td>
   </tr>
