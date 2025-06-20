@@ -74,7 +74,9 @@ public:
             }
         }
         root = &(get<0>(gridNode.at(0).at(0)));
-        get<0>(gridNode.at(height - 1).at(width - 1)).goal = true;
+        root->explored = true;
+        get<0>(gridNode.at(height - 1).at(width - 1))
+            .goal = true;
         goal = &get<0>(gridNode.at(height - 1).at(width - 1));
     }
 
