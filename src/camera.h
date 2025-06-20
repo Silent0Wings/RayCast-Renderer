@@ -392,7 +392,11 @@ public:
 
     void cameraToImageOptimized(object obj)
     {
+
         // cout << "No texture" << endl;
+        // cout << "cameraToImageOptimized ";
+        // std::cout << "height : " << height << " width : " << width << std::endl;
+
         for (unsigned int i = 0; i < height; ++i)
         {
             for (unsigned int j = 0; j < width; ++j)
@@ -564,6 +568,7 @@ public:
         for (auto const &x : obj.colorMap)
         {
             // Get the vertices as an array
+            // cout << "i :" << i << " | j : " << j << endl;
             array<point, 3> arr = {x.first[0], x.first[1], x.first[2]};
 
             // Check if the ray intersects with the current triangle
@@ -590,6 +595,131 @@ public:
                 }
             }
         }
+    }
+
+    vector<camera> splitCamera(camera &c, size_t split)
+    {
+        if (split <= 1 || c.getheight() == 0 || c.getwidth() == 0)
+        {
+            return {camera()};
+        }
+
+        if (c.getheight() * c.getwidth() > split)
+        {
+            vector<ray> Linear_Ray;
+
+            vector<vector<ray>> camera_splits;
+
+            for (auto const &x : c.gridRay) // x is a vector<ray>
+            {
+                Linear_Ray.insert(Linear_Ray.end(), x.begin(), x.end());
+            }
+
+            size_t linear_size = Linear_Ray.size();
+            if (linear_size >= split)
+            {
+                size_t chunk_size = linear_size / split;
+                // cout << "chunk_size " << chunk_size << endl;
+                if (chunk_size == 0)
+                    return {camera()};
+
+                vector<ray> temp;
+                size_t increment = 0;
+                for (size_t i = 0; i < Linear_Ray.size(); i++)
+                {
+
+                    if (increment >= chunk_size)
+                    {
+                        camera_splits.push_back(temp);
+                        increment = 0;
+                        temp.clear();
+                    }
+
+                    temp.push_back(Linear_Ray.at(i));
+                    increment++;
+                }
+
+                // whatervre is remaining in the temp vector holding the values of the rays will be dumbed into the last groupe  within camera_splits
+                for (auto const &x : temp) // x is a vector<ray>
+                {
+                    camera_splits.at(camera_splits.size() - 1).push_back(x);
+                }
+
+                if (camera_splits.size() != 0)
+                {
+
+                    vector<camera> cameras_group;
+                    for (auto const &x : camera_splits)
+                    {
+                        camera temp = camera();
+                        temp.width = x.size();
+                        temp.height = 1;
+                        temp.setRay({x});
+                        temp.img = image(temp.height, temp.width);
+                        cameras_group.push_back(temp);
+                        // cout << "temp camera Height" << temp.height << " | width : " << temp.width << endl;
+                    }
+
+                    return cameras_group;
+                }
+            }
+            else
+            {
+                return {camera()};
+            }
+        }
+        else
+        {
+            return {camera()};
+        }
+        return {camera()};
+    }
+
+    image consruct_split(vector<camera> v, size_t h, size_t w)
+    {
+
+        vector<color> Linear_Ray;
+        vector<vector<color>> final;
+
+        for (auto const &cam : v) // x is a vector<ray>
+        {
+
+            vector<vector<color>> temppixel = cam.getimage().getPixels();
+            if (temppixel.size() != 1)
+            {
+                cout << "this can only construct linear images" << endl;
+                return image();
+            }
+            Linear_Ray.insert(Linear_Ray.end(), temppixel.at(0).begin(), temppixel.at(0).end());
+        }
+
+        size_t increment = 0;
+        vector<color> temp;
+        // cout << "Linear_Ray" << Linear_Ray.size() << endl;
+        for (size_t i = 0; i < Linear_Ray.size(); i++)
+        {
+
+            if (increment >= w)
+            {
+                final.push_back(temp);
+                increment = 0;
+                temp.clear();
+            }
+
+            temp.push_back(Linear_Ray.at(i));
+            increment++;
+        }
+        if (!temp.empty())
+        {
+            final.push_back(temp);
+        }
+
+        // cout << "height : " << h << " | width : " << w << " | final.size() : " << final.size() << " | final.at(0).size() : " << final.at(0).size() << endl;
+        if (final.size() != h || final.at(0).size() != w)
+            return image();
+        image final_image = image(h, w, final);
+
+        return final_image;
     }
 };
 #endif // CAMERA_H

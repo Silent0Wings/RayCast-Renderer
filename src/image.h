@@ -29,7 +29,7 @@ private:
 public:
     // Default constructor
     image() : image(0, 0) {}
-    image(const int w, const int h)
+    image(const int h, const int w)
     {
 
         if (w < 0 || h < 0)
@@ -47,13 +47,13 @@ public:
             this->width = static_cast<unsigned int>(w);
             this->height = static_cast<unsigned int>(h);
             pixels.resize(height);
-            for (unsigned int i = 0; i < width; ++i)
+            for (unsigned int i = 0; i < height; ++i)
             {
                 pixels[i].resize(width);
             }
         }
     }
-    image(const int w, const int h, vector<vector<color>> img)
+    image(const int h, const int w, vector<vector<color>> img)
     {
 
         if (w < 0 || h < 0)
@@ -85,7 +85,7 @@ public:
             }
         }
     }
-    image(const int w, const int h, vector<vector<image>> images) : image(w, h)
+    image(const int h, const int w, vector<vector<image>> images) : image(w, h)
     {
         imageConstruct(images);
     }
@@ -183,6 +183,11 @@ public:
         return height;
     }
 
+    // Get all the pixels
+    vector<vector<color>> getPixels() const
+    {
+        return pixels;
+    }
     // Get the color of a pixel
     const color &get(unsigned int x, unsigned int y) const
     {
@@ -200,15 +205,22 @@ public:
     {
         if (constrain(x, y))
         {
-            throw std::invalid_argument("Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
+            throw std::invalid_argument("image::set_Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
         }
         pixels[x][y] = c;
     }
 
+    void setPixels()
+    {
+    }
     // Check if a pixel is out of bounds
     bool constrain(unsigned int &x, unsigned int &y) const
     {
-        return (x >= height || y >= width || x <0 || y<0);
+        // std::cout << "constrain :" << std::endl;
+        // std::cout << "x : " << x << " y : " << y << std::endl;
+        // std::cout << "height : " << height << " width : " << width << std::endl;
+
+        return (x >= height || y >= width || x < 0 || y < 0);
     }
 
     // Clear the image

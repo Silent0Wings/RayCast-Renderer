@@ -3736,6 +3736,88 @@ void tttt()
     ImageRenderer::renderToFile(s.cameras.at(0).getimage(), "Output/Step" + std::to_string(0) + ".ppm");
 }
 
+void test_automated_Camera_Split()
+{
+    std::cout << "_________Space Test_______________" << std::endl;
+
+    // Define the grid size and step
+    size_t ratio = 200;
+    unsigned int size = 2000 / ratio;
+    double cam_step = .01f * ratio;
+
+    // camera config
+    point camOrigin(0, 0, 100);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, 1, 0);
+
+    // mesh datat
+    double scaling = 5;
+    point offset = point(size * cam_step, size * cam_step, 0) / 2.5;
+    vec3 axis(1, 1, 1);
+
+    camera cam1(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1);
+    vector<camera> cam_list = cam1.splitCamera(cam1, 4);
+
+    // create a grid of objects
+    vector<object>
+        test;
+    object obj(primitive::cube, scaling, offset);
+    test.push_back(obj);
+
+    space s({obj});
+    s.cameras = cam_list;
+    s.triggerCameraRayOptimized();
+    std::filesystem::create_directories("Output");
+    image finalstitched = cam1.consruct_split(s.cameras, size, size);
+    ImageRenderer::renderToFile(finalstitched, "Output/stitchediamge.ppm");
+}
+
+void test_automated_Camera_Split_threaded()
+{
+    std::cout << "_________Space Test_______________" << std::endl;
+
+    // Define the grid size and step
+    size_t ratio = 10;
+    unsigned int size = 2000 / ratio;
+    double cam_step = .01f * ratio;
+
+    // camera config
+    point camOrigin(0, 0, 100);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, 1, 0);
+
+    // mesh datat
+    double scaling = 5;
+    point offset = point(size * cam_step, size * cam_step, 0) / 2.5;
+    vec3 axis(1, 1, 1);
+
+    camera cam1(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1);
+    vector<camera> cam_list = cam1.splitCamera(cam1, 4);
+
+    // create a grid of objects
+    vector<object>
+        test;
+    object obj(primitive::suzane, scaling, offset);
+    test.push_back(obj);
+
+    space s({obj});
+    s.cameras = cam_list;
+
+    std::vector<std::future<void>> futures;
+    s.threadedCameraRay(futures);
+
+    // Wait for all threads to complete
+    for (auto &future : futures)
+    {
+        future.get();
+    }
+
+    // s.triggerCameraRayOptimized();
+    std::filesystem::create_directories("Output");
+    image finalstitched = cam1.consruct_split(s.cameras, size, size);
+    ImageRenderer::renderToFile(finalstitched, "Output/stitchediamge.ppm");
+}
+
 int main(int argc, char const *argv[])
 {
     // testintersection();
@@ -3787,7 +3869,9 @@ int main(int argc, char const *argv[])
     // testGraph6();
     // testGraph7();
     // testGraph8();
-    testGraph9();
+    // testGraph9();
+    // test_automated_Camera_Split();
+    test_automated_Camera_Split_threaded();
     // tttt();
     return 0;
 }
