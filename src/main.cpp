@@ -4047,6 +4047,53 @@ void testGraph11()
     // ffmpeg -framerate 4 -i Step%d.ppm -c:v libx264 -crf 0 -preset placebo -pix_fmt yuv444p -r 30 output_video.mp4
 }
 
+void testSuzanRender()
+{
+    std::cout << "_________Space Test_______________" << std::endl;
+
+    // Define the grid size and step
+    size_t ratio = 1;
+    unsigned int size = 8000 / ratio;
+    double cam_step = 0.0025f * ratio;
+
+    // camera config
+    point camOrigin(0, 0, 0);
+    vec3 camYDirection(0, 0, 1);
+    vec3 camXDirection(1, 0, 0);
+
+    // mesh datat
+    double scaling = 5;
+    point offset = point(1, 1, 1) * (size * cam_step) / 2;
+    vec3 axis(1, 1, 1);
+
+    camera cam1(size, size, cam_step, camOrigin, camXDirection, camYDirection, -1);
+    vector<camera> cam_list = cam1.splitCamera(cam1, 12);
+
+    // create a grid of objects
+    vector<object>
+        test;
+    object obj(primitive::suzane, scaling, offset);
+
+    test.push_back(obj);
+
+    space s(test);
+    s.cameras = cam_list;
+
+    std::vector<std::future<void>> futures;
+    s.threadedCameraRayOptimized(futures);
+
+    // Wait for all threads to complete
+    for (auto &future : futures)
+    {
+        future.get();
+    }
+
+    // s.triggerCameraRayOptimized();
+    std::filesystem::create_directories("Output");
+    image finalstitched = cam1.consruct_split(s.cameras, size, size);
+    ImageRenderer::renderToFile(finalstitched, "Output/testSuzanRender" + to_string(size) + ".ppm");
+}
+
 int main(int argc, char const *argv[])
 {
     // testintersection();
@@ -4102,8 +4149,9 @@ int main(int argc, char const *argv[])
     // test_automated_Camera_Split();
     // test_automated_Camera_Split_threaded();
     // testGraph10();
-    testGraph11();
+    // testGraph11();
     // tttt();
+    testSuzanRender();
     return 0;
 }
 
