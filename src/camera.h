@@ -352,7 +352,7 @@ public:
         return !(*this == other);
     }
 
-    // Clear the camera
+    // create the image that the camera would see based on the object
     void cameraToImage(object obj)
     {
         if (!obj.tex.empty() && !obj.colorMap.empty())
@@ -397,6 +397,7 @@ public:
         // cout << "cameraToImageOptimized ";
         // std::cout << "height : " << height << " width : " << width << std::endl;
 
+        // basically if the rays within the camera are not intersecting with the spehere the object is within skip them alltogether
         for (unsigned int i = 0; i < height; ++i)
         {
             for (unsigned int j = 0; j < width; ++j)
