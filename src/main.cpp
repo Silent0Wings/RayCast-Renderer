@@ -4052,9 +4052,10 @@ void testSuzanRender()
     std::cout << "_________Space Test_______________" << std::endl;
 
     // Define the grid size and step
+    size_t factor = 2;
     size_t ratio = 1;
-    unsigned int size = 8000 / ratio;
-    double cam_step = 0.0025f * ratio;
+    unsigned int size = (4000 * factor) / ratio;
+    double cam_step = (0.005f / factor) * ratio;
 
     // camera config
     point camOrigin(0, 0, 0);
