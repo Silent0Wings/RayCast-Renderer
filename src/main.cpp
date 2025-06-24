@@ -4054,8 +4054,8 @@ void testSuzanRender()
     // Define the grid size and step
     size_t factor = 1;
     size_t ratio = 1;
-    unsigned int size = (1000 * factor) / ratio;
-    double cam_step = (0.02f / factor) * ratio;
+    unsigned int size = (500 * factor) / ratio;
+    double cam_step = (0.04f / factor) * ratio;
 
     // camera config
     point camOrigin(0, 0, 0);
@@ -4092,7 +4092,10 @@ void testSuzanRender()
     // s.triggerCameraRayOptimized();
     std::filesystem::create_directories("Output");
     image finalstitched = cam1.consruct_split(s.cameras, size, size);
-    ImageRenderer::renderToFile(finalstitched, "Output/testSuzanRender" + to_string(size) + ".ppm");
+    // ImageRenderer::renderToFile(finalstitched, "Output/testSuzanRender" + to_string(size) + ".ppm");
+    ImageRenderer::WriteBMP(finalstitched, "Output/testSuzanRender" + to_string(size) + ".bmp");
+    image read = ImageRenderer::ReadBMP("Output/testSuzanRender" + to_string(size) + ".bmp");
+    ImageRenderer::WriteBMP(read, "Output/WWWWW.bmp");
 }
 
 int main(int argc, char const *argv[])
