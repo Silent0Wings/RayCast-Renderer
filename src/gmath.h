@@ -55,7 +55,7 @@ public:
     static bool intersect(const ray &p, const ray &offset);
     // Intersection location
     static point *intersectLocation(const ray &r1, const ray &r2);
-    static point *intersect3d1(const ray &r1, const point arr[3]);
+    static point *intersectRayTriangle(const ray &r1, const point arr[3]);
     static Hit *intersect3dHit(const ray &r1, const point arr[3]);
     static point *intersect3d2(const ray &r1, const point arr[4]);
     static bool intersectRaySphere(const ray &r1, const point center, const double radius);

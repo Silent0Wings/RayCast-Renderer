@@ -424,7 +424,7 @@ public:
             array<point, 3> arr = {x.first[0], x.first[1], x.first[2]};
 
             // Check if the ray intersects with the current triangle
-            point *val = gmath::intersect3d1(r1, arr.data());
+            point *val = gmath::intersectRayTriangle(r1, arr.data());
 
             if (val != nullptr)
             {
@@ -480,7 +480,7 @@ public:
             array<point, 3> arr = {x.first[0], x.first[1], x.first[2]};
 
             // Check if the ray intersects with the current triangle
-            point *val = gmath::intersect3d1(r1, arr.data());
+            point *val = gmath::intersectRayTriangle(r1, arr.data());
 
             if (val != nullptr)
             {
@@ -530,7 +530,7 @@ public:
             array<point, 3> arr = {x.first[0], x.first[1], x.first[2]};
 
             // Check if the ray intersects with the current triangle
-            point *val = gmath::intersect3d1(r1, arr.data());
+            point *val = gmath::intersectRayTriangle(r1, arr.data());
 
             if (val != nullptr)
             {
@@ -573,7 +573,7 @@ public:
             array<point, 3> arr = {x.first[0], x.first[1], x.first[2]};
 
             // Check if the ray intersects with the current triangle
-            point *val = gmath::intersect3d1(r1, arr.data());
+            point *val = gmath::intersectRayTriangle(r1, arr.data());
 
             if (val != nullptr)
             {
