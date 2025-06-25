@@ -23,6 +23,20 @@ public:
     color() : vec3(0, 0, 0) {}
 
     // Constructor with red, green, blue components
+    color(size_t val)
+    {
+        size_t temp =  val%766;
+        if(temp<=255)
+        {
+            set(temp,0,0);
+        }else if(temp<=(255+255))
+        {
+            set(temp,temp-255,0);
+        }else if(temp<=(255+255+255))
+        { 
+            set(temp,temp-255,temp-255-255);
+        }
+    }
     color(double r, double g, double b) : vec3(r, g, b) {}
 
     void randomColor()

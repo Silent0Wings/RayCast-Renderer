@@ -4147,6 +4147,55 @@ void testSuzanRender()
     ImageRenderer::WriteBMP(finalstitched, "Output/testSuzanRender" + to_string(size) + ".bmp");
 }
 
+void testColor()
+{
+
+
+    size_t x,y;
+    x=255*10;
+    y=255*10;
+    image testimg(x,y);
+   
+    for(size_t i =0;i<x;i++)
+    {
+        for(size_t j =0;j<y;j++)
+        {
+            testimg.set(i,j,color((i+j)%256,i%256,j%256));
+        }
+    }
+    ImageRenderer::WriteBMP(testimg, "Output/W0.bmp");
+   
+    for(size_t i =0;i<x;i++)
+    {
+        for(size_t j =0;j<y;j++)
+        {
+            testimg.set(i,j,color(i%256,j%256,(i+j)%256));
+        }
+    }
+    ImageRenderer::WriteBMP(testimg, "Output/W1.bmp");
+
+    for(size_t i =0;i<x;i++)
+    {
+        for(size_t j =0;j<y;j++)
+        {
+            testimg.set(i,j,color(i%256,j%256,0));
+        }
+    }
+    ImageRenderer::WriteBMP(testimg, "Output/W2.bmp");
+
+    size_t increment =0;
+    for(size_t i =0;i<x;i++)
+    {
+        for(size_t j =0;j<y;j++)
+        {
+            testimg.set(i,j,color(increment));
+            increment++;
+        }
+    }
+    ImageRenderer::WriteBMP(testimg, "Output/W3.bmp");
+
+}
+
 int main(int argc, char const *argv[])
 {
     // testintersection();
@@ -4204,7 +4253,8 @@ int main(int argc, char const *argv[])
     // testGraph10();
     // testGraph11();
     // tttt();
-    testSuzanRender();
+    // testSuzanRender();
+    testColor();
     return 0;
 }
 
