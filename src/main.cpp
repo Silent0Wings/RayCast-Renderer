@@ -19,6 +19,8 @@
 #include <vector> // Include vector header
 #include <future>
 #include <filesystem>
+#include "guiwindow.h"
+
 using namespace std;
 
 /**
@@ -4047,7 +4049,6 @@ void testGraph11()
     // ffmpeg -framerate 4 -i Step%d.ppm -c:v libx264 -crf 0 -preset placebo -pix_fmt yuv444p -r 30 output_video.mp4
 }
 
-
 void testBMPFormat()
 {
     std::cout << "_________Space Test_______________" << std::endl;
@@ -4099,6 +4100,53 @@ void testBMPFormat()
     ImageRenderer::WriteBMP(read, "Output/WWWWW.bmp");
 }
 
+void testColor()
+{
+
+    size_t x, y;
+    x = 255 * 10;
+    y = 255 * 10;
+    image testimg(x, y);
+
+    for (size_t i = 0; i < x; i++)
+    {
+        for (size_t j = 0; j < y; j++)
+        {
+            testimg.set(i, j, color((i + j) % 256, i % 256, j % 256));
+        }
+    }
+    ImageRenderer::WriteBMP(testimg, "Output/W0.bmp");
+
+    for (size_t i = 0; i < x; i++)
+    {
+        for (size_t j = 0; j < y; j++)
+        {
+            testimg.set(i, j, color(i % 256, j % 256, (i + j) % 256));
+        }
+    }
+    ImageRenderer::WriteBMP(testimg, "Output/W1.bmp");
+
+    for (size_t i = 0; i < x; i++)
+    {
+        for (size_t j = 0; j < y; j++)
+        {
+            testimg.set(i, j, color(i % 256, j % 256, 0));
+        }
+    }
+    ImageRenderer::WriteBMP(testimg, "Output/W2.bmp");
+
+    size_t increment = 0;
+    for (size_t i = 0; i < x; i++)
+    {
+        for (size_t j = 0; j < y; j++)
+        {
+            testimg.set(i, j, color(increment));
+            increment++;
+        }
+    }
+    ImageRenderer::WriteBMP(testimg, "Output/W3.bmp");
+}
+
 void testSuzanRender()
 {
     std::cout << "_________Space Test_______________" << std::endl;
@@ -4120,7 +4168,7 @@ void testSuzanRender()
     vec3 axis(1, 1, 1);
 
     camera cam1(size, size, cam_step, camOrigin, camXDirection, camYDirection, -1);
-    vector<camera> cam_list = cam1.splitCamera(cam1, 12);
+    vector<camera> cam_list = cam1.splitCamera(cam1, 5);
 
     // create a grid of objects
     vector<object>
@@ -4147,56 +4195,134 @@ void testSuzanRender()
     ImageRenderer::WriteBMP(finalstitched, "Output/testSuzanRender" + to_string(size) + ".bmp");
 }
 
-void testColor()
+void testSuzanRenderImage(double val, image &img)
 {
+    std::cout << "_________Space Test_______________" << std::endl;
 
+    // Define the grid size and step
+    size_t factor = 1;
+    size_t ratio = 1;
+    unsigned int size = (10 * factor) / ratio;
+    double cam_step = (0.04f / factor) * ratio;
 
-    size_t x,y;
-    x=255*10;
-    y=255*10;
-    image testimg(x,y);
-   
-    for(size_t i =0;i<x;i++)
+    // camera config
+    point camOrigin(0, 0, 0);
+    vec3 camYDirection(0, 0, 1);
+    vec3 camXDirection(1, 0, 0);
+
+    // mesh datat
+    double scaling = 5 * val;
+    point offset = point(1, 1, 1) * (size * cam_step) / 2;
+    vec3 axis(1, 1, 1);
+
+    camera cam1(size, size, cam_step, camOrigin, camXDirection, camYDirection, -1);
+    vector<camera> cam_list = cam1.splitCamera(cam1, 5);
+
+    // create a grid of objects
+    vector<object>
+        test;
+    object obj(primitive::suzane, scaling, offset);
+
+    test.push_back(obj);
+
+    space s(test);
+    s.cameras = cam_list;
+
+    std::vector<std::future<void>> futures;
+    s.threadedCameraRayOptimized(futures);
+
+    // Wait for all threads to complete
+    for (auto &future : futures)
     {
-        for(size_t j =0;j<y;j++)
-        {
-            testimg.set(i,j,color((i+j)%256,i%256,j%256));
-        }
+        future.get();
     }
-    ImageRenderer::WriteBMP(testimg, "Output/W0.bmp");
-   
-    for(size_t i =0;i<x;i++)
-    {
-        for(size_t j =0;j<y;j++)
-        {
-            testimg.set(i,j,color(i%256,j%256,(i+j)%256));
-        }
-    }
-    ImageRenderer::WriteBMP(testimg, "Output/W1.bmp");
-
-    for(size_t i =0;i<x;i++)
-    {
-        for(size_t j =0;j<y;j++)
-        {
-            testimg.set(i,j,color(i%256,j%256,0));
-        }
-    }
-    ImageRenderer::WriteBMP(testimg, "Output/W2.bmp");
-
-    size_t increment =0;
-    for(size_t i =0;i<x;i++)
-    {
-        for(size_t j =0;j<y;j++)
-        {
-            testimg.set(i,j,color(increment));
-            increment++;
-        }
-    }
-    ImageRenderer::WriteBMP(testimg, "Output/W3.bmp");
-
+    img = cam1.consruct_split(s.cameras, size, size);
 }
 
-int main(int argc, char const *argv[])
+void testRenderFrame(size_t resolution)
+{
+    std::cout << "_________Space Test_______________" << std::endl;
+
+    // Define the grid size and step
+    size_t factor = 1;
+    size_t ratio = 1;
+    unsigned int size = (resolution * factor) / ratio;
+    double cam_step = (0.04f / factor) * ratio;
+
+    // camera config
+    point camOrigin(0, 0, 0);
+    vec3 camYDirection(0, 0, 1);
+    vec3 camXDirection(1, 0, 0);
+
+    // mesh datat
+    double scaling = 5;
+    point offset = point(1, 1, 1) * (size * cam_step) / 2;
+    vec3 axis(1, 1, 1);
+
+    camera cam1(size, size, cam_step, camOrigin, camXDirection, camYDirection, -1);
+    vector<camera> cam_list = cam1.splitCamera(cam1, 10);
+
+    // create a grid of objects
+    vector<object>
+        test;
+    object obj(primitive::cube, scaling, offset);
+
+    test.push_back(obj);
+
+    space s(test);
+    s.cameras = cam_list;
+
+    std::vector<std::future<void>> futures;
+    s.threadedCameraRayOptimized(futures);
+
+    // Wait for all threads to complete
+    for (auto &future : futures)
+    {
+        future.get();
+    }
+    image finalstitched = cam1.consruct_split(s.cameras, size, size);
+}
+
+void testframeRate()
+{
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    testRenderFrame(500); // Your full render call
+
+    auto end = std::chrono::high_resolution_clock::now();
+    float frameTime = std::chrono::duration<float, std::milli>(end - start).count();
+    float fps = 1000.0f / frameTime;
+    std::cout << "FPS: " << fps << "\n";
+}
+
+#include <thread>
+
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow)
+{
+    // g++ -std=c++17 main.cpp guiwindow.cpp -lgdi32 -o viewer.exe
+    static image sharedImg(640, 480);
+    guiwindow win(sharedImg);
+
+    std::thread gameLoop([&]()
+                         {
+        double val = 1;
+        while (true)
+        {
+            cout << val << endl;
+            testSuzanRenderImage(val, sharedImg);
+            win.set(sharedImg);
+            val += 0.1;
+            Sleep(10); // ~60 FPS
+        } });
+
+    int result = win.run(hInst, nCmdShow);
+
+    gameLoop.detach();
+    return result;
+}
+
+int XXmain(int argc, char const *argv[])
 {
     // testintersection();
     // testimage()
@@ -4254,7 +4380,9 @@ int main(int argc, char const *argv[])
     // testGraph11();
     // tttt();
     // testSuzanRender();
-    testColor();
+    // testColor();
+    // testframeRate();
+
     return 0;
 }
 
@@ -4262,3 +4390,17 @@ int main(int argc, char const *argv[])
 // shortcut to expand all : citrl + k + j
 // clean formating ctrl + k then -> ctrl + f
 // clean formating ctrl + k then -> ctrl + k
+
+// To do :
+/*
+-   stereo scopy
+-   camera rotaion
+-   optimisation
+-   splitting spaces
+-   quad and polygones to triangles
+-   obj support
+-   thread optimisation
+-   display and interact with a 3d space threw input control (walk around)
+-   coliision handeling
+
+*/
