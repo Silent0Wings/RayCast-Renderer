@@ -4319,14 +4319,14 @@ void test3dString()
     vec3 axis(1, 1, 1);
 
     camera cam1(size, size, cam_step, camOrigin, camXDirection, camYDirection, -1);
-    vector<camera> cam_list = cam1.splitCamera(cam1, 5);
+    vector<camera> cam_list = cam1.splitCamera(cam1, 10);
 
     // create a grid of objects
     vector<object>
         test;
     object obj(primitive::cube, scaling, offset);
 
-    string_3d str3d = string_3d("Hello World!", 1.6, scaling * .6, offset);
+    string_3d str3d = string_3d("Hello World!", 1.6, scaling * .5, offset);
     // test.push_back(obj);
 
     for (ascii c : str3d.objects)
