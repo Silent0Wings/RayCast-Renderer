@@ -30,7 +30,7 @@ public:
             for (char c : s)
             {
                 size_t ascii = static_cast<int>(c);
-                if (ascii < 33 || ascii > 127)
+                if (ascii < 33 || ascii > 126)
                     value.push_back(32);
                 else
                     value.push_back(ascii);

@@ -4359,8 +4359,8 @@ void testAlphabet()
 
     std::cout << "_________Space Test_______________" << std::endl;
 
-    size_t x=10;
-    size_t y =200;
+    size_t x=100;
+    size_t y =5000;
 
     // Define the grid size and step
     size_t factor = 1;
@@ -4374,7 +4374,7 @@ void testAlphabet()
 
     // mesh datat
     double scaling = 5;
-    point offset = point(1, 1, 1) * (x * cam_step) / 2;
+    point offset = point(1, 1, 1) * (x * cam_step) / 2+point(10,0,0);
     vec3 axis(1, 1, 1);
 
     camera cam1(x, y, cam_step, camOrigin, camXDirection, camYDirection, -1);
@@ -4385,7 +4385,13 @@ void testAlphabet()
         test;
     object obj(primitive::cube, scaling, offset);
 
-    string_3d str3d = string_3d("Hello World!", 1.6, scaling * .5, offset);
+    string alphabet="";
+    for(size_t i =33;i< 127;i++)
+    {
+        alphabet+=static_cast<char>(i);
+    }
+
+    string_3d str3d = string_3d(alphabet, 2, scaling * .5, offset);
     // test.push_back(obj);
 
     for (ascii c : str3d.objects)
@@ -4410,7 +4416,7 @@ void testAlphabet()
     // s.triggerCameraRayOptimized();
     std::filesystem::create_directories("StringOutput");
     image finalstitched = cam1.consruct_split(s.cameras, x, y);
-    ImageRenderer::WriteBMP(finalstitched, "StringOutput/hello" + std::to_string(00) + ".bmp");
+    ImageRenderer::WriteBMP(finalstitched, "StringOutput/alpha" + std::to_string(00) + ".bmp");
 }
 
 /*
@@ -4501,8 +4507,8 @@ int main(int argc, char const *argv[])
     // testSuzanRender();
     // testColor();
     // testframeRate();
-    //test3dString();
-    testAlphabet();
+    test3dString();
+    //testAlphabet();
     return 0;
 }
 

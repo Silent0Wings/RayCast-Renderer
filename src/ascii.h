@@ -35,7 +35,7 @@ public:
 
             obj.loadMesh(".\\Mesh\\Ascii_File\\" + to_string(v) + ".txt", size, offset);
             obj.randomColoring();
-            obj.setColor(color(500));
+            //obj.setColor(color(500));
         }
     }
 };
