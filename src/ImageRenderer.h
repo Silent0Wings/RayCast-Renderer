@@ -233,7 +233,7 @@ public:
         {
             for (int x = 0; x < width; x++)
             {
-                color c = img.get(x, y);
+                color c = img.get(y, x);
                 uint8_t r = static_cast<uint8_t>(c.r());
                 uint8_t g = static_cast<uint8_t>(c.g());
                 uint8_t b = static_cast<uint8_t>(c.b());

@@ -108,7 +108,7 @@ public:
     {
         if (constrain(x, y))
         {
-            throw std::invalid_argument("Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
+            throw std::invalid_argument("LightReceptor::get():Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
         }
         return PixelReceptor[y][x];
     }
@@ -118,7 +118,7 @@ public:
     {
         if (constrain(x, y))
         {
-            throw std::invalid_argument("Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
+            throw std::invalid_argument("LightReceptor::set():Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
         }
         PixelReceptor[y][x] = c;
     }

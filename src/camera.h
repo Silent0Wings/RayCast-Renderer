@@ -248,7 +248,7 @@ public:
     {
         if (constrain(x, y))
         {
-            throw std::invalid_argument("Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
+            throw std::invalid_argument("Camera::get():Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
         }
         return gridRay[y][x];
     }
@@ -258,7 +258,7 @@ public:
     {
         if (constrain(x, y))
         {
-            throw std::invalid_argument("Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
+            throw std::invalid_argument("Camera::set():Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
         }
         gridRay[y][x] = r;
     }
@@ -267,7 +267,7 @@ public:
     {
         if (img.constrain(x, y))
         {
-            throw std::invalid_argument("Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
+            throw std::invalid_argument("Camera::setColor():Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
         }
         img.set(x, y, c);
     }

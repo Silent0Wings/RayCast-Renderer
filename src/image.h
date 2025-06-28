@@ -194,7 +194,9 @@ public:
         // cout << " x :" << x << " y : "<< y << endl;
         if (constrain(x, y))
         {
-            throw std::invalid_argument("Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
+            cout << "get("<< x <<" , "<< y<<")"<< endl;
+            cout << "width : "<< width << " | height : "<< height << endl;
+            throw std::invalid_argument("image::get():Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
         }
         return pixels[x][y];
     }
@@ -205,7 +207,8 @@ public:
     {
         if (constrain(x, y))
         {
-            throw std::invalid_argument("image::set_Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
+            cout << "set("<< x <<" , "<< y<<" , "<<c<<")"<< endl;
+            throw std::invalid_argument("image::set_Pixel():Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
         }
         pixels[x][y] = c;
     }

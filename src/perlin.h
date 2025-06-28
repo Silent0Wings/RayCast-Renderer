@@ -31,7 +31,7 @@ public:
         }
         else
         {
-            throw std::invalid_argument("Pixel coordinates out of bounds. w: " + std::to_string(w) + " | h: " + std::to_string(h));
+            throw std::invalid_argument("perlin::Constructor():Pixel coordinates out of bounds. w: " + std::to_string(w) + " | h: " + std::to_string(h));
         }
 
         srand(time(0)); // Seed the random number generator
