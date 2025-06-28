@@ -4326,7 +4326,7 @@ void test3dString()
         test;
     object obj(primitive::cube, scaling, offset);
 
-    string_3d str3d = string_3d("hello world!", 1.6, -scaling * .7, offset);
+    string_3d str3d = string_3d("Hello World!", 1.6, scaling * .6, offset);
     // test.push_back(obj);
 
     for (ascii c : str3d.objects)
