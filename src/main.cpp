@@ -20,6 +20,7 @@
 #include <future>
 #include <filesystem>
 #include "guiwindow.h"
+#include "string_3d.h"
 
 using namespace std;
 
@@ -4296,6 +4297,64 @@ void testframeRate()
     std::cout << "FPS: " << fps << "\n";
 }
 
+void test3dString()
+{
+
+    std::cout << "_________Space Test_______________" << std::endl;
+
+    // Define the grid size and step
+    size_t factor = 2;
+    size_t ratio = 1;
+    unsigned int size = (500 * factor) / ratio;
+    double cam_step = (0.04f / factor) * ratio;
+
+    // camera config
+    point camOrigin(0, 0, 0);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, 1, 0);
+
+    // mesh datat
+    double scaling = 5;
+    point offset = point(1, 1, 1) * (size * cam_step) / 2;
+    vec3 axis(1, 1, 1);
+
+    camera cam1(size, size, cam_step, camOrigin, camXDirection, camYDirection, -1);
+    vector<camera> cam_list = cam1.splitCamera(cam1, 5);
+
+    // create a grid of objects
+    vector<object>
+        test;
+    object obj(primitive::cube, scaling, offset);
+
+    string_3d str3d = string_3d("hello world!", 1.6, -scaling * .7, offset);
+    // test.push_back(obj);
+
+    for (ascii c : str3d.objects)
+    {
+        // cout << c.obj;
+        test.push_back(c.obj);
+    }
+    // cout << obj;
+
+    space s(test);
+    s.cameras = cam_list;
+
+    std::vector<std::future<void>> futures;
+    s.threadedCameraRayOptimized(futures);
+
+    // Wait for all threads to complete
+    for (auto &future : futures)
+    {
+        future.get();
+    }
+
+    // s.triggerCameraRayOptimized();
+    std::filesystem::create_directories("StringOutput");
+    image finalstitched = cam1.consruct_split(s.cameras, size, size);
+    ImageRenderer::WriteBMP(finalstitched, "StringOutput/hello" + to_string(size) + ".bmp");
+}
+
+/*
 #include <thread>
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow)
@@ -4321,8 +4380,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow)
     gameLoop.detach();
     return result;
 }
+*/
 
-int XXmain(int argc, char const *argv[])
+int main(int argc, char const *argv[])
 {
     // testintersection();
     // testimage()
@@ -4382,6 +4442,7 @@ int XXmain(int argc, char const *argv[])
     // testSuzanRender();
     // testColor();
     // testframeRate();
+    test3dString();
 
     return 0;
 }
