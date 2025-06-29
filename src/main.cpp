@@ -4419,6 +4419,69 @@ void testAlphabet()
     ImageRenderer::WriteBMP(finalstitched, "StringOutput/alpha" + std::to_string(00) + ".bmp");
 }
 
+
+
+void testStackedAlphabet()
+{
+    std::cout << "_________Space Test_______________" << std::endl;
+
+    // Define the grid size and step
+    size_t factor = 1;
+    size_t ratio = 1;
+    unsigned int size = (500 * factor) / ratio;
+    double cam_step = (0.04f / factor) * ratio;
+
+    // camera config
+    point camOrigin(0, 0, 0);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, 1, 0);
+
+    // mesh datat
+    double scaling = 10;
+    point offset = (point(1, 1, 1) * (size * cam_step) / 2) + point(8,0,0);
+    vec3 axis(1, 1, 1);
+
+    camera cam1(size, size, cam_step, camOrigin, camXDirection, camYDirection, -1);
+    vector<camera> cam_list = cam1.splitCamera(cam1, 8);
+
+    // create a grid of objects
+    vector<object>
+        test;
+
+     string alphabet="";
+    for(size_t i =33;i< 127;i++)
+    {
+        alphabet+=static_cast<char>(i);
+    }
+
+    string_3d str3d = string_3d(alphabet, 0, scaling , offset);
+    // test.push_back(obj);
+
+    for (ascii c : str3d.objects)
+    {
+        // cout << c.obj;
+        test.push_back(c.obj);
+    }
+    // cout << obj;
+
+    space s(test);
+    s.cameras = cam_list;
+
+    std::vector<std::future<void>> futures;
+    s.threadedCameraRayOptimized(futures);
+
+    // Wait for all threads to complete
+    for (auto &future : futures)
+    {
+        future.get();
+    }
+
+    // s.triggerCameraRayOptimized();
+    std::filesystem::create_directories("StringOutput");
+    image finalstitched = cam1.consruct_split(s.cameras, size, size);
+    ImageRenderer::WriteBMP(finalstitched, "StringOutput/stacked" + std::to_string(size) + ".bmp");
+}
+
 /*
 #include <thread>
 
@@ -4507,8 +4570,9 @@ int main(int argc, char const *argv[])
     // testSuzanRender();
     // testColor();
     // testframeRate();
-    test3dString();
+    //test3dString();
     //testAlphabet();
+    testStackedAlphabet();
     return 0;
 }
 
