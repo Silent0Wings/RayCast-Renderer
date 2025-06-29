@@ -3,6 +3,10 @@
 
 #include "graphNode.h"
 #include "object.h"
+#include <queue>   // For std::priority_queue
+#include <tuple>   // For std::tuple
+#include <vector>  // For std::vector (used internally)
+#include <random>
 
 /**
  * @class graph
@@ -68,7 +72,8 @@ public:
                 {
                     if (graphConstraing(i + direct[0], z + direct[1], height, Width))
                     {
-                        get<0>(gridNode.at(i).at(z)).children.push_back(std::make_tuple(&get<0>(gridNode.at(i + direct[0]).at(z + direct[1])),0));
+                        size_t r = std::rand() % 100;  // 0–99
+                        get<0>(gridNode.at(i).at(z)).children.push_back(std::make_tuple(&get<0>(gridNode.at(i + direct[0]).at(z + direct[1])),r+i+z));
                     }
                 }
             }
@@ -79,6 +84,7 @@ public:
             .goal = true;
         goal = &get<0>(gridNode.at(height - 1).at(width - 1));
     }
+    
 
     static bool graphConstraing(int x, int y, size_t height, size_t width)
     {
@@ -98,7 +104,8 @@ public:
                     // Print connection
                     cout << "(" << node.index[0] << "," << node.index[1] << ")"
                          << " -> "
-                         << "(" <<  get<0>(child)->index[0] << "," <<  get<0>(child)->index[1] << ")\n";                         
+                         << "(" <<  get<0>(child)->index[0] << "," <<  get<0>(child)->index[1]  
+                         << "| weight :" <<  get<1>(child) << ")\n";                         
                 }
             }
         }
@@ -191,7 +198,7 @@ public:
     bool step_bfs()
     {
         static vector<graphNode *> queue = {root};
-        // stack.push_back(root);
+        // stack.push_back(roaot);
         graphNode *current = queue.at(0);
         // for(size_t i=0;i<Height*Width;i++)
         for (size_t i = 0; i < 1; i++)
@@ -320,5 +327,123 @@ public:
         }
         return allObjects;
     }
+
+
+    
+    bool greedyBestFirstSearch()
+    {
+           // c++ priority queue 
+         using NodeEntry = std::tuple<graphNode*, size_t>;
+
+        struct Compare {
+            bool operator()(const NodeEntry& a, const NodeEntry& b) const {
+                return std::get<1>(a) > std::get<1>(b);  // Min-heap by size_t
+            }
+        };
+
+       
+
+        static std::priority_queue<NodeEntry, std::vector<NodeEntry>, Compare> pq;
+
+        static bool initialized = false;
+        if (!initialized) {
+            pq.push({root, 0});
+            initialized = true;
+        }
+
+        // stack.push_back(root);
+        graphNode *current = nullptr;
+        // for(size_t i=0;i<Height*Width;i++)
+        for (size_t i = 0; i < Height*Width; i++)
+        {
+            current = std::get<0>(pq.top());
+            pq.pop();
+            size_t the_x = current->index[0];
+            size_t the_y = current->index[1];
+
+            if (current->goal)
+            {
+                get<1>(gridNode[the_x][the_y]).setColor(color(0, 255, 0));
+                return true;
+            }else
+            {
+                for (const auto &child : current->children)
+                {
+                    if (get<0>(child)->explored == false)
+                    {
+                        get<0>(child)->explored =true;
+                        get<0>(child)->parent =current;
+                        get<1>(gridNode[the_x][the_y]).setColor(color(0, 0, 255));
+                        pq.push(child);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    bool stepGreedyBestFirstSearch()
+    {
+           // c++ priority queue 
+         using NodeEntry = std::tuple<graphNode*, size_t>;
+
+        	struct Compare {
+            bool operator()(const NodeEntry& a, const NodeEntry& b) const {
+                return std::get<1>(a) > std::get<1>(b);  //  smallest size_t at top
+            }
+        };
+
+       
+
+        static std::priority_queue<NodeEntry, std::vector<NodeEntry>, Compare> pq;
+
+        static bool initialized = false;
+        if (!initialized) {
+            pq.push({root, 0});
+            initialized = true;
+        }
+
+        // stack.push_back(root);
+        graphNode *current = nullptr;
+        // for(size_t i=0;i<Height*Width;i++)
+        for (size_t i = 0; i < 1; i++)
+        {
+            current = std::get<0>(pq.top());
+            pq.pop();
+            size_t the_x = current->index[0];
+            size_t the_y = current->index[1];
+
+            if (current->goal)
+            {
+                get<1>(gridNode[the_x][the_y]).setColor(color(0, 255, 0));
+                return true;
+            }else
+            {
+                for (const auto &child : current->children)
+                {
+                    if (get<0>(child)->explored == false)
+                    {
+                        get<0>(child)->explored =true;
+                        get<0>(child)->parent =current;
+                        get<1>(gridNode[the_x][the_y]).setColor(color(0, 0, 255));
+                        pq.push(child);
+                    }
+                }
+            }
+        }
+
+
+        /*
+        auto copy = pq;  // make a copy
+         while (!copy.empty()) {
+             std::cout << std::get<0>(copy.top()) << " | " << std::get<1>(copy.top()) << '\n';
+             copy.pop();
+         }
+         cout << endl<< "______"<< endl;
+         
+         */
+         return false;
+    }
+
 };
 #endif // GRAPH_H
