@@ -34,6 +34,24 @@ These GIFs demonstrate the renderer's ability to animate scenes and generate vid
   </tr>
 </table>
 
+# ASCII to 3D Text
+
+The renderer also supports conversion of **ASCII characters into 3D mesh text**. This allows visualization of full strings (e.g., `"HELLO WORLD"`) as 3D geometry.
+
+## Example Outputs
+
+- **Hello World stacked 1 Render**: <img src="src/StringOutput/stacked500_1.bmp" width="250"/>
+- **Hello World stacked 2 Render**: <img src="src/StringOutput/stacked500_2.bmp" width="250"/>
+- **Full Printable ASCII Mesh Preview**: <img src="src/StringOutput/alpha001.bmp" width="1000"/>
+
+
+### Technical Notes
+
+- Converts characters from ASCII 32 to 126 into triangle-based meshes.
+- Each mesh is positioned with uniform spacing in the X direction.
+- Characters with very few vertices skip decimation to preserve structure.
+
+
 # RayCast Renderer
 
 [Project Report](Github.pdf)
