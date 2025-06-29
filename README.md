@@ -40,8 +40,8 @@ The renderer also supports conversion of **ASCII characters into 3D mesh text**.
 
 ## Example Outputs
 
-- **Hello World stacked 1 Render**: <img src="src/StringOutput/stacked500_1.bmp" width="250"/>
-- **Hello World stacked 2 Render**: <img src="src/StringOutput/stacked500_2.bmp" width="250"/>
+- **Printable ASCII stacked 1 Render**: <img src="src/StringOutput/stacked500_1.bmp" width="250"/>
+- **Printable ASCII stacked 2 Render**: <img src="src/StringOutput/stacked500_2.bmp" width="250"/>
 - **Full Printable ASCII Mesh Preview**: <img src="src/StringOutput/alpha001.bmp" width="1000"/>
 
 
