@@ -3865,13 +3865,23 @@ void testGraph13()
 
         std::vector<object> allObjects = main_graph.getObjects();
         space s(allObjects);
-        s.cameras.push_back(cam1);
-        s.triggerCameraRayOptimized();
+
+        vector<camera> cam_list = cam1.splitCamera(cam1, 8);
+        s.cameras = cam_list;
+
+        std::vector<std::future<void>> futures;
+        s.threadedCameraRayOptimized(futures);
+
+        // Wait for all threads to complete
+        for (auto &future : futures)
+        {
+            future.get();
+        }
+
         std::filesystem::create_directories("Greedy");
-        ImageRenderer::WriteBMP(
-            s.cameras.at(0).getimage(),
-            "Greedy/Step" + std::to_string(i) + ".bmp");
-        shit_increment++;
+        image finalstitched = cam1.consruct_split(s.cameras, size, size);
+        ImageRenderer::WriteBMP(finalstitched, "Greedy/Step" + std::to_string(i) + ".bmp");
+            shit_increment++;
     }
 
     // process the path backwards
@@ -3892,15 +3902,27 @@ void testGraph13()
 
         std::vector<object> allObjects = main_graph.getObjects();
         space s(allObjects);
-        s.cameras.push_back(cam1);
-        s.triggerCameraRayOptimized();
+
+        vector<camera> cam_list = cam1.splitCamera(cam1, 8);
+        s.cameras = cam_list;
+
+        std::vector<std::future<void>> futures;
+        s.threadedCameraRayOptimized(futures);
+
+        // Wait for all threads to complete
+        for (auto &future : futures)
+        {
+            future.get();
+        }
+
         std::filesystem::create_directories("Greedy");
-        ImageRenderer::WriteBMP(
-            s.cameras.at(0).getimage(),
-            "Greedy/Step" + std::to_string(shit_increment + i) + ".bmp");
+        image finalstitched = cam1.consruct_split(s.cameras, size, size);
+        ImageRenderer::WriteBMP(finalstitched, "Greedy/Step" +  std::to_string(shit_increment + i) + ".bmp");
     }
 
-    // ffmpeg -framerate 4 -i Step%d.ppm -c:v libx264 -crf 0 -preset placebo -pix_fmt yuv444p -r 30 output_video.mp4
+    // ffmpeg -framerate 10 -i Step%d.bmp -frames:v 437 -vf palettegen palette.png
+    // ffmpeg -framerate 10 -i Step%d.bmp -frames:v 437 -vf palettegen palette.png
+
 }
 
 void tttt()

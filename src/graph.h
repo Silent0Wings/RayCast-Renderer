@@ -412,6 +412,8 @@ public:
             pq.pop();
             size_t the_x = current->index[0];
             size_t the_y = current->index[1];
+            get<1>(gridNode[the_x][the_y]).setColor(color(74, 74, 74));
+
 
             if (current->goal)
             {
