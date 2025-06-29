@@ -9,7 +9,7 @@ class graphNode
 {
 public:
     int value;
-    std::vector<graphNode*> children;  // Pointers to child nodes
+    std::vector<std::tuple<graphNode*, size_t>> children;
     graphNode* parent = nullptr;       // Pointer to parent node
     std::array<size_t, 2> index;
 
