@@ -1,6 +1,6 @@
 # RayCast Renderer
 
-<img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/ccea9cce6a20f92a9ce836cf03a78983156d97e4/src/img/suzane2000.png" width="300"/>
+<img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/ccea9cce6a20f92a9ce836cf03a78983156d97e4/src/img/testSuzanRender8000.png" width="300"/>
 <img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/0d70f502cf390c3f684a59b6940151f66277709a/src/img/dhalia%20resolution.png" width="300"/>
 <img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/11f97693d6eb489b350571ddb001aaaff9069bcd/src/img/suzane%20colored%20options1.png" width="300"/>
 <img src="src/img/dear2.png" width="300"/>
