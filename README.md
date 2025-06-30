@@ -22,7 +22,7 @@ Greedy
 UCS
 <img src="src/UnifiedCostSearch/UnifiedCostSearchoutput.gif" width="200"/>
 A*
-<img src="src/AStar/AStaroutput.gif" width="200"/>
+<img src="src/AStar/AStaroutputV3.gif" width="200"/>
 ## Animation Highlights
 
 These GIFs demonstrate the renderer's ability to animate scenes and generate videos from dynamic geometry and traversal logic, including rotation, scaling, multiple objects, and perspective shifting.
