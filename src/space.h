@@ -214,6 +214,45 @@ public:
         }
     }
 
+    void launchThreadedCameraRay()
+    {
+        std::vector<std::future<void>> futures;
+
+        for (auto &cam : cameras)
+        {
+            // cout << "!!!!!!!!!!!!!!!!!" << endl;
+            size_t camIndex = &cam - &cameras[0];
+            // std::cout << "Thread N*= " << camIndex << " |started!" << std::endl;
+            for (auto &o : obj)
+            {
+                // Launch asynchronous task for processing each camera-object pair
+                futures.push_back(std::async(std::launch::async, [&cam, &o, camIndex]()
+                                             {
+                                                 // Calculate thread identifier for logging
+
+                                                 // Log thread start
+
+                                                 // Clear screen (optional, might not work in all consoles)
+
+                                                 // Process the object with the camera
+                                                 cam.cameraToImageOptimized(o);
+
+                                                 // Save the rendered image to a file
+                                                 // ImageRenderer::renderToFile(cam.getimage(), "output" + std::to_string(camIndex) + ".ppm");
+                                                 // cerr << " camIndex= " << camIndex << "!" << endl;
+
+                                                 // Log thread end
+                                             }));
+                // std::cout << "\033[2J\033[H";
+            }
+            // std::cout << "Thread N*= " << camIndex << " |ended!" << std::endl;
+        }
+
+        for (auto& future : futures) {
+            future.get();
+        }
+    }
+
     // This launches a thread for each camera
     void launchThreadedCamera() {
         std::vector<std::future<void>> futures;
