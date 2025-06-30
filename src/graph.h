@@ -73,7 +73,7 @@ public:
                     if (graphConstraing(i + direct[0], z + direct[1], height, Width))
                     {
                         size_t r = std::rand() % 100; // 0–99
-                        get<0>(gridNode.at(i).at(z)).children.push_back(std::make_tuple(&get<0>(gridNode.at(i + direct[0]).at(z + direct[1])), r + i + z));
+                        get<0>(gridNode.at(i).at(z)).children.push_back(std::make_tuple(&get<0>(gridNode.at(i + direct[0]).at(z + direct[1])), 0));
                     }
                 }
             }
@@ -447,7 +447,6 @@ public:
 
     void unifiedCostSearch()
     {
-
         // c++ priority queue
         using NodeEntry = std::tuple<graphNode *, size_t>;
 
@@ -503,7 +502,6 @@ public:
 
     bool stepUnifiedCostSearch()
     {
-
         // c++ priority queue
         using NodeEntry = std::tuple<graphNode *, size_t>;
 
