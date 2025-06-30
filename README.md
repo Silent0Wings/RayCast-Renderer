@@ -1,9 +1,9 @@
 # RayCast Renderer
 
-<img src="src/img/testSuzanRender8000.png" width="300"/>
-<img src="src/img/dhalia resolution.png" width="300"/>
-<img src="src/img/suzane colored options1.png" width="300"/>
-<img src="src/img/dear2.png" width="300"/>
+<img src="src/Renders/img/testSuzanRender8000.png" width="300"/>
+<img src="src/Renders/img/dhalia resolution.png" width="300"/>
+<img src="src/Renders/img/suzane colored options1.png" width="300"/>
+<img src="src/Renders/img/dear2.png" width="300"/>
 
 # Project Overview
 
@@ -104,14 +104,14 @@ Each triangle has a unique color. When hit by a ray, its color is assigned to th
 
 | **DFS** | **BFS** | **Uniform Cost** |
 |--------|--------|------------------|
-| <img src="src/Graph/DFS_782/output_video2.gif" width="200"/> | <img src="src/Graph/BFS/output_video (2).gif" width="200"/> | <img src="src/Graph/UnifiedCostSearch/UnifiedCostSearchoutput.gif" width="200"/> |
+| <img src="src/Renders/Graph/DFS_782/output_video2.gif" width="200"/> | <img src="src/Renders/Graph/BFS/output_video (2).gif" width="200"/> | <img src="src/Renders/Graph/UnifiedCostSearch/UnifiedCostSearchoutput.gif" width="200"/> |
 
 ### Informed Search
 **For heuristic-based algorithms, a distance-based heuristic is used.**
 
 | **Greedy** | **Best-First** | **A\*** |
 |-----------|----------------|--------|
-| <img src="src/Graph/Greedy/GBFS_output.gif" width="200"/> | <img src="src/Graph/BestFirstSearch/BFS_output.gif" width="200"/> | <img src="src/Graph/AStar/AStaroutputV3.gif" width="200"/> |
+| <img src="src/Renders/Graph/Greedy/GBFS_output.gif" width="200"/> | <img src="src/Renders/Graph/BestFirstSearch/BFS_output.gif" width="200"/> | <img src="src/Renders/Graph/AStar/AStaroutputV3.gif" width="200"/> |
 
 
 ## Animation Highlights
@@ -137,8 +137,8 @@ The renderer also supports conversion of **ASCII characters into 3D mesh text**.
 
 ## Example Outputs
 
-- **Printable ASCII stacked 1 Render**: <img src="src/StringOutput/stacked500_1.bmp" width="250"/> <img src="src/StringOutput/stacked500_2.bmp" width="250"/>
-- **Full Printable ASCII Mesh Preview**: <img src="src/StringOutput/alpha001.bmp" width="1000"/>
+- **Printable ASCII stacked 1 Render**: <img src="src/Renders/StringOutput/stacked500_1.bmp" width="250"/> <img src="src/Renders/StringOutput/stacked500_2.bmp" width="250"/>
+- **Full Printable ASCII Mesh Preview**: <img src="src/Renders/StringOutput/alpha001.bmp" width="1000"/>
 
 ### Technical Notes
 
