@@ -5090,6 +5090,40 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow)
 }
 */
 
+
+
+void testRenderDiamond()
+{
+    // Define the grid size and step
+    size_t ratio = 1;
+    unsigned int size = 500 / ratio;
+    double cam_step = 0.005f * ratio;
+
+    // camera config
+    point camOrigin(0, 0, 10);
+    vec3 camYDirection(1, 0, 1);
+    vec3 camXDirection(1, 1, 0);
+
+    // mesh datat
+    double scaling = 1;
+    point offset = point(size * cam_step, size * cam_step, 0) / 2;
+    vec3 axis(1, 1, 1);
+
+    object obj = object();
+    obj.loadMesh(".\\Mesh\\Diamond1.txt", scaling, offset);
+    obj.randomColoring();
+
+    space s({obj});
+    camera cam1(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1);
+    s.cameras = cam1.splitCamera(cam1, 20);;
+    s.launchThreadedCamera();
+
+    std::filesystem::create_directories("OutputDI");
+    image finalstitched = cam1.consruct_split(s.cameras, size, size);
+    ImageRenderer::WriteBMP(finalstitched, "OutputDI/diamondrender.bmp");
+}
+
+
 int main(int argc, char const *argv[])
 {
     // testintersection();
@@ -5149,7 +5183,7 @@ int main(int argc, char const *argv[])
     // testGraph12();
     // testGraph13();
     // testGraph14();
-    testGraph15();
+    //  testGraph15();
     // testGraph16();
     //  tttt();
     //  testSuzanRender();
@@ -5158,6 +5192,7 @@ int main(int argc, char const *argv[])
     //  test3dString();
     //  testAlphabet();
     //  testStackedAlphabet();
+    testRenderDiamond();
     return 0;
 }
 
