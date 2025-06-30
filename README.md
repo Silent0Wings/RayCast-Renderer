@@ -5,24 +5,24 @@
 ![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/11f97693d6eb489b350571ddb001aaaff9069bcd/src/img/suzane%20colored%20options1.png)
 ![Rendered Scene](src/img/dear2.png)
 
-## DFS/BFS Traversal Visualization
+## Search Algorithm Visualizations
 
-The following animation demonstrates a Depth-First search and a Breadth-first search traversal rendered by this engine:
+**All algorithms are applied on a weighted, undirected graph with randomized edge weights.  
+
+### Uninformed Search
+
+| **DFS** | **BFS** | **Uniform Cost** |
+|--------|--------|------------------|
+| <img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/8e844de49082df6220abf17d3664939468fdb728/src/DFS_782/output_video2.gif" width="200"/> | <img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/4837f3183256ff1087328a332cda4217130e9194/src/BFS/output_video%20(2).gif" width="200"/> | <img src="src/UnifiedCostSearch/UnifiedCostSearchoutput.gif" width="200"/> |
+
+### Informed Search
+For heuristic-based algorithms, a distance-based heuristic is used.**
+
+| **Greedy** | **Best-First** | **A\*** |
+|-----------|----------------|--------|
+| <img src="src/Greedy/GBFS_output.gif" width="200"/> | <img src="src/BestFirstSearch/BFS_output.gif" width="200"/> | <img src="src/AStar/AStaroutputV3.gif" width="200"/> |
 
 
-DFS:
-<img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/8e844de49082df6220abf17d3664939468fdb728/src/DFS_782/output_video2.gif" width="200"/>
-BFS
-<img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/4837f3183256ff1087328a332cda4217130e9194/src/BFS/output_video%20(2).gif" width="200"/>
-BestFirstSearch
-<img src="src/BestFirstSearch/BFS_output.gif" width="200"/>
-
-Greedy
-<img src="src/Greedy/GBFS_output.gif" width="200"/>
-UCS
-<img src="src/UnifiedCostSearch/UnifiedCostSearchoutput.gif" width="200"/>
-A*
-<img src="src/AStar/AStaroutputV3.gif" width="200"/>
 ## Animation Highlights
 
 These GIFs demonstrate the renderer's ability to animate scenes and generate videos from dynamic geometry and traversal logic, including rotation, scaling, multiple objects, and perspective shifting.
@@ -46,8 +46,7 @@ The renderer also supports conversion of **ASCII characters into 3D mesh text**.
 
 ## Example Outputs
 
-- **Printable ASCII stacked 1 Render**: <img src="src/StringOutput/stacked500_1.bmp" width="250"/>
-- **Printable ASCII stacked 2 Render**: <img src="src/StringOutput/stacked500_2.bmp" width="250"/>
+- **Printable ASCII stacked 1 Render**: <img src="src/StringOutput/stacked500_1.bmp" width="250"/> <img src="src/StringOutput/stacked500_2.bmp" width="250"/>
 - **Full Printable ASCII Mesh Preview**: <img src="src/StringOutput/alpha001.bmp" width="1000"/>
 
 
