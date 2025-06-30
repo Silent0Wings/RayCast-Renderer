@@ -39,7 +39,7 @@ public:
             for (size_t i = 0; i < value.size(); i++)
             {
                 objects.push_back(ascii(value.at(i), size, shitoffset));
-                objects.at(i).obj.setColor(i*100+255);
+                objects.at(i).obj.setColor(i * 100 + 255);
                 shitoffset += vec3(spacing, 0, 0);
             }
         }
