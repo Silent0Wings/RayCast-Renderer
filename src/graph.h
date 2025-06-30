@@ -557,11 +557,10 @@ public:
         return false;
     }
 
-    size_t heuristic(size_t x, size_t y)
+    double heuristic(size_t x, size_t y)
     {
         size_t the_x = goal->index[0];
         size_t the_y = goal->index[1];
-        get<1>(gridNode[the_x][the_y]).center;
 
         return gmath::distance(get<1>(gridNode[the_x][the_y]).center, get<1>(gridNode[x][y]).center);
     }
@@ -569,13 +568,13 @@ public:
     {
 
         // c++ priority queue
-        using NodeEntry = std::tuple<graphNode *, size_t>;
+        using NodeEntry = std::tuple<size_t, size_t, graphNode *>;
 
         struct Compare
         {
             bool operator()(const NodeEntry &a, const NodeEntry &b) const
             {
-                return std::get<1>(a) > std::get<1>(b); // Min-heap by size_t
+                return std::get<0>(a) > std::get<0>(b); // sort by value1 (first)
             }
         };
 
@@ -584,7 +583,8 @@ public:
         static bool initialized = false;
         if (!initialized)
         {
-            pq.push({root, 0});
+            pq.push({0, 0, root}); // value1, value2, node
+
             initialized = true;
         }
 
@@ -593,8 +593,8 @@ public:
         // for(size_t i=0;i<Height*Width;i++)
         for (size_t i = 0; i < Height * Width; i++)
         {
-            current = std::get<0>(pq.top());
-            size_t weight = std::get<1>(pq.top());
+            current = std::get<2>(pq.top()); // get the node
+            size_t previousG = std::get<1>(pq.top());
             pq.pop();
             size_t the_x = current->index[0];
             size_t the_y = current->index[1];
@@ -613,12 +613,81 @@ public:
                         get<0>(child)->explored = true;
                         get<0>(child)->parent = current;
                         get<1>(gridNode[the_x][the_y]).setColor(color(0, 0, 255));
-                        pq.push({std::get<0>(child), std::get<1>(child) + weight + heuristic(the_x, the_y)});
+                        pq.push({
+                            (std::get<1>(child) + previousG) + heuristic(std::get<0>(child)->index[0], std::get<0>(child)->index[1]), // value1 : f(n)= [cost of current edge + sum(previosu paths)]+h(n)
+                            std::get<1>(child) + previousG,                                                                           // value2 : g(n) total cost of the path
+                            std::get<0>(child)                                                                                        // node
+                        });
+
+                        // child :   std::tuple<graphNode *, size_t>
                     }
                 }
             }
         }
         return;
+    }
+
+    bool stepAStar()
+    {
+
+        // c++ priority queue
+        using NodeEntry = std::tuple<size_t, size_t, graphNode *>;
+
+        struct Compare
+        {
+            bool operator()(const NodeEntry &a, const NodeEntry &b) const
+            {
+                return std::get<0>(a) > std::get<0>(b); // sort by value1 (first)
+            }
+        };
+
+        static std::priority_queue<NodeEntry, std::vector<NodeEntry>, Compare> pq;
+
+        static bool initialized = false;
+        if (!initialized)
+        {
+            pq.push({0, 0, root}); // value1, value2, node
+
+            initialized = true;
+        }
+
+        // stack.push_back(root);
+        graphNode *current = nullptr;
+        // for(size_t i=0;i<Height*Width;i++)
+        for (size_t i = 0; i < 1; i++)
+        {
+            current = std::get<2>(pq.top()); // get the node
+            size_t previousG = std::get<1>(pq.top());
+            pq.pop();
+            size_t the_x = current->index[0];
+            size_t the_y = current->index[1];
+
+            if (current->goal)
+            {
+                get<1>(gridNode[the_x][the_y]).setColor(color(0, 255, 0));
+                return true;
+            }
+            else
+            {
+                for (const auto &child : current->children)
+                {
+                    if (get<0>(child)->explored == false)
+                    {
+                        get<0>(child)->explored = true;
+                        get<0>(child)->parent = current;
+                        get<1>(gridNode[the_x][the_y]).setColor(color(0, 0, 255));
+                        pq.push({
+                            (std::get<1>(child) + previousG) + heuristic(std::get<0>(child)->index[0], std::get<0>(child)->index[1]), // value1 : f(n)= [cost of current edge + sum(previosu paths)]+h(n)
+                            std::get<1>(child) + previousG,                                                                           // value2 : g(n) total cost of the path
+                            std::get<0>(child)                                                                                        // node
+                        });
+
+                        // child :   std::tuple<graphNode *, size_t>
+                    }
+                }
+            }
+        }
+        return false;
     }
 };
 #endif // GRAPH_H
