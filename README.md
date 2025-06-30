@@ -11,13 +11,15 @@ The following animation demonstrates a Depth-First search and a Breadth-first se
 
 
 DFS:
-<img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/8e844de49082df6220abf17d3664939468fdb728/src/DFS_782/output_video2.gif" width="250"/>
+<img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/8e844de49082df6220abf17d3664939468fdb728/src/DFS_782/output_video2.gif" width="200"/>
 BFS
-<img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/4837f3183256ff1087328a332cda4217130e9194/src/BFS/output_video%20(2).gif" width="250"/>
+<img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/4837f3183256ff1087328a332cda4217130e9194/src/BFS/output_video%20(2).gif" width="200"/>
 Greedy
-<img src="src/Greedy/GBFS_output.gif" width="250"/>
+<img src="src/Greedy/GBFS_output.gif" width="200"/>
 UnifiedCostSearch
-<img src="src/UnifiedCostSearch/UnifiedCostSearchoutput.gif" width="250"/>
+<img src="src/UnifiedCostSearch/UnifiedCostSearchoutput.gif" width="200"/>
+A*
+<img src="src/AStar/AStaroutput.gif" width="200"/>
 ## Animation Highlights
 
 These GIFs demonstrate the renderer's ability to animate scenes and generate videos from dynamic geometry and traversal logic, including rotation, scaling, multiple objects, and perspective shifting.
