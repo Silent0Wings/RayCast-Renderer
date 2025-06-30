@@ -4110,18 +4110,8 @@ void testGraph15()
 
         std::vector<object> allObjects = main_graph.getObjects();
         space s(allObjects);
-
-        vector<camera> cam_list = cam1.splitCamera(cam1, 8);
-        s.cameras = cam_list;
-
-        std::vector<std::future<void>> futures;
-        s.threadedCameraRayOptimized(futures);
-
-        // Wait for all threads to complete
-        for (auto &future : futures)
-        {
-            future.get();
-        }
+        s.cameras =  cam1.splitCamera(cam1, 8);
+        s.launchThreadedCamera();
 
         std::filesystem::create_directories("AStar");
         image finalstitched = cam1.consruct_split(s.cameras, size, size);
@@ -4147,18 +4137,8 @@ void testGraph15()
 
         std::vector<object> allObjects = main_graph.getObjects();
         space s(allObjects);
-
-        vector<camera> cam_list = cam1.splitCamera(cam1, 8);
-        s.cameras = cam_list;
-
-        std::vector<std::future<void>> futures;
-        s.threadedCameraRayOptimized(futures);
-
-        // Wait for all threads to complete
-        for (auto &future : futures)
-        {
-            future.get();
-        }
+        s.cameras =  cam1.splitCamera(cam1, 8);
+        s.launchThreadedCamera();
 
         std::filesystem::create_directories("AStar");
         image finalstitched = cam1.consruct_split(s.cameras, size, size);

@@ -214,6 +214,7 @@ public:
         }
     }
 
+    // this laucnhes a thread for each camera to object pair : 10 objects & 10 cameras = 100 threads !!! not good
     void launchThreadedCameraRay()
     {
         std::vector<std::future<void>> futures;
