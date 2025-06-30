@@ -3853,7 +3853,7 @@ void testGraph13()
         }
         else
         {
-            if (main_graph.stepGreedyBestFirstSearch())
+            if (main_graph.stepBestFirstSearch())
             {
                 trigger_next_end = true;
             }
@@ -3874,9 +3874,9 @@ void testGraph13()
             future.get();
         }
 
-        std::filesystem::create_directories("Greedy");
+        std::filesystem::create_directories("BestFirstSearch");
         image finalstitched = cam1.consruct_split(s.cameras, size, size);
-        ImageRenderer::WriteBMP(finalstitched, "Greedy/Step" + std::to_string(i) + ".bmp");
+        ImageRenderer::WriteBMP(finalstitched, "BestFirstSearch/Step" + std::to_string(i) + ".bmp");
         shit_increment++;
     }
 
@@ -3911,9 +3911,9 @@ void testGraph13()
             future.get();
         }
 
-        std::filesystem::create_directories("Greedy");
+        std::filesystem::create_directories("BestFirstSearch");
         image finalstitched = cam1.consruct_split(s.cameras, size, size);
-        ImageRenderer::WriteBMP(finalstitched, "Greedy/Step" + std::to_string(shit_increment + i) + ".bmp");
+        ImageRenderer::WriteBMP(finalstitched, "BestFirstSearch/Step" + std::to_string(shit_increment + i) + ".bmp");
     }
 
     // ffmpeg -framerate 10 -i Step%d.bmp -frames:v 437 -vf palettegen palette.png
@@ -4163,6 +4163,131 @@ void testGraph15()
         std::filesystem::create_directories("AStar");
         image finalstitched = cam1.consruct_split(s.cameras, size, size);
         ImageRenderer::WriteBMP(finalstitched, "AStar/Step" + std::to_string(shit_increment + i) + ".bmp");
+    }
+
+    // ffmpeg -framerate 10 -i Step%d.bmp -frames:v 437 -vf palettegen palette.png
+
+    // ffmpeg -framerate 10 -i Step%d.bmp -i palette.png -frames:v 437 -lavfi paletteuse output.gif
+}
+
+void testGraph16()
+{
+    // the entended square grid
+    size_t x = 20, y = 20;
+    graph main_graph(x, y);
+
+    std::cout << "_________Space Test_______________" << std::endl;
+
+    // Define the grid size and step
+    size_t ratio = 10;
+    unsigned int size = 2000 / ratio;
+    double cam_step = .01f * ratio;
+
+    // camera config
+    point camOrigin(0, 0, 100);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, 1, 0);
+
+    // mesh datat
+    double ratio_for_scale_to_offset = 1;
+    double scaling = 0.4 * ratio_for_scale_to_offset;
+    point offset = point(0.22, 0.22, 0);
+    vec3 axis(1, 1, 1);
+
+    camera cam1(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1);
+
+    // create a grid of objects
+    vector<object> test;
+    double offsetmultiplier = 1 * ratio_for_scale_to_offset;
+    for (size_t i = 0; i < x; i++)
+    {
+        for (size_t j = 0; j < y; j++)
+        {
+            object obj(primitive::plane, scaling, offset + point(scaling / 2, scaling / 2, scaling / 2) + point(j * offsetmultiplier, i * offsetmultiplier, 0));
+            obj.setColor(color(255, 0, 0));
+            test.push_back(obj);
+            std::get<1>(main_graph.gridNode[i][j]) = obj;
+        }
+    }
+
+    // Create a space and assign the object
+    bool trigger_next_end = false;
+    size_t loop_size = 1;
+    loop_size = x * y + 4;
+
+    // process the path backwards
+    size_t shit_increment = 0;
+    trigger_next_end = false;
+    // main_graph.print_connections();
+    for (size_t i = 0; i < loop_size; i++)
+    {
+        if (trigger_next_end)
+        {
+            break;
+        }
+        else
+        {
+            if (main_graph.stepGreedyBestFirstSearch())
+            {
+                trigger_next_end = true;
+            }
+        }
+
+        std::vector<object> allObjects = main_graph.getObjects();
+        space s(allObjects);
+
+        vector<camera> cam_list = cam1.splitCamera(cam1, 8);
+        s.cameras = cam_list;
+
+        std::vector<std::future<void>> futures;
+        s.threadedCameraRayOptimized(futures);
+
+        // Wait for all threads to complete
+        for (auto &future : futures)
+        {
+            future.get();
+        }
+
+        std::filesystem::create_directories("Greedy");
+        image finalstitched = cam1.consruct_split(s.cameras, size, size);
+        ImageRenderer::WriteBMP(finalstitched, "Greedy/Step" + std::to_string(i) + ".bmp");
+        shit_increment++;
+    }
+
+    // process the path backwards
+    trigger_next_end = false;
+    for (size_t i = 0; i < loop_size; i++)
+    {
+        if (trigger_next_end)
+        {
+            break;
+        }
+        else
+        {
+            if (main_graph.step_Trace_Path())
+            {
+                trigger_next_end = true;
+            }
+        }
+
+        std::vector<object> allObjects = main_graph.getObjects();
+        space s(allObjects);
+
+        vector<camera> cam_list = cam1.splitCamera(cam1, 8);
+        s.cameras = cam_list;
+
+        std::vector<std::future<void>> futures;
+        s.threadedCameraRayOptimized(futures);
+
+        // Wait for all threads to complete
+        for (auto &future : futures)
+        {
+            future.get();
+        }
+
+        std::filesystem::create_directories("Greedy");
+        image finalstitched = cam1.consruct_split(s.cameras, size, size);
+        ImageRenderer::WriteBMP(finalstitched, "Greedy/Step" + std::to_string(shit_increment + i) + ".bmp");
     }
 
     // ffmpeg -framerate 10 -i Step%d.bmp -frames:v 437 -vf palettegen palette.png
@@ -5044,14 +5169,15 @@ int main(int argc, char const *argv[])
     // testGraph12();
     // testGraph13();
     // testGraph14();
-    testGraph15();
-    // tttt();
-    // testSuzanRender();
-    // testColor();
-    // testframeRate();
-    // test3dString();
-    // testAlphabet();
-    // testStackedAlphabet();
+    // testGraph15();
+    testGraph16();
+    //  tttt();
+    //  testSuzanRender();
+    //  testColor();
+    //  testframeRate();
+    //  test3dString();
+    //  testAlphabet();
+    //  testStackedAlphabet();
     return 0;
 }
 

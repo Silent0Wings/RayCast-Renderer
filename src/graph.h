@@ -327,7 +327,7 @@ public:
         return allObjects;
     }
 
-    void greedyBestFirstSearch()
+    void BestFirstSearch()
     {
         // c++ priority queue
         using NodeEntry = std::tuple<graphNode *, size_t>;
@@ -381,7 +381,7 @@ public:
         return;
     }
 
-    bool stepGreedyBestFirstSearch()
+    bool stepBestFirstSearch()
     {
         // c++ priority queue
         using NodeEntry = std::tuple<graphNode *, size_t>;
@@ -562,6 +562,114 @@ public:
 
         return gmath::distance(get<1>(gridNode[the_x][the_y]).center, get<1>(gridNode[x][y]).center);
     }
+
+    void greedyBestFirstSearch()
+    {
+        // c++ priority queue
+        using NodeEntry = std::tuple<graphNode *, size_t>;
+
+        struct Compare
+        {
+            bool operator()(const NodeEntry &a, const NodeEntry &b) const
+            {
+                return std::get<1>(a) > std::get<1>(b); // Min-heap by size_t
+            }
+        };
+
+        static std::priority_queue<NodeEntry, std::vector<NodeEntry>, Compare> pq;
+
+        static bool initialized = false;
+        if (!initialized)
+        {
+            pq.push({root, 0});
+            initialized = true;
+        }
+
+        // stack.push_back(root);
+        graphNode *current = nullptr;
+        // for(size_t i=0;i<Height*Width;i++)
+        for (size_t i = 0; i < Height * Width; i++)
+        {
+            current = std::get<0>(pq.top());
+            pq.pop();
+            size_t the_x = current->index[0];
+            size_t the_y = current->index[1];
+
+            if (current->goal)
+            {
+                get<1>(gridNode[the_x][the_y]).setColor(color(0, 255, 0));
+                return;
+            }
+            else
+            {
+                for (const auto &child : current->children)
+                {
+                    if (get<0>(child)->explored == false)
+                    {
+                        get<0>(child)->explored = true;
+                        get<0>(child)->parent = current;
+                        get<1>(gridNode[the_x][the_y]).setColor(color(0, 0, 255));
+                        pq.push({std::get<0>(child), heuristic(std::get<0>(child)->index[0], std::get<0>(child)->index[1])});
+                    }
+                }
+            }
+        }
+        return;
+    }
+    bool stepGreedyBestFirstSearch()
+    {
+        // c++ priority queue
+        using NodeEntry = std::tuple<graphNode *, size_t>;
+
+        struct Compare
+        {
+            bool operator()(const NodeEntry &a, const NodeEntry &b) const
+            {
+                return std::get<1>(a) > std::get<1>(b); // Min-heap by size_t
+            }
+        };
+
+        static std::priority_queue<NodeEntry, std::vector<NodeEntry>, Compare> pq;
+
+        static bool initialized = false;
+        if (!initialized)
+        {
+            pq.push({root, 0});
+            initialized = true;
+        }
+
+        // stack.push_back(root);
+        graphNode *current = nullptr;
+        // for(size_t i=0;i<Height*Width;i++)
+        for (size_t i = 0; i < 1; i++)
+        {
+            current = std::get<0>(pq.top());
+            pq.pop();
+            size_t the_x = current->index[0];
+            size_t the_y = current->index[1];
+
+            if (current->goal)
+            {
+                get<1>(gridNode[the_x][the_y]).setColor(color(0, 255, 0));
+                return true;
+            }
+            else
+            {
+                for (const auto &child : current->children)
+                {
+                    if (get<0>(child)->explored == false)
+                    {
+                        get<0>(child)->explored = true;
+                        get<0>(child)->parent = current;
+                        get<1>(gridNode[the_x][the_y]).setColor(color(0, 0, 255));
+                        pq.push({std::get<0>(child), heuristic(std::get<0>(child)->index[0], std::get<0>(child)->index[1])});
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     void aStar()
     {
 
