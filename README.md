@@ -150,14 +150,14 @@ Each triangle is assigned a unique color. When a ray hits a triangle, the pixel 
 
 | **DFS** | **BFS** | **Uniform Cost** |
 |--------|--------|------------------|
-| <img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/8e844de49082df6220abf17d3664939468fdb728/src/DFS_782/output_video2.gif" width="200"/> | <img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/4837f3183256ff1087328a332cda4217130e9194/src/BFS/output_video%20(2).gif" width="200"/> | <img src="src/UnifiedCostSearch/UnifiedCostSearchoutput.gif" width="200"/> |
+| <img src="src/Graph/DFS_782/output_video2.gif" width="200"/> | <img src="src/Graph/BFS/output_video (2).gif" width="200"/> | <img src="src/Graph/UnifiedCostSearch/UnifiedCostSearchoutput.gif" width="200"/> |
 
 ### Informed Search
 **For heuristic-based algorithms, a distance-based heuristic is used.**
 
 | **Greedy** | **Best-First** | **A\*** |
 |-----------|----------------|--------|
-| <img src="src/Greedy/GBFS_output.gif" width="200"/> | <img src="src/BestFirstSearch/BFS_output.gif" width="200"/> | <img src="src/AStar/AStaroutputV3.gif" width="200"/> |
+| <img src="src/Graph/Greedy/GBFS_output.gif" width="200"/> | <img src="src/Graph/BestFirstSearch/BFS_output.gif" width="200"/> | <img src="src/Graph/AStar/AStaroutputV3.gif" width="200"/> |
 
 
 ## Animation Highlights
