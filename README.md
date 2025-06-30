@@ -5,39 +5,35 @@
 <img src="src/img/suzane colored options1.png" width="300"/>
 <img src="src/img/dear2.png" width="300"/>
 
-# Project Overvie
+# Project Overview
 
 [Project Report](Github.pdf)
 
-This project focuses on building a 3D ray-cast renderer from the ground up, adhering to a "make it yourself" philosophy. The goal is to create, optimize, and expand a custom rendering engine, minimizing external inspiration and library usage. The RayCast Renderer itself is a lightweight engine that uses ray tracing to generate high-quality 2D images from 3D scenes. The project implements core concepts like vector mathematics, intersection logic, and parallel processing, while also incorporating advanced optimization techniques such as sub-camera splitting and asynchronous programming.
+This project builds a lightweight 3D ray-cast renderer from scratch, following a DIY approach with minimal external libraries. It uses ray tracing to render 2D images from 3D scenes and implements vector math, intersection logic, and parallelism, along with optimizations like sub-camera splitting and async processing.
 
 ---
 
-
-
 ## Key Concepts
 
-### What is Ray Casting?
+### Ray Casting
 
-Ray casting is the process of tracing rays from a viewpoint (camera) into a scene to identify the closest object along each ray's path. This forms the basis for rendering 3D scenes onto a 2D plane.
+Ray casting traces rays from the camera into a 3D scene to find the nearest object each ray hits, forming the basis for 2D rendering.
 
-**Ray Equation**:
-R(t) = O + t \* D
+**Ray Equation**:  
+`R(t) = O + t × D`  
+- **O**: Ray origin (camera)  
+- **D**: Normalized direction  
+- **t**: Scalar distance  
 
-- **O**: Ray origin, typically the camera position.
-- **D**: Ray direction, represented as a normalized 3D vector.
-- **t**: Scalar parameter, determining the point along the ray.
+### Triangles as Primitives
 
-### Triangles as Building Blocks
+All objects are built from **triangles**, each defined by:
+- 3D **vertices** (v1, v2, v3)  
+- A **color** value  
 
-In this renderer, all objects are represented as collections of **triangles**—the fundamental geometric primitive. Each triangle is defined by:
+### Ray–Triangle Intersection
 
-- **Vertices**: Three points in 3D space (v1, v2, v3).
-- **Color**: A color value that determines how the triangle will appear in the final image.
-
-### Intersection Testing
-
-The renderer employs the **linear algebra intersection** to efficiently calculate intersections between rays and triangles. When a ray intersects a triangle, the color of the triangle is assigned to the corresponding pixel in the rendered image.
+The engine uses linear algebra to test ray-triangle intersections. When a ray hits a triangle, its color is mapped to the corresponding pixel.
 
 ---
 
@@ -52,66 +48,26 @@ The renderer employs the **linear algebra intersection** to efficiently calculat
 
 ## Rendering Pipeline
 
-### 1. Scene Setup
-
-Define objects using triangles and configure the camera:
-
-```cpp
-// Define a triangle with three vertices
-object obj(primitive::cube, scaling, offset, angle, axis);
-
-// Set up the camera
-Camera camera(Point(0, 0, -5), Vec3(0, 0, 1), 90.0);
-```
-
-### 2. Ray Casting
+### Ray Casting
 
 - Rays are generated for each pixel in the image grid.
 - Each ray is cast into the scene to test for intersections with objects.
 
-### 3. Intersection Detection
+### Intersection Detection
 
 - The _linear algebra intersection algorithm_ determines:
   - Whether a ray intersects a triangle.
   - The point of intersection.
   - The triangle closest to the ray's origin.
 
-### 4. Color Mapping
+### Color Mapping
 
 - Assign the color of the intersected triangle to the corresponding pixel on the image plane.
 
-### 5. Image Output
+### Image Output
 
 - Combine all pixel data to generate the final 2D image.
 - Save the rendered image in formats like PNG or PPM.
-
-### Simple Geometries
-
-- Low-resolution and high-resolution renders of basic shapes like cubes.
-
-```cpp
-// Render a cube at low resolution
-Image image(128, 128);
-Renderer renderer(scene, camera);
-renderer.render(image);
-image.save("low_res_cube.png");
-```
-
-### Complex Geometries
-
-- High-detail renders of models like the Dahlia flower and Suzanne.
-
-```cpp
-// Load and render a complex model
-MeshReader reader;
-space scene = space("dahlia.txt");
-Image image(1920, 1080);
-Camera camera(Point(0, 0, -5), Vec3(0, 0, 1), 90.0);
-scene.addCamera(camera);
-scene.triggerCameras();
-image.save("dahlia_render.png");
-
-```
 
 ## Installation
 
@@ -131,20 +87,18 @@ image.save("dahlia_render.png");
 
 ## Theory Behind the Renderer
 
-Intersection Testing:
-The renderer solves the ray-triangle intersection problem:
+### Intersection Testing
 
-1. Check if the ray intersects the plane of the triangle.
-2. Confirm the intersection point lies inside the triangle bounds.
+The renderer checks ray-triangle intersections by:
 
-Color Mapping:
-Each triangle is assigned a unique color. When a ray hits a triangle, the pixel corresponding to the ray is updated with the triangle’s color.
+1. Testing if the ray intersects the triangle’s plane.  
+2. Verifying the intersection point lies within the triangle.
 
+### Color Mapping
 
+Each triangle has a unique color. When hit by a ray, its color is assigned to the corresponding pixel.
 
 ## Search Algorithm Visualizations
-
-**All algorithms are applied on a weighted, undirected graph with randomized edge weights.  **
 
 ### Uninformed Search
 
@@ -186,14 +140,11 @@ The renderer also supports conversion of **ASCII characters into 3D mesh text**.
 - **Printable ASCII stacked 1 Render**: <img src="src/StringOutput/stacked500_1.bmp" width="250"/> <img src="src/StringOutput/stacked500_2.bmp" width="250"/>
 - **Full Printable ASCII Mesh Preview**: <img src="src/StringOutput/alpha001.bmp" width="1000"/>
 
-
 ### Technical Notes
 
 - Converts characters from ASCII 32 to 126 into triangle-based meshes.
 - Each mesh is positioned with uniform spacing in the X direction.
 - Characters with very few vertices skip decimation to preserve structure.
-
-
 
 ## Limitations
 
