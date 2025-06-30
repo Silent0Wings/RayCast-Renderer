@@ -14,9 +14,11 @@ DFS:
 <img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/8e844de49082df6220abf17d3664939468fdb728/src/DFS_782/output_video2.gif" width="200"/>
 BFS
 <img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/4837f3183256ff1087328a332cda4217130e9194/src/BFS/output_video%20(2).gif" width="200"/>
+BestFirstSearch
+<img src="src/BestFirstSearch/BFS_output.gif" width="200"/>
+
 Greedy
 <img src="src/Greedy/GBFS_output.gif" width="200"/>
-
 UCS
 <img src="src/UnifiedCostSearch/UnifiedCostSearchoutput.gif" width="200"/>
 A*
