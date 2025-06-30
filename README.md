@@ -17,7 +17,7 @@ BFS
 Greedy
 <img src="src/Greedy/GBFS_output.gif" width="200"/>
 
-UnifiedCostSearch
+UCS
 <img src="src/UnifiedCostSearch/UnifiedCostSearchoutput.gif" width="200"/>
 A*
 <img src="src/AStar/AStaroutput.gif" width="200"/>
