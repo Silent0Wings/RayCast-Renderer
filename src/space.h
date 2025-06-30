@@ -214,6 +214,24 @@ public:
         }
     }
 
+    // This launches a thread for each camera
+    void launchThreadedCamera() {
+        std::vector<std::future<void>> futures;
+
+        for (size_t camIndex = 0; camIndex < cameras.size(); ++camIndex) {
+            futures.push_back(std::async(std::launch::async, [&, camIndex]() {
+                for (auto& o : obj) {
+                    cameras[camIndex].cameraToImageOptimized(o);
+                }
+            }));
+        }
+
+        for (auto& future : futures) {
+            future.get();
+        }
+    }
+
+
     // output the imges
     void saveImages()
     {
