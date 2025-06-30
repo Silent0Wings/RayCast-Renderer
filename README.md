@@ -7,7 +7,7 @@
 
 ## Search Algorithm Visualizations
 
-**All algorithms are applied on a weighted, undirected graph with randomized edge weights.  
+**All algorithms are applied on a weighted, undirected graph with randomized edge weights.  **
 
 ### Uninformed Search
 
@@ -16,7 +16,7 @@
 | <img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/8e844de49082df6220abf17d3664939468fdb728/src/DFS_782/output_video2.gif" width="200"/> | <img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/4837f3183256ff1087328a332cda4217130e9194/src/BFS/output_video%20(2).gif" width="200"/> | <img src="src/UnifiedCostSearch/UnifiedCostSearchoutput.gif" width="200"/> |
 
 ### Informed Search
-For heuristic-based algorithms, a distance-based heuristic is used.**
+**For heuristic-based algorithms, a distance-based heuristic is used.**
 
 | **Greedy** | **Best-First** | **A\*** |
 |-----------|----------------|--------|
@@ -57,7 +57,7 @@ The renderer also supports conversion of **ASCII characters into 3D mesh text**.
 - Characters with very few vertices skip decimation to preserve structure.
 
 
-# RayCast Renderer
+# Project Overvie
 
 [Project Report](Github.pdf)
 
@@ -123,7 +123,7 @@ Camera camera(Point(0, 0, -5), Vec3(0, 0, 1), 90.0);
 
 ### 3. Intersection Detection
 
-- The _linear algebra intercection algorithm_ determines:
+- The _linear algebra intersection algorithm_ determines:
   - Whether a ray intersects a triangle.
   - The point of intersection.
   - The triangle closest to the ray's origin.
