@@ -1,61 +1,9 @@
 # RayCast Renderer
 
-![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/ccea9cce6a20f92a9ce836cf03a78983156d97e4/src/img/suzane2000.png)
-![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/0d70f502cf390c3f684a59b6940151f66277709a/src/img/dhalia%20resolution.png)
-![Rendered Scene](https://github.com/Silent0Wings/RayCast-Renderer/blob/11f97693d6eb489b350571ddb001aaaff9069bcd/src/img/suzane%20colored%20options1.png)
-![Rendered Scene](src/img/dear2.png)
-
-## Search Algorithm Visualizations
-
-**All algorithms are applied on a weighted, undirected graph with randomized edge weights.  **
-
-### Uninformed Search
-
-| **DFS** | **BFS** | **Uniform Cost** |
-|--------|--------|------------------|
-| <img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/8e844de49082df6220abf17d3664939468fdb728/src/DFS_782/output_video2.gif" width="200"/> | <img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/4837f3183256ff1087328a332cda4217130e9194/src/BFS/output_video%20(2).gif" width="200"/> | <img src="src/UnifiedCostSearch/UnifiedCostSearchoutput.gif" width="200"/> |
-
-### Informed Search
-**For heuristic-based algorithms, a distance-based heuristic is used.**
-
-| **Greedy** | **Best-First** | **A\*** |
-|-----------|----------------|--------|
-| <img src="src/Greedy/GBFS_output.gif" width="200"/> | <img src="src/BestFirstSearch/BFS_output.gif" width="200"/> | <img src="src/AStar/AStaroutputV3.gif" width="200"/> |
-
-
-## Animation Highlights
-
-These GIFs demonstrate the renderer's ability to animate scenes and generate videos from dynamic geometry and traversal logic, including rotation, scaling, multiple objects, and perspective shifting.
-
-<table>
-  <tr>
-    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/96ebe0298accf9018281e680fb79e39b1d66a0eb/src/CubeRenderPerspective/0001-0072.gif" width="250"/></td>
-    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/CubeRotationHigh.gif" width="250"/></td>
-    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/CubeRotationHighFinal.gif" width="250"/></td>
-  </tr>
-  <tr>
-    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/02b8950f58238ec8dfcf8adeef7b123af9e70946/src/NewRenderForVideo/YshiftCubeTest.gif" width="250"/></td>
-    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/output_videoCone.gif" width="250"/></td>
-    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/output_videoCube.gif" width="250"/></td>
-  </tr>
-</table>
-
-# ASCII to 3D Text
-
-The renderer also supports conversion of **ASCII characters into 3D mesh text**. This allows visualization of full strings (e.g., `"HELLO WORLD"`) as 3D geometry.
-
-## Example Outputs
-
-- **Printable ASCII stacked 1 Render**: <img src="src/StringOutput/stacked500_1.bmp" width="250"/> <img src="src/StringOutput/stacked500_2.bmp" width="250"/>
-- **Full Printable ASCII Mesh Preview**: <img src="src/StringOutput/alpha001.bmp" width="1000"/>
-
-
-### Technical Notes
-
-- Converts characters from ASCII 32 to 126 into triangle-based meshes.
-- Each mesh is positioned with uniform spacing in the X direction.
-- Characters with very few vertices skip decimation to preserve structure.
-
+<img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/ccea9cce6a20f92a9ce836cf03a78983156d97e4/src/img/suzane2000.png" width="300"/>
+<img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/0d70f502cf390c3f684a59b6940151f66277709a/src/img/dhalia%20resolution.png" width="300"/>
+<img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/11f97693d6eb489b350571ddb001aaaff9069bcd/src/img/suzane%20colored%20options1.png" width="300"/>
+<img src="src/img/dear2.png" width="300"/>
 
 # Project Overvie
 
@@ -191,6 +139,61 @@ The renderer solves the ray-triangle intersection problem:
 
 Color Mapping:
 Each triangle is assigned a unique color. When a ray hits a triangle, the pixel corresponding to the ray is updated with the triangle’s color.
+
+
+
+## Search Algorithm Visualizations
+
+**All algorithms are applied on a weighted, undirected graph with randomized edge weights.  **
+
+### Uninformed Search
+
+| **DFS** | **BFS** | **Uniform Cost** |
+|--------|--------|------------------|
+| <img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/8e844de49082df6220abf17d3664939468fdb728/src/DFS_782/output_video2.gif" width="200"/> | <img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/4837f3183256ff1087328a332cda4217130e9194/src/BFS/output_video%20(2).gif" width="200"/> | <img src="src/UnifiedCostSearch/UnifiedCostSearchoutput.gif" width="200"/> |
+
+### Informed Search
+**For heuristic-based algorithms, a distance-based heuristic is used.**
+
+| **Greedy** | **Best-First** | **A\*** |
+|-----------|----------------|--------|
+| <img src="src/Greedy/GBFS_output.gif" width="200"/> | <img src="src/BestFirstSearch/BFS_output.gif" width="200"/> | <img src="src/AStar/AStaroutputV3.gif" width="200"/> |
+
+
+## Animation Highlights
+
+These GIFs demonstrate the renderer's ability to animate scenes and generate videos from dynamic geometry and traversal logic, including rotation, scaling, multiple objects, and perspective shifting.
+
+<table>
+  <tr>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/96ebe0298accf9018281e680fb79e39b1d66a0eb/src/CubeRenderPerspective/0001-0072.gif" width="250"/></td>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/CubeRotationHigh.gif" width="250"/></td>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/CubeRotationHighFinal.gif" width="250"/></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/02b8950f58238ec8dfcf8adeef7b123af9e70946/src/NewRenderForVideo/YshiftCubeTest.gif" width="250"/></td>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/output_videoCone.gif" width="250"/></td>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/output_videoCube.gif" width="250"/></td>
+  </tr>
+</table>
+
+# ASCII to 3D Text
+
+The renderer also supports conversion of **ASCII characters into 3D mesh text**. This allows visualization of full strings (e.g., `"HELLO WORLD"`) as 3D geometry.
+
+## Example Outputs
+
+- **Printable ASCII stacked 1 Render**: <img src="src/StringOutput/stacked500_1.bmp" width="250"/> <img src="src/StringOutput/stacked500_2.bmp" width="250"/>
+- **Full Printable ASCII Mesh Preview**: <img src="src/StringOutput/alpha001.bmp" width="1000"/>
+
+
+### Technical Notes
+
+- Converts characters from ASCII 32 to 126 into triangle-based meshes.
+- Each mesh is positioned with uniform spacing in the X direction.
+- Characters with very few vertices skip decimation to preserve structure.
+
+
 
 ## Limitations
 
