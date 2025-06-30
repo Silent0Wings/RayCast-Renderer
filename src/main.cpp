@@ -5169,8 +5169,8 @@ int main(int argc, char const *argv[])
     // testGraph12();
     // testGraph13();
     // testGraph14();
-    // testGraph15();
-    testGraph16();
+    testGraph15();
+    // testGraph16();
     //  tttt();
     //  testSuzanRender();
     //  testColor();
