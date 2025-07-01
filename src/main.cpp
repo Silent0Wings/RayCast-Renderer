@@ -1991,8 +1991,128 @@ void testPerspective()
     std::string filename = folderName + "/CubeRenderPerspectiveScale" + std::to_string((int)perspectiveScale);
     std::replace(filename.begin(), filename.end(), '.', '_'); // Replace '.' with '_'
 
-    ImageRenderer::renderToFile(s.cameras.at(0).getimage(), filename + ".ppm");
+    ImageRenderer::WriteBMP(s.cameras.at(0).getimage(), filename + ".bmp");
 }
+
+void testPerspective1()
+{
+    std::cout << "_________Space Test_______________" << std::endl;
+    unsigned int size = 500;
+    double step = 0.01;
+
+    float perspectiveScale = 0.9;
+    float perspectiveForce = 1;
+
+    // create a grid of rays that will be used to create the camera
+    // and another grid of rays that will be used to create a difference in space between each ray
+    // the  y axis in this case is depth
+    // the z is left and right
+    // and the x is height
+
+    // +x moves up , +y moves left , + z move away
+    vec3 origineOffset = vec3(-(size * step) / 2.5, -(size * step) / 2.5, 0);
+
+    // create 2 camera 1 origine and another one at the same position but much bigger
+    //    camera(int h, int w, double step, point origin, vec3 indexFinger, vec3 midleFinger, int thumbFinger)
+    camera camera_Origine(size, size, step, origineOffset, point(1, 0, 0), vec3(0, 1, 0), 1);
+    camera camera_OrigineScaled(size, size, step * perspectiveScale, origineOffset, point(1, 0, 0), vec3(0, 1, 0), 1);
+
+    // make sure ther have the same center
+    vec3 reCenteringVector = camera_OrigineScaled.get(camera_OrigineScaled.getheight() / 2, camera_OrigineScaled.getwidth() / 2).getOrigine() - camera_Origine.get(camera_Origine.getheight() / 2, camera_Origine.getwidth() / 2).getOrigine();
+    // apply this direction to center it
+
+    for (size_t i = 0; i < camera_OrigineScaled.getheight(); i++)
+    {
+        for (size_t j = 0; j < camera_OrigineScaled.getwidth(); j++)
+        {
+            ray currentR = camera_OrigineScaled.get(i, j);
+            ray newR = ray(currentR.getOrigine() + reCenteringVector, currentR.getDirection());
+            camera_OrigineScaled.set(i, j, newR);
+        }
+    }
+    // and move the camera_OrigineScaled away from the origine camera
+    for (size_t i = 0; i < camera_OrigineScaled.getheight(); i++)
+    {
+        for (size_t j = 0; j < camera_OrigineScaled.getwidth(); j++)
+        {
+            ray currentR = camera_OrigineScaled.get(i, j);
+            ray newR = ray(currentR.get(perspectiveForce), currentR.getDirection());
+            camera_OrigineScaled.set(i, j, newR);
+        }
+    }
+
+    camera finalCam(camera_Origine.getheight(), camera_Origine.getwidth());
+    for (size_t i = 0; i < camera_Origine.getheight(); i++)
+    {
+        for (size_t j = 0; j < camera_Origine.getwidth(); j++)
+        {
+            vec3 newDirection = camera_OrigineScaled.get(i, j).getOrigine() - camera_Origine.get(i, j).getOrigine();
+            newDirection = gmath::normalize(newDirection);
+            ray newR(camera_Origine.get(i, j).getOrigine(), newDirection);
+            finalCam.set(i, j, newR);
+        }
+    }
+
+    double scaling = 1;
+    point offset = point(0, 0, 0);
+    object obj(primitive::cube, scaling, offset);
+
+    // Create a space and assign the object
+    space s({obj});
+
+    // Add the camera to the space
+    s.cameras.push_back(finalCam);
+
+    // Trigger the camera rays
+    s.triggerCameraRay();
+    s.saveImages();
+
+    std::cout << "________________________" << std::endl;
+
+    // ImageRenderer::renderToFile(stitchedImage, "Step"+std::to_string(i)+".ppm");
+    string folderName = "TestRender";
+    std::filesystem::create_directories(folderName);
+    std::string filename = folderName + "/CubeRenderPerspectiveScale" + std::to_string((int)perspectiveScale);
+    std::replace(filename.begin(), filename.end(), '.', '_'); // Replace '.' with '_'
+
+    ImageRenderer::WriteBMP(s.cameras.at(0).getimage(), filename + ".bmp");
+}
+
+void testPerspective2()
+{
+    // Define the grid size and step
+    size_t ratio = 1;
+    unsigned int size = 500 / ratio;
+    double cam_step = 0.005f * ratio;
+
+    float perspectiveScale = 1.5;
+    float perspectiveForce = 10;
+
+    // camera config
+    point camOrigin(0, 0, 20);
+    vec3 camYDirection(1, 0, 1);
+    vec3 camXDirection(0, 1, 0);
+
+    // mesh datat
+    double scaling = 1;
+    point offset = point(size * cam_step, size * cam_step, 0);
+    vec3 axis(1, 1, 1);
+
+    object obj = object();
+    obj.loadMesh(".\\Mesh\\Diamond1.txt", scaling, offset);
+    obj.randomColoring();
+
+    space s({obj});
+    camera cam1 = camera::perspectiveCamera(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1, perspectiveScale, perspectiveForce);
+
+    s.cameras = cam1.splitCamera(cam1, 20);
+    s.launchThreadedCamera();
+
+    std::filesystem::create_directories("OutputDI");
+    image finalstitched = cam1.consruct_split(s.cameras, size, size);
+    ImageRenderer::WriteBMP(finalstitched, "OutputDI/diamondrender.bmp");
+}
+
 // create a video of a cube in differend perspective like a field of view
 void testPerspectiveLoop()
 {
@@ -4110,7 +4230,7 @@ void testGraph15()
 
         std::vector<object> allObjects = main_graph.getObjects();
         space s(allObjects);
-        s.cameras =  cam1.splitCamera(cam1, 8);
+        s.cameras = cam1.splitCamera(cam1, 8);
         s.launchThreadedCamera();
 
         std::filesystem::create_directories("AStar");
@@ -4137,7 +4257,7 @@ void testGraph15()
 
         std::vector<object> allObjects = main_graph.getObjects();
         space s(allObjects);
-        s.cameras =  cam1.splitCamera(cam1, 8);
+        s.cameras = cam1.splitCamera(cam1, 8);
         s.launchThreadedCamera();
 
         std::filesystem::create_directories("AStar");
@@ -5090,8 +5210,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow)
 }
 */
 
-
-
 void testRenderDiamond()
 {
     // Define the grid size and step
@@ -5115,14 +5233,14 @@ void testRenderDiamond()
 
     space s({obj});
     camera cam1(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1);
-    s.cameras = cam1.splitCamera(cam1, 20);;
+    s.cameras = cam1.splitCamera(cam1, 20);
+    ;
     s.launchThreadedCamera();
 
     std::filesystem::create_directories("OutputDI");
     image finalstitched = cam1.consruct_split(s.cameras, size, size);
     ImageRenderer::WriteBMP(finalstitched, "OutputDI/diamondrender.bmp");
 }
-
 
 int main(int argc, char const *argv[])
 {
@@ -5153,6 +5271,8 @@ int main(int argc, char const *argv[])
     // generateVideo1();
     // generateVideo2();
     // testPerspective();
+    // testPerspective1();
+    testPerspective2();
     // testPerspectiveLoop();
     // testPerspectiveLoop1();
     // splitCamera();
@@ -5192,7 +5312,7 @@ int main(int argc, char const *argv[])
     //  test3dString();
     //  testAlphabet();
     //  testStackedAlphabet();
-    testRenderDiamond();
+    // testRenderDiamond();
     return 0;
 }
 

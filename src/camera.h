@@ -65,7 +65,6 @@ public:
     }
     camera(const int h, const int w, const double step, const point origin, const point offset, const vec3 affect, const vec3 direction)
     {
-
         if (w <= 0 || h <= 0 || step <= 0)
         {
             throw std::invalid_argument("Width and height must be non-negative");
@@ -81,6 +80,7 @@ public:
         {
             this->width = static_cast<unsigned int>(w);
             this->height = static_cast<unsigned int>(h);
+
             gridRay.resize(height);
             for (unsigned int i = 0; i < (unsigned int)height; ++i)
             {
@@ -153,6 +153,60 @@ public:
         gridRay = g;
     }
 
+    static camera perspectiveCamera(int h, int w, double step, point origin, vec3 indexFinger, vec3 midleFinger, int thumbFinger = 1, double perspectiveScale = 0.9, double perspectiveForce = 1)
+    {
+
+        // create a grid of rays that will be used to create the camera
+        // and another grid of rays that will be used to create a difference in space between each ray
+        // the  y axis in this case is depth
+        // the z is left and right
+        // and the x is height
+
+        // +x moves up , +y moves left , + z move away
+
+        // create 2 camera 1 origine and another one at the same position but much bigger
+        //    camera(int h, int w, double step, point origin, vec3 indexFinger, vec3 midleFinger, int thumbFinger)
+        camera camera_Origine(h, w, step, origin, indexFinger, midleFinger, thumbFinger);
+        camera camera_OrigineScaled(h, w, step * perspectiveScale, origin, indexFinger, midleFinger, thumbFinger);
+
+        // make sure ther have the same center
+        vec3 reCenteringVector = camera_OrigineScaled.get(camera_OrigineScaled.getheight() / 2, camera_OrigineScaled.getwidth() / 2).getOrigine() - camera_Origine.get(camera_Origine.getheight() / 2, camera_Origine.getwidth() / 2).getOrigine();
+        // apply this direction to center it
+
+        for (size_t i = 0; i < camera_OrigineScaled.getheight(); i++)
+        {
+            for (size_t j = 0; j < camera_OrigineScaled.getwidth(); j++)
+            {
+                ray currentR = camera_OrigineScaled.get(i, j);
+                ray newR = ray(currentR.getOrigine() + reCenteringVector, currentR.getDirection());
+                camera_OrigineScaled.set(i, j, newR);
+            }
+        }
+        // and move the camera_OrigineScaled away from the origine camera
+        for (size_t i = 0; i < camera_OrigineScaled.getheight(); i++)
+        {
+            for (size_t j = 0; j < camera_OrigineScaled.getwidth(); j++)
+            {
+                ray currentR = camera_OrigineScaled.get(i, j);
+                ray newR = ray(currentR.get(perspectiveForce), currentR.getDirection());
+                camera_OrigineScaled.set(i, j, newR);
+            }
+        }
+
+        camera finalCam(camera_Origine.getheight(), camera_Origine.getwidth());
+        for (size_t i = 0; i < camera_Origine.getheight(); i++)
+        {
+            for (size_t j = 0; j < camera_Origine.getwidth(); j++)
+            {
+                vec3 newDirection = camera_OrigineScaled.get(i, j).getOrigine() - camera_Origine.get(i, j).getOrigine();
+                newDirection = gmath::normalize(newDirection);
+                ray newR(camera_Origine.get(i, j).getOrigine(), newDirection);
+                finalCam.set(i, j, newR);
+            }
+        }
+
+        return finalCam;
+    }
     // construct the ray grid for the camera
     void consructRay(point camOrigin, point CamOffset, vec3 camDirection, unsigned int height, unsigned int width, double step)
     {

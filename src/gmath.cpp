@@ -28,7 +28,7 @@ vec3 gmath::normalize(const vec3 &vec)
     double len = length(vec);
     if (len == 0)
     {
-        throw std::invalid_argument("Division by zero is not allowed");
+        throw std::invalid_argument("gmath::normalize():Division by zero is not allowed");
     }
     return vec3(vec.x() / len, vec.y() / len, vec.z() / len);
 }
@@ -174,11 +174,11 @@ point *gmath::intersectLocation(const ray &r1, const ray &r2)
     return intersection;
 }
 
-point* gmath::intersectRayTriangle(const ray& r, const point triangle[3])
+point *gmath::intersectRayTriangle(const ray &r, const point triangle[3])
 {
-    const point& A = triangle[0];
-    const point& B = triangle[1];
-    const point& C = triangle[2];
+    const point &A = triangle[0];
+    const point &B = triangle[1];
+    const point &C = triangle[2];
 
     // Step 1: Early direction check (ray must point toward triangle)
     point rayOrigin = r.getOrigine();
@@ -238,7 +238,6 @@ point* gmath::intersectRayTriangle(const ray& r, const point triangle[3])
 
     return nullptr;
 }
-
 
 Hit *gmath::intersect3dHit(const ray &r1, const point arr[3])
 {
