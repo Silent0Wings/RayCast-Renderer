@@ -40,6 +40,12 @@ public:
         return origine + direction * t;
     }
 
+    // Point at a distance t along the ray
+    ray getRay(double t) const
+    {
+        return ray(origine + direction * t, direction);
+    }
+
     // Overload operator==
     bool operator==(const ray &other) const
     {

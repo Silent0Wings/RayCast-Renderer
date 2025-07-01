@@ -192,6 +192,28 @@ public:
         sphereRadius *= 2;
     }
 
+    void MoveTo(point target)
+    {
+        map<array<point, 3>, color> newcolorMap;
+        const point origin = center;
+        const vec3 translationDirection = target - origin;
+        for (size_t i = 0; i < vertices.size(); i++)
+        {
+            array<point, 3> triangle = {
+                vertices[i][0],
+                vertices[i][1],
+                vertices[i][2]};
+
+            array<point, 3> newTriangle = {
+                vertices[i][0] + translationDirection,
+                vertices[i][1] + translationDirection,
+                vertices[i][2] + translationDirection};
+
+            newcolorMap[newTriangle] = colorMap.at(triangle);
+        }
+        colorMap = newcolorMap;
+    }
+
     void sphere(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
         loadMesh(".\\Mesh\\sphere.txt", scaling, offset, axis, angle);

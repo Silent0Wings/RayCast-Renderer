@@ -2081,26 +2081,26 @@ void testPerspective1()
 void testPerspective2()
 {
     // Define the grid size and step
-    size_t ratio = 1;
+    double ratio = .125;
     unsigned int size = 500 / ratio;
     double cam_step = 0.005f * ratio;
 
-    float perspectiveScale = 1.5;
-    float perspectiveForce = 10;
+    float perspectiveScale = 25;
+    float perspectiveForce = 25;
 
-    // camera config
-    point camOrigin(0, 0, 20);
-    vec3 camYDirection(1, 0, 1);
-    vec3 camXDirection(0, 1, 0);
+    // camera config use https://www.geogebra.org/3d
+    point camOrigin(0, 10, 10);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, 1, -1);
 
     // mesh datat
-    double scaling = 1;
-    point offset = point(size * cam_step, size * cam_step, 0);
-    vec3 axis(1, 1, 1);
+    double scaling = 10;
+    point offset = point(size * cam_step, size * cam_step, 0) / 2;
 
     object obj = object();
     obj.loadMesh(".\\Mesh\\Diamond1.txt", scaling, offset);
     obj.randomColoring();
+    obj.MoveTo(point(0, 0, 0));
 
     space s({obj});
     camera cam1 = camera::perspectiveCamera(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1, perspectiveScale, perspectiveForce);
@@ -2110,7 +2110,7 @@ void testPerspective2()
 
     std::filesystem::create_directories("OutputDI");
     image finalstitched = cam1.consruct_split(s.cameras, size, size);
-    ImageRenderer::WriteBMP(finalstitched, "OutputDI/diamondrender.bmp");
+    ImageRenderer::WriteBMP(finalstitched, "OutputDI/diamondrender" + to_string((int)perspectiveForce) + ".bmp");
 }
 
 // create a video of a cube in differend perspective like a field of view
@@ -5272,7 +5272,7 @@ int main(int argc, char const *argv[])
     // generateVideo2();
     // testPerspective();
     // testPerspective1();
-    testPerspective2();
+    // testPerspective2();
     // testPerspectiveLoop();
     // testPerspectiveLoop1();
     // splitCamera();

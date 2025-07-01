@@ -167,11 +167,19 @@ public:
         // create 2 camera 1 origine and another one at the same position but much bigger
         //    camera(int h, int w, double step, point origin, vec3 indexFinger, vec3 midleFinger, int thumbFinger)
         camera camera_Origine(h, w, step, origin, indexFinger, midleFinger, thumbFinger);
+        if (perspectiveScale <= 1 || perspectiveForce == 0)
+        {
+            return camera_Origine;
+        }
+
         camera camera_OrigineScaled(h, w, step * perspectiveScale, origin, indexFinger, midleFinger, thumbFinger);
 
         // make sure ther have the same center
-        vec3 reCenteringVector = camera_OrigineScaled.get(camera_OrigineScaled.getheight() / 2, camera_OrigineScaled.getwidth() / 2).getOrigine() - camera_Origine.get(camera_Origine.getheight() / 2, camera_Origine.getwidth() / 2).getOrigine();
+        point origine = camera_Origine.get(camera_Origine.getheight() / 2, camera_Origine.getwidth() / 2).getOrigine();
+        point scaledOrigine = camera_OrigineScaled.get(camera_OrigineScaled.getheight() / 2, camera_OrigineScaled.getwidth() / 2).getOrigine();
+        vec3 reCenteringVector = origine - scaledOrigine;
         // apply this direction to center it
+        // cout << "XX1 : " << camera_Origine.get(camera_Origine.getheight() / 2, camera_Origine.getwidth() / 2).getOrigine() << " | YY1 : " << camera_OrigineScaled.get(camera_OrigineScaled.getheight() / 2, camera_OrigineScaled.getwidth() / 2).getOrigine() << endl;
 
         for (size_t i = 0; i < camera_OrigineScaled.getheight(); i++)
         {
@@ -182,30 +190,34 @@ public:
                 camera_OrigineScaled.set(i, j, newR);
             }
         }
+
+        // cout << "XX2 : " << camera_Origine.get(camera_Origine.getheight() / 2, camera_Origine.getwidth() / 2).getOrigine() << " | YY2 : " << camera_OrigineScaled.get(camera_OrigineScaled.getheight() / 2, camera_OrigineScaled.getwidth() / 2).getOrigine() << endl;
+
         // and move the camera_OrigineScaled away from the origine camera
         for (size_t i = 0; i < camera_OrigineScaled.getheight(); i++)
         {
             for (size_t j = 0; j < camera_OrigineScaled.getwidth(); j++)
             {
-                ray currentR = camera_OrigineScaled.get(i, j);
-                ray newR = ray(currentR.get(perspectiveForce), currentR.getDirection());
-                camera_OrigineScaled.set(i, j, newR);
+                ray newR = camera_OrigineScaled.get(i, j);
+                camera_OrigineScaled.set(i, j, newR.getRay(perspectiveForce));
             }
         }
+        // cout << "XX3 : " << camera_Origine.get(camera_Origine.getheight() / 2, camera_Origine.getwidth() / 2).getOrigine() << " | YY3 : " << camera_OrigineScaled.get(camera_OrigineScaled.getheight() / 2, camera_OrigineScaled.getwidth() / 2).getOrigine() << endl;
 
-        camera finalCam(camera_Origine.getheight(), camera_Origine.getwidth());
         for (size_t i = 0; i < camera_Origine.getheight(); i++)
         {
             for (size_t j = 0; j < camera_Origine.getwidth(); j++)
             {
-                vec3 newDirection = camera_OrigineScaled.get(i, j).getOrigine() - camera_Origine.get(i, j).getOrigine();
+                ray originRay = camera_Origine.get(i, j);
+                ray scaledRay = camera_OrigineScaled.get(i, j);
+                vec3 newDirection = scaledRay.getOrigine() - originRay.getOrigine();
                 newDirection = gmath::normalize(newDirection);
-                ray newR(camera_Origine.get(i, j).getOrigine(), newDirection);
-                finalCam.set(i, j, newR);
+                ray newR(originRay.getOrigine(), newDirection);
+                camera_Origine.set(i, j, newR);
             }
         }
 
-        return finalCam;
+        return camera_Origine;
     }
     // construct the ray grid for the camera
     void consructRay(point camOrigin, point CamOffset, vec3 camDirection, unsigned int height, unsigned int width, double step)
