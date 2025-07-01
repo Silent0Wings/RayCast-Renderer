@@ -5213,14 +5213,14 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow)
 void testRenderDiamond()
 {
     // Define the grid size and step
-    size_t ratio = 1;
-    unsigned int size = 500 / ratio;
+    double ratio = .125;
+    size_t size = 500 / ratio;
     double cam_step = 0.005f * ratio;
 
     // camera config
     point camOrigin(0, 0, 10);
-    vec3 camYDirection(1, 0, 1);
-    vec3 camXDirection(1, 1, 0);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, 1, 0);
 
     // mesh datat
     double scaling = 1;
@@ -5239,7 +5239,7 @@ void testRenderDiamond()
 
     std::filesystem::create_directories("OutputDI");
     image finalstitched = cam1.consruct_split(s.cameras, size, size);
-    ImageRenderer::WriteBMP(finalstitched, "OutputDI/diamondrender.bmp");
+    ImageRenderer::WriteBMP(finalstitched, "OutputDI/diamondrenderx" + to_string(size) + ".bmp");
 }
 
 int main(int argc, char const *argv[])
@@ -5312,7 +5312,7 @@ int main(int argc, char const *argv[])
     //  test3dString();
     //  testAlphabet();
     //  testStackedAlphabet();
-    // testRenderDiamond();
+    testRenderDiamond();
     return 0;
 }
 
