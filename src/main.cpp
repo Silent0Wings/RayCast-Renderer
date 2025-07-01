@@ -5242,6 +5242,42 @@ void testRenderDiamond()
     ImageRenderer::WriteBMP(finalstitched, "OutputDI/diamondrenderx" + to_string(size) + ".bmp");
 }
 
+void testRenderDiamondLoop()
+{
+    // Define the grid size and step
+    double ratio = 1;
+    unsigned int size = 500 / ratio;
+    double cam_step = 0.005f * ratio;
+    // mesh datat
+    double scaling = 10;
+    point offset = point(size * cam_step, size * cam_step, 0) / 2;
+
+    object obj = object();
+    obj.loadMesh(".\\Mesh\\Diamond1.txt", scaling, offset);
+    obj.randomColoring();
+    obj.MoveTo(point(0, 0, 0));
+    // camera config use https://www.geogebra.org/3d
+    point camOrigin(0, 10, 10);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, 1, -1);
+    for (size_t i = 0; i < 100; i++)
+    {
+
+        float perspectiveScale = i;
+        float perspectiveForce = 25;
+
+        space s({obj});
+        camera cam1 = camera::perspectiveCamera(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1, perspectiveScale, perspectiveForce);
+
+        s.cameras = cam1.splitCamera(cam1, 20);
+        s.launchThreadedCamera();
+
+        std::filesystem::create_directories("OutputDILoop");
+        image finalstitched = cam1.consruct_split(s.cameras, size, size);
+        ImageRenderer::WriteBMP(finalstitched, "OutputDILoop/step" + to_string((int)perspectiveScale) + ".bmp");
+    }
+}
+
 int main(int argc, char const *argv[])
 {
     // testintersection();
@@ -5312,7 +5348,8 @@ int main(int argc, char const *argv[])
     //  test3dString();
     //  testAlphabet();
     //  testStackedAlphabet();
-    testRenderDiamond();
+    // testRenderDiamond();
+    testRenderDiamondLoop();
     return 0;
 }
 
