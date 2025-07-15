@@ -85,6 +85,74 @@ public:
         goal = &get<0>(gridNode.at(height - 1).at(width - 1));
     }
 
+    graph(const vector<vector<object>> *allObject)
+    {
+
+        // creating the graph like structure
+        int increment = 0;
+
+        // set the parent node into the grid
+        for (size_t i = 0; i < allObject->size(); i++)
+        {
+            if ((*allObject)[i].size() == 1)
+            {
+                // disconnected node
+            }
+            else
+            {
+                vector<tuple<graphNode, object>> temprow;
+
+                graphNode tempNode;
+                tempNode.value = increment;
+                tempNode.index = {i, 0};
+                temprow.push_back(std::make_tuple(tempNode, (*allObject)[i][0]));
+                increment++;
+                gridNode.push_back(temprow);
+            }
+        }
+
+        // set the connected nodes
+        for (size_t i = 0; i < allObject->size(); i++)
+        {
+            if ((*allObject)[i].size() == 1)
+            {
+                // disconnected node
+            }
+            else
+            {
+                get<0>(gridNode.at(i).at(0));
+
+                for (size_t z = 1; z < (*allObject)[i].size(); z++)
+                {
+                    graphNode tempNode;
+                    tempNode.value = increment;
+                    tempNode.index = {i, z};
+                    tempNode.parent = &get<0>(gridNode.at(i).at(0)); // set the parent value
+
+                    gridNode.at(i).push_back(std::make_tuple(tempNode, (*allObject)[i][z]));
+                    // associate current node to the parent which is at the start of the row
+                    get<0>(gridNode.at(i).at(0)).children.push_back(std::make_tuple(&get<0>(gridNode.at(i).at(0)), increment));
+                }
+                increment++;
+            }
+        }
+
+        root = &(get<0>(gridNode.at(0).at(0)));
+        root->explored = true;
+        cout << "54" << endl;
+
+        if (gridNode.size() > 2 && gridNode[2].size() > 2)
+        {
+            get<0>(gridNode[2][2]).goal = true;
+            goal = &get<0>(gridNode[2][2]);
+        }
+        else
+        {
+            std::cerr << "Not enough nodes to set goal at (2, 2)" << std::endl;
+            goal = nullptr;
+        }
+    }
+
     static bool graphConstraing(int x, int y, size_t height, size_t width)
     {
         return !(x < 0 || x >= (int)height || y < 0 || y >= (int)width);

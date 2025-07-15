@@ -5278,6 +5278,154 @@ void testRenderDiamondLoop()
     }
 }
 
+void testLoadGraphConnection(const std::string &filename, std::vector<std::vector<std::string>> *vertices)
+{
+    std::ifstream file(filename);
+    if (!file.is_open())
+    {
+        std::cerr << "failed to open the file!" << std::endl;
+        return;
+    }
+
+    std::string line;
+    while (std::getline(file, line))
+    {
+        // Trim whitespace (space, tab, carriage return, newline)
+        line.erase(0, line.find_first_not_of(" \t\r\n"));
+        line.erase(line.find_last_not_of(" \t\r\n") + 1);
+
+        // Skip empty lines
+        if (line.empty())
+            continue;
+
+        // Debug
+        // std::cout << "Raw line: [" << line << "]" << std::endl;
+
+        std::vector<std::string> vertex;
+        size_t pos = line.find('|');
+        if (pos == std::string::npos)
+            continue;
+
+        vertex.push_back(line.substr(0, pos)); // current node
+        line.erase(0, pos + 1);                // remove current node and '|'
+
+        // Split connections by ;
+        while ((pos = line.find(';')) != std::string::npos)
+        {
+            std::string token = line.substr(0, pos);
+            if (!token.empty())
+                vertex.push_back(token);
+            line.erase(0, pos + 1);
+        }
+
+        if (!line.empty())
+            vertex.push_back(line); // last node
+
+        // Only push if there's at least 1 connection
+        if (!vertex.empty())
+            vertices->push_back(vertex);
+    }
+
+    file.close();
+}
+
+bool convertMesh(vector<vector<point>> *vertices, vector<vector<string>> *verticesString)
+{
+    if (verticesString->size() == 0)
+    {
+        cerr << "failed to open the file !" << endl;
+        return false;
+    }
+
+    for (size_t i = 0; i < verticesString->size(); i++)
+    {
+
+        vector<point> v;
+        for (size_t j = 0; j < (*verticesString)[i].size(); j++)
+        {
+            // cout << "24" << endl;
+            const std::string &raw = (*verticesString)[i][j];
+            // std::cout << "Raw line: [" << raw << "]" << std::endl;
+
+            if (raw.length() < 5)
+            {
+                std::cerr << "Invalid point string: " << raw << std::endl;
+                continue;
+            }
+            point p(raw);
+
+            v.push_back(p);
+        }
+        vertices->push_back(v);
+    }
+
+    if (verticesString->size() == vertices->size())
+    {
+        return true;
+    }
+
+    return false;
+}
+
+void posToObject(const std::vector<std::vector<point>> *vertices, std::vector<std::vector<object>> &allObject, const primitive instance = primitive::cube)
+{
+    for (size_t i = 0; i < vertices->size(); i++)
+    {
+        std::vector<object> row;
+
+        for (const point &pos : (*vertices)[i])
+        {
+            object tempObj(instance, 1.0, pos);
+            row.push_back(tempObj);
+        }
+
+        allObject.push_back(row);
+    }
+}
+
+void montrealTest()
+{
+    // Define the grid size and step
+    double ratio = 1;
+    unsigned int size = 500 / ratio;
+    double cam_step = 0.005f * ratio;
+    // mesh datat
+    // double scaling = 10;
+    // point offset = point(size * cam_step, size * cam_step, 0) / 2;
+
+    object obj = object();
+    //".\\DataMontreal\\vertex_connections.txt"
+
+    string path = ".\\DataMontreal\\vertex_connections.txt";
+    std::vector<std::vector<string>> verticesString;
+    testLoadGraphConnection(path, &verticesString);
+
+    vector<vector<point>> verticesPoint;
+    convertMesh(&verticesPoint, &verticesString);
+
+    vector<vector<object>> allObject;
+    posToObject(&verticesPoint, allObject);
+    graph main_graph(&allObject);
+
+    // camera config use https://www.geogebra.org/3d
+    point camOrigin(0, 10, 10);
+    vec3 camYDirection(1, 0, 0);
+    vec3 camXDirection(0, 1, -1);
+
+    float perspectiveScale = 100;
+    float perspectiveForce = 25;
+
+    space s(main_graph.getObjects());
+    camera cam1 = camera::perspectiveCamera(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1, perspectiveScale, perspectiveForce);
+
+    s.cameras = cam1.splitCamera(cam1, 20);
+    s.launchThreadedCamera();
+
+    std::filesystem::create_directories("MontrealRender");
+    image finalstitched = cam1.consruct_split(s.cameras, size, size);
+    ImageRenderer::WriteBMP(finalstitched, "MontrealRender/step" + to_string((int)perspectiveScale) + ".bmp");
+}
+
 int main(int argc, char const *argv[])
 {
     // testintersection();
@@ -5349,7 +5497,8 @@ int main(int argc, char const *argv[])
     //  testAlphabet();
     //  testStackedAlphabet();
     // testRenderDiamond();
-    testRenderDiamondLoop();
+    // testRenderDiamondLoop();
+    montrealTest();
     return 0;
 }
 
