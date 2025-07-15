@@ -5393,7 +5393,6 @@ void montrealTest()
     // double scaling = 10;
     // point offset = point(size * cam_step, size * cam_step, 0) / 2;
 
-    object obj = object();
     //".\\DataMontreal\\vertex_connections.txt"
 
     string path = ".\\DataMontreal\\vertex_connections.txt";
@@ -5416,14 +5415,89 @@ void montrealTest()
     float perspectiveForce = 25;
 
     space s(main_graph.getObjects());
-    camera cam1 = camera::perspectiveCamera(size * 2, size * 2, cam_step, camOrigin, camXDirection, camYDirection, 1, perspectiveScale, perspectiveForce);
+    camera cam1 = camera::perspectiveCamera(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1, perspectiveScale, perspectiveForce);
 
+    main_graph.print_connections();
     s.cameras = cam1.splitCamera(cam1, 16);
     s.launchThreadedCamera();
 
     std::filesystem::create_directories("MontrealRender");
     image finalstitched = cam1.consruct_split(s.cameras, size, size);
     ImageRenderer::WriteBMP(finalstitched, "MontrealRender/step" + to_string((int)perspectiveScale) + ".bmp");
+}
+
+void testGraph17()
+{
+
+    cout << 1 << endl;
+    // Define the grid size and step
+    double ratio = 1;
+    unsigned int size = 250 / ratio;
+    double cam_step = 0.01f * ratio;
+    // mesh datat
+    // double scaling = 10;
+    // point offset = point(size * cam_step, size * cam_step, 0) / 2;
+
+    //".\\DataMontreal\\vertex_connections.txt"
+    cout << 2 << endl;
+
+    string path = ".\\DataMontreal\\vertex_connections.txt";
+    std::vector<std::vector<string>> verticesString;
+    testLoadGraphConnection(path, &verticesString);
+    cout << 3 << endl;
+
+    vector<vector<point>> verticesPoint;
+    convertMesh(&verticesPoint, &verticesString);
+    cout << 4 << endl;
+
+    vector<vector<object>> allObject;
+    // BIG BUG HERE FIX ME !
+    posToObject(&verticesPoint, allObject);
+    graph main_graph(&allObject);
+    cout << 5 << endl;
+
+    // camera config use https://www.geogebra.org/3d
+    point camOrigin(0, 0, 100);  // camera is 10 units above origin
+    vec3 camXDirection(0, 1, 0); // looking down
+    vec3 camYDirection(1, 0, 0); // "up" is global Y
+
+    float perspectiveScale = 100;
+    float perspectiveForce = 25;
+    cout << 6 << endl;
+
+    space s(main_graph.getObjects());
+    camera cam1 = camera::perspectiveCamera(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1, perspectiveScale, perspectiveForce);
+
+    // process the path backwards
+    size_t shit_increment = 0;
+    bool trigger_next_end = false;
+    // main_graph.print_connections();
+    for (size_t i = 0; i < 3; i++)
+    {
+        if (trigger_next_end)
+        {
+            break;
+        }
+        else
+        {
+            if (main_graph.stepGreedyBestFirstSearch())
+            {
+                trigger_next_end = true;
+            }
+        }
+
+        std::vector<object> allObjects = main_graph.getObjects();
+        space s(allObjects);
+
+        // main_graph.print_connections();
+        s.cameras = cam1.splitCamera(cam1, 16);
+        s.launchThreadedCamera();
+
+        std::filesystem::create_directories("MontrealRender");
+        image finalstitched = cam1.consruct_split(s.cameras, size, size);
+        ImageRenderer::WriteBMP(finalstitched, "MontrealRender/Step" + std::to_string(i) + ".bmp");
+        shit_increment++;
+    }
 }
 
 int main(int argc, char const *argv[])
@@ -5487,18 +5561,19 @@ int main(int argc, char const *argv[])
     // testGraph12();
     // testGraph13();
     // testGraph14();
-    //  testGraph15();
+    // testGraph15();
     // testGraph16();
-    //  tttt();
-    //  testSuzanRender();
-    //  testColor();
-    //  testframeRate();
-    //  test3dString();
-    //  testAlphabet();
-    //  testStackedAlphabet();
+    // tttt();
+    // testSuzanRender();
+    // testColor();
+    // testframeRate();
+    // test3dString();
+    // testAlphabet();
+    // testStackedAlphabet();
     // testRenderDiamond();
     // testRenderDiamondLoop();
-    montrealTest();
+    // montrealTest();
+    testGraph17();
     return 0;
 }
 

@@ -105,12 +105,15 @@ public:
                 graphNode tempNode;
                 tempNode.value = increment;
                 tempNode.index = {i, 0};
-                temprow.push_back(std::make_tuple(tempNode, (*allObject)[i][0]));
+                object refObject = (*allObject)[i][0];
+                refObject.setColor(color(255, 255, 255));
+                temprow.push_back(std::make_tuple(tempNode, refObject));
                 increment++;
                 gridNode.push_back(temprow);
             }
         }
 
+        increment = 0;
         // set the connected nodes
         for (size_t i = 0; i < allObject->size(); i++)
         {
@@ -120,19 +123,25 @@ public:
             }
             else
             {
-                get<0>(gridNode.at(i).at(0));
+                auto &parentNode = get<0>(gridNode[i][0]);
 
                 for (size_t z = 1; z < (*allObject)[i].size(); z++)
                 {
+
                     graphNode tempNode;
                     tempNode.value = increment;
                     tempNode.index = {i, z};
-                    tempNode.parent = &get<0>(gridNode.at(i).at(0)); // set the parent value
+                    tempNode.parent = &parentNode;
+                    object refObject = (*allObject)[i][0];
+                    refObject.setColor(color(255, 255, 255));
 
-                    gridNode.at(i).push_back(std::make_tuple(tempNode, (*allObject)[i][z]));
-                    // associate current node to the parent which is at the start of the row
-                    get<0>(gridNode.at(i).at(0)).children.push_back(std::make_tuple(&get<0>(gridNode.at(i).at(0)), increment));
+                    gridNode[i].push_back(std::make_tuple(tempNode, refObject));
+
+                    auto &childNode = get<0>(gridNode[i].back());
+
+                    parentNode.children.push_back(std::make_tuple(&childNode, increment));
                 }
+
                 increment++;
             }
         }
