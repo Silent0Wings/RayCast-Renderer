@@ -5367,7 +5367,7 @@ bool convertMesh(vector<vector<point>> *vertices, vector<vector<string>> *vertic
     return false;
 }
 
-void posToObject(const std::vector<std::vector<point>> *vertices, std::vector<std::vector<object>> &allObject, const primitive instance = primitive::cube)
+void posToObject(const std::vector<std::vector<point>> *vertices, std::vector<std::vector<object>> &allObject, const primitive instance = primitive::plane)
 {
     for (size_t i = 0; i < vertices->size(); i++)
     {
@@ -5387,8 +5387,8 @@ void montrealTest()
 {
     // Define the grid size and step
     double ratio = 1;
-    unsigned int size = 500 / ratio;
-    double cam_step = 0.005f * ratio;
+    unsigned int size = 250 / ratio;
+    double cam_step = 0.01f * ratio;
     // mesh datat
     // double scaling = 10;
     // point offset = point(size * cam_step, size * cam_step, 0) / 2;
@@ -5408,17 +5408,17 @@ void montrealTest()
     graph main_graph(&allObject);
 
     // camera config use https://www.geogebra.org/3d
-    point camOrigin(0, 10, 10);
-    vec3 camYDirection(1, 0, 0);
-    vec3 camXDirection(0, 1, -1);
+    point camOrigin(0, 0, 100);  // camera is 10 units above origin
+    vec3 camXDirection(0, 1, 0); // looking down
+    vec3 camYDirection(1, 0, 0); // "up" is global Y
 
     float perspectiveScale = 100;
     float perspectiveForce = 25;
 
     space s(main_graph.getObjects());
-    camera cam1 = camera::perspectiveCamera(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1, perspectiveScale, perspectiveForce);
+    camera cam1 = camera::perspectiveCamera(size * 2, size * 2, cam_step, camOrigin, camXDirection, camYDirection, 1, perspectiveScale, perspectiveForce);
 
-    s.cameras = cam1.splitCamera(cam1, 20);
+    s.cameras = cam1.splitCamera(cam1, 16);
     s.launchThreadedCamera();
 
     std::filesystem::create_directories("MontrealRender");

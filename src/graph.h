@@ -139,7 +139,6 @@ public:
 
         root = &(get<0>(gridNode.at(0).at(0)));
         root->explored = true;
-        cout << "54" << endl;
 
         if (gridNode.size() > 2 && gridNode[2].size() > 2)
         {
