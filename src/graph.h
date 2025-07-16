@@ -87,6 +87,7 @@ public:
 
     graph(const vector<vector<object>> *allObject)
     {
+        cout << 21 << endl;
 
         // creating the graph like structure
         int increment = 0;
@@ -123,41 +124,33 @@ public:
             }
             else
             {
-                auto &parentNode = get<0>(gridNode[i][0]);
+                gridNode[i].reserve((*allObject)[i].size());
 
                 for (size_t z = 1; z < (*allObject)[i].size(); z++)
                 {
+                    graphNode child;
+                    child.value = increment;
+                    child.index = {i, z};
+                    child.parent = &std::get<0>(gridNode[i][0]);
 
-                    graphNode tempNode;
-                    tempNode.value = increment;
-                    tempNode.index = {i, z};
-                    tempNode.parent = &parentNode;
-                    object refObject = (*allObject)[i][0];
-                    refObject.setColor(color(255, 255, 255));
+                    gridNode[i].push_back(std::make_tuple(child, (*allObject)[i][z]));
 
-                    gridNode[i].push_back(std::make_tuple(tempNode, refObject));
-
-                    auto &childNode = get<0>(gridNode[i].back());
-
-                    parentNode.children.push_back(std::make_tuple(&childNode, increment));
+                    graphNode *currentParent = &get<0>(gridNode[i][0]);
+                    currentParent->children.push_back(std::make_tuple(&get<0>(gridNode[i].back()), 1));
                 }
-
                 increment++;
             }
         }
 
-        root = &(get<0>(gridNode.at(0).at(0)));
-        root->explored = true;
-
-        if (gridNode.size() > 2 && gridNode[2].size() > 2)
+        if (!gridNode.empty() && !gridNode[0].empty())
         {
-            get<0>(gridNode[2][2]).goal = true;
-            goal = &get<0>(gridNode[2][2]);
+            root = &get<0>(gridNode[0][0]);
+            root->explored = true;
         }
         else
         {
-            std::cerr << "Not enough nodes to set goal at (2, 2)" << std::endl;
-            goal = nullptr;
+            std::cerr << "No root node available!" << std::endl;
+            root = nullptr;
         }
     }
 

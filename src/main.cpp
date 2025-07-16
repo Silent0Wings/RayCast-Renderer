@@ -5429,7 +5429,6 @@ void montrealTest()
 void testGraph17()
 {
 
-    cout << 1 << endl;
     // Define the grid size and step
     double ratio = 1;
     unsigned int size = 250 / ratio;
@@ -5439,23 +5438,22 @@ void testGraph17()
     // point offset = point(size * cam_step, size * cam_step, 0) / 2;
 
     //".\\DataMontreal\\vertex_connections.txt"
-    cout << 2 << endl;
 
     string path = ".\\DataMontreal\\vertex_connections.txt";
     std::vector<std::vector<string>> verticesString;
     testLoadGraphConnection(path, &verticesString);
-    cout << 3 << endl;
 
     vector<vector<point>> verticesPoint;
     convertMesh(&verticesPoint, &verticesString);
-    cout << 4 << endl;
 
     vector<vector<object>> allObject;
-    // BIG BUG HERE FIX ME !
     posToObject(&verticesPoint, allObject);
-    graph main_graph(&allObject);
     cout << 5 << endl;
+    // BIG BUG HERE FIX ME !
+    graph main_graph(&allObject);
+    cout << 6 << endl;
 
+    /*
     // camera config use https://www.geogebra.org/3d
     point camOrigin(0, 0, 100);  // camera is 10 units above origin
     vec3 camXDirection(0, 1, 0); // looking down
@@ -5498,6 +5496,7 @@ void testGraph17()
         ImageRenderer::WriteBMP(finalstitched, "MontrealRender/Step" + std::to_string(i) + ".bmp");
         shit_increment++;
     }
+            */
 }
 
 int main(int argc, char const *argv[])
