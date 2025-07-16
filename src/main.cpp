@@ -5367,7 +5367,7 @@ bool convertMesh(vector<vector<point>> *vertices, vector<vector<string>> *vertic
     return false;
 }
 
-void posToObject(const std::vector<std::vector<point>> *vertices, std::vector<std::vector<object>> &allObject, const primitive instance = primitive::plane)
+void posToObject(const std::vector<std::vector<point>> *vertices, std::vector<std::vector<object>> &allObject, const primitive instance = primitive::plane, double size = 1)
 {
     for (size_t i = 0; i < vertices->size(); i++)
     {
@@ -5375,7 +5375,8 @@ void posToObject(const std::vector<std::vector<point>> *vertices, std::vector<st
 
         for (const point &pos : (*vertices)[i])
         {
-            object tempObj(instance, 1.0, pos);
+            object tempObj(instance, size, pos);
+            tempObj.setColor(color(255, 255, 255));
             row.push_back(tempObj);
         }
 
@@ -5403,7 +5404,7 @@ void montrealTest()
     convertMesh(&verticesPoint, &verticesString);
 
     vector<vector<object>> allObject;
-    posToObject(&verticesPoint, allObject);
+    posToObject(&verticesPoint, allObject, primitive::plane, 1);
     graph main_graph(&allObject);
 
     // camera config use https://www.geogebra.org/3d
@@ -5432,7 +5433,7 @@ void testGraph17()
     // Define the grid size and step
     double ratio = 1;
     unsigned int size = 250 / ratio;
-    double cam_step = 0.01f * ratio;
+    double cam_step = 0.00075f * ratio;
     // mesh datat
     // double scaling = 10;
     // point offset = point(size * cam_step, size * cam_step, 0) / 2;
@@ -5447,13 +5448,9 @@ void testGraph17()
     convertMesh(&verticesPoint, &verticesString);
 
     vector<vector<object>> allObject;
-    posToObject(&verticesPoint, allObject);
-    cout << 5 << endl;
-    // BIG BUG HERE FIX ME !
+    posToObject(&verticesPoint, allObject, primitive::plane, 0.2f);
     graph main_graph(&allObject);
-    cout << 6 << endl;
 
-    /*
     // camera config use https://www.geogebra.org/3d
     point camOrigin(0, 0, 100);  // camera is 10 units above origin
     vec3 camXDirection(0, 1, 0); // looking down
@@ -5461,16 +5458,18 @@ void testGraph17()
 
     float perspectiveScale = 100;
     float perspectiveForce = 25;
-    cout << 6 << endl;
 
     space s(main_graph.getObjects());
     camera cam1 = camera::perspectiveCamera(size, size, cam_step, camOrigin, camXDirection, camYDirection, 1, perspectiveScale, perspectiveForce);
+    cout << 2 << endl;
 
     // process the path backwards
     size_t shit_increment = 0;
     bool trigger_next_end = false;
     // main_graph.print_connections();
-    for (size_t i = 0; i < 3; i++)
+    cout << main_graph.root << endl;
+    cout << main_graph.goal << endl;
+    for (size_t i = 0; i < 5; i++)
     {
         if (trigger_next_end)
         {
@@ -5478,7 +5477,7 @@ void testGraph17()
         }
         else
         {
-            if (main_graph.stepGreedyBestFirstSearch())
+            if (main_graph.step_bfs())
             {
                 trigger_next_end = true;
             }
@@ -5496,7 +5495,6 @@ void testGraph17()
         ImageRenderer::WriteBMP(finalstitched, "MontrealRender/Step" + std::to_string(i) + ".bmp");
         shit_increment++;
     }
-            */
 }
 
 int main(int argc, char const *argv[])

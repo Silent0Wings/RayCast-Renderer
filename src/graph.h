@@ -87,7 +87,6 @@ public:
 
     graph(const vector<vector<object>> *allObject)
     {
-        cout << 21 << endl;
 
         // creating the graph like structure
         int increment = 0;
@@ -132,6 +131,7 @@ public:
                     child.value = increment;
                     child.index = {i, z};
                     child.parent = &std::get<0>(gridNode[i][0]);
+                    std::get<1>(gridNode[i][0]).setColor(color(255, 255, 255));
 
                     gridNode[i].push_back(std::make_tuple(child, (*allObject)[i][z]));
 
