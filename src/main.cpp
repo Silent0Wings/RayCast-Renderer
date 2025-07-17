@@ -5376,7 +5376,7 @@ void posToObject(const std::vector<std::vector<point>> *vertices, std::vector<st
         for (const point &pos : (*vertices)[i])
         {
             object tempObj(instance, size, pos);
-            tempObj.setColor(color(255, 255, 255));
+            // tempObj.setColor(color(255, 255, 255));
             row.push_back(tempObj);
         }
 
@@ -5469,7 +5469,7 @@ void testGraph17()
     // main_graph.print_connections();
     cout << main_graph.root << endl;
     cout << main_graph.goal << endl;
-    for (size_t i = 0; i < 5; i++)
+    for (size_t i = 0; i < 1; i++)
     {
         if (trigger_next_end)
         {

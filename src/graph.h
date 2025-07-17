@@ -131,9 +131,9 @@ public:
                     child.value = increment;
                     child.index = {i, z};
                     child.parent = &std::get<0>(gridNode[i][0]);
-                    std::get<1>(gridNode[i][0]).setColor(color(255, 255, 255));
 
                     gridNode[i].push_back(std::make_tuple(child, (*allObject)[i][z]));
+                    std::get<1>(gridNode[i][z]).setColor(color(255, 255, 255));
 
                     graphNode *currentParent = &get<0>(gridNode[i][0]);
                     currentParent->children.push_back(std::make_tuple(&get<0>(gridNode[i].back()), 1));
@@ -233,6 +233,7 @@ public:
         // stack.push_back(root);
         graphNode *current = queue.at(0);
         // for(size_t i=0;i<Height*Width;i++)
+
         for (size_t i = 0; i < Width * Height; i++)
         {
             current = queue.at(0);
