@@ -11,6 +11,17 @@
 
 This project builds a lightweight 3D ray-cast renderer from scratch, following a DIY approach with minimal external libraries. It uses ray tracing to render 2D images from 3D scenes and implements vector math, intersection logic, and parallelism, along with optimizations like sub-camera splitting and async processing.
 
+## Design Constraints
+
+To encourage deeper understanding and hands-on problem-solving, the following restrictions were placed on the project:
+
+- No third-party rendering libraries (e.g., OpenGL, Vulkan).
+- Minimal to no use of external dependencies beyond essential utilities (e.g., image saving).
+- No use of any debugging tools (e.g., gdb, IDE-integrated debuggers).
+- Workarounds were implemented manually instead of relying on built-in or commonly used solutions.
+
+These constraints ensured a fully DIY rendering pipeline focused on algorithmic development and low-level system design.
+
 ---
 
 ## Key Concepts
