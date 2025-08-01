@@ -131,14 +131,14 @@ These GIFs demonstrate the renderer's ability to animate scenes and generate vid
 
 <table>
   <tr>
-    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/96ebe0298accf9018281e680fb79e39b1d66a0eb/src/CubeRenderPerspective/0001-0072.gif" width="250"/></td>
-    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/CubeRotationHigh.gif" width="250"/></td>
-    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/CubeRotationHighFinal.gif" width="250"/></td>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/96ebe0298accf9018281e680fb79e39b1d66a0eb/src/CubeRenderPerspective/0001-0072.gif" width="200"/></td>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/CubeRotationHigh.gif" width="200"/></td>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/CubeRotationHighFinal.gif" width="200"/></td>
   </tr>
   <tr>
-    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/02b8950f58238ec8dfcf8adeef7b123af9e70946/src/NewRenderForVideo/YshiftCubeTest.gif" width="250"/></td>
-    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/output_videoCone.gif" width="250"/></td>
-    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/output_videoCube.gif" width="250"/></td>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/02b8950f58238ec8dfcf8adeef7b123af9e70946/src/NewRenderForVideo/YshiftCubeTest.gif" width="200"/></td>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/output_videoCone.gif" width="200"/></td>
+    <td><img src="https://github.com/Silent0Wings/RayCast-Renderer/blob/949bedeff6608c81ef004a893c73db1efaab1989/src/Video/output_videoCube.gif" width="200"/></td>
   </tr>
 </table>
 
@@ -148,7 +148,9 @@ The renderer also supports conversion of **ASCII characters into 3D mesh text**.
 
 ## Example Outputs
 
-- **Printable ASCII stacked 1 Render**: <img src="src/Renders/StringOutput/stacked500_1.bmp" width="250"/> <img src="src/Renders/StringOutput/stacked500_2.bmp" width="250"/>
+- **Printable ASCII stacked 1 Render**:
+
+<img src="src/Renders/StringOutput/stacked500_1.bmp" width="250"/> <img src="src/Renders/StringOutput/stacked500_2.bmp" width="250"/>
 - **Full Printable ASCII Mesh Preview**: <img src="src/Renders/StringOutput/alpha001.bmp" width="1000"/>
 
 ### Technical Notes
