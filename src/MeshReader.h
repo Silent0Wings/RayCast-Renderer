@@ -20,6 +20,7 @@ struct CameraData
 {
     Vec3 position, rotation;
     double fov = 60.0, nearClip = 0.1, farClip = 1000.0;
+    int resX = 800, resY = 800;
 };
 
 struct ObjectData
@@ -114,7 +115,7 @@ public:
             if (parts.empty())
                 continue;
 
-            if (parts[0] == "CAMERA" && parts.size() == 4)
+            if (parts[0] == "CAMERA" && parts.size() == 5)
             {
                 sceneCamera.position = parseVec3(parts[1]);
                 sceneCamera.rotation = parseVec3(parts[2]);
@@ -122,6 +123,11 @@ public:
                 sceneCamera.fov = f.x;
                 sceneCamera.nearClip = f.y;
                 sceneCamera.farClip = f.z;
+
+                Vec3 res = parseVec3(parts[4] + ", 0");
+                sceneCamera.resX = (int)res.x;
+                sceneCamera.resY = (int)res.y;
+
                 hasCamera = true;
             }
             else if (parts[0] == "OBJECT" && parts.size() == 5)

@@ -310,7 +310,7 @@ public:
         // Load objects (rotation dropped — object class has no setRotation)
         for (const auto &objData : reader.sceneObjects)
         {
-            double avgScale = (objData.scale.x + objData.scale.y + objData.scale.z) / 1;
+            double avgScale = (objData.scale.x + objData.scale.y + objData.scale.z) / 3.0;
             object obj((primitive)objData.type, avgScale, point(objData.location.x, objData.location.y, objData.location.z));
             addObject(obj);
         }
@@ -345,10 +345,9 @@ public:
             vec3 Ydirection(m01, m11, m21);
             vec3 direction(-m02, -m12, -m22);
 
-            int size = 800;
             double step = 0.01;
 
-            camera cam(size, size, step, origin, Xdirection, Ydirection, direction);
+            camera cam(reader.sceneCamera.resY, reader.sceneCamera.resX, step, origin, Xdirection, Ydirection, direction);
             cam.recenterTo(origin); // fixes edge-vs-center mismatch
             addCamera(cam);
         }

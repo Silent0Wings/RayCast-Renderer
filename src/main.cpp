@@ -14,7 +14,7 @@ void scene_file()
 {
     space s;
     s.loadFromFile("../scene_export.txt");
-    s.triggerCameraRay();
+    s.triggerCameraRayOptimized();
     s.saveImages();
 }
 
