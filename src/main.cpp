@@ -2,8 +2,8 @@
 
 void simple()
 {
-    camera cam1(400, 400);
-    object obj(primitive::cube, 2, point(0, 0, 0));
+    camera cam1(800);
+    object obj(primitive::cube, 0.1, point(0, 0, 1));
     space s({obj});
     s.cameras.push_back(cam1);
     s.triggerCameraRay();

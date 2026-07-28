@@ -701,13 +701,9 @@ void testSpace()
     obj.colorMap[{point(0, 0, 0), point(1, 0, 0), point(0, 1, 0)}] = color(255, 0, 0);
     obj.colorMap[{point(1, 0, 0), point(1, 1, 0), point(0, 1, 0)}] = color(0, 255, 0);
     // Set the global position
-    obj.globalPosition = point(1, 2, 3);
     // Set the global rotation
-    obj.globalRotation = vec3(4, 5, 6);
     // Set the local rotation
-    obj.locallRotation = vec3(7, 8, 9);
     // Set the parent object
-    obj.parent = nullptr;
     // output the object
     std::cout << obj << std::endl;
     // output the space

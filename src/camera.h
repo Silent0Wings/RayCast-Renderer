@@ -37,6 +37,7 @@ public:
         : gridRay(other.gridRay), width(other.width), height(other.height), defaultColor(other.defaultColor), img(other.img) {}
     // Default constructor
     camera() : camera(0, 0) {}
+    camera(const int h) : camera(h, h) {}
 
     camera(const int h, const int w, const double step = 1.0, const point origin = point(0, 0, 0), const point offset = point(0, 0, 0), const vec3 affect = vec3(0, 0, 1), const vec3 direction = vec3(0, 0, -1))
     {

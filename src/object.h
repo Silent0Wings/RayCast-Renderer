@@ -28,12 +28,7 @@ using namespace std;
 class object
 {
 public:
-    point globalPosition;
     point center;
-    vec3 globalRotation;
-    point globallRotation;
-    vec3 locallRotation;
-    object *parent;
     texture tex;
     double sphereRadius;
 
@@ -49,13 +44,11 @@ public:
     // Constructs a new Object.
     object()
     {
-        parent = nullptr;
         tex = texture();
     }
     object(const vector<vector<point>> &v)
     {
         vertices = v;
-        parent = nullptr;
         tex = texture();
     }
     object(primitive prim, double scale = 1, point offset = point(0, 0, 0), double angle = 0, vec3 axis = vec3(0, 0, 0))
@@ -87,8 +80,6 @@ public:
         default:
             throw std::invalid_argument("Unknown primitive type");
         }
-
-        globalPosition = offset;
     }
     void cube(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
