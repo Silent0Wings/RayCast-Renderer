@@ -10,9 +10,17 @@ void simple()
     s.saveImages();
 }
 
+void scene_file()
+{
+    space s;
+    s.loadFromFile("../scene_export.txt");
+    s.triggerCameraRay();
+    s.saveImages();
+}
+
 int main(int argc, char const *argv[])
 {
-    simple();
+    scene_file();
     return 0;
 }
 

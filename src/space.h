@@ -249,28 +249,31 @@ public:
             // std::cout << "Thread N*= " << camIndex << " |ended!" << std::endl;
         }
 
-        for (auto& future : futures) {
+        for (auto &future : futures)
+        {
             future.get();
         }
     }
 
     // This launches a thread for each camera
-    void launchThreadedCamera() {
+    void launchThreadedCamera()
+    {
         std::vector<std::future<void>> futures;
 
-        for (size_t camIndex = 0; camIndex < cameras.size(); ++camIndex) {
-            futures.push_back(std::async(std::launch::async, [&, camIndex]() {
+        for (size_t camIndex = 0; camIndex < cameras.size(); ++camIndex)
+        {
+            futures.push_back(std::async(std::launch::async, [&, camIndex]()
+                                         {
                 for (auto& o : obj) {
                     cameras[camIndex].cameraToImageOptimized(o);
-                }
-            }));
+                } }));
         }
 
-        for (auto& future : futures) {
+        for (auto &future : futures)
+        {
             future.get();
         }
     }
-
 
     // output the imges
     void saveImages()
@@ -293,6 +296,62 @@ public:
     void saveImage(camera c, string name)
     {
         ImageRenderer::renderToFile(c.getimage(), "output_" + name + ".ppm");
+    }
+
+    void loadFromFile(const string &path_to_scene)
+    {
+        MeshReader reader;
+        if (!reader.loadScene(path_to_scene))
+        {
+            cerr << "Failed to load scene: " << path_to_scene << endl;
+            return;
+        }
+
+        // Load objects (rotation dropped — object class has no setRotation)
+        for (const auto &objData : reader.sceneObjects)
+        {
+            double avgScale = (objData.scale.x + objData.scale.y + objData.scale.z) / 1;
+            object obj((primitive)objData.type, avgScale, point(objData.location.x, objData.location.y, objData.location.z));
+            addObject(obj);
+        }
+
+        // Load camera
+        if (reader.hasCamera)
+        {
+            point origin(
+                reader.sceneCamera.position.x,
+                reader.sceneCamera.position.y,
+                reader.sceneCamera.position.z);
+
+            double rx = reader.sceneCamera.rotation.x * gmath::pi / 180.0;
+            double ry = reader.sceneCamera.rotation.y * gmath::pi / 180.0;
+            double rz = reader.sceneCamera.rotation.z * gmath::pi / 180.0;
+
+            double cx = cos(rx), sx = sin(rx);
+            double cy = cos(ry), sy = sin(ry);
+            double cz = cos(rz), sz = sin(rz);
+
+            double m00 = cy * cz;
+            double m01 = sx * sy * cz - cx * sz;
+            double m02 = cx * sy * cz + sx * sz;
+            double m10 = cy * sz;
+            double m11 = sx * sy * sz + cx * cz;
+            double m12 = cx * sy * sz - sx * cz;
+            double m20 = -sy;
+            double m21 = sx * cy;
+            double m22 = cx * cy;
+
+            vec3 Xdirection(m00, m10, m20);
+            vec3 Ydirection(m01, m11, m21);
+            vec3 direction(-m02, -m12, -m22);
+
+            int size = 800;
+            double step = 0.01;
+
+            camera cam(size, size, step, origin, Xdirection, Ydirection, direction);
+            cam.recenterTo(origin); // fixes edge-vs-center mismatch
+            addCamera(cam);
+        }
     }
 };
 

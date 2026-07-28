@@ -129,6 +129,32 @@ public:
         gridRay = g;
     }
 
+    void recenterTo(const point &desiredCenter)
+    {
+        if (height == 0 || width == 0)
+            return;
+
+        // Current center of the grid (the ray that's actually in the middle)
+        point currentCenter = get(height / 2, width / 2).getOrigine();
+
+        // How far off the center is from where we WANT it to be
+        vec3 offset(
+            desiredCenter.get_x() - currentCenter.get_x(),
+            desiredCenter.get_y() - currentCenter.get_y(),
+            desiredCenter.get_z() - currentCenter.get_z());
+
+        // Shift every ray's origin by that offset, keep direction unchanged
+        for (unsigned int i = 0; i < height; ++i)
+        {
+            for (unsigned int j = 0; j < width; ++j)
+            {
+                ray currentR = get(i, j);
+                ray newR(currentR.getOrigine() + offset, currentR.getDirection());
+                set(i, j, newR);
+            }
+        }
+    }
+
     static camera perspectiveCamera(int h, int w, double step, point origin, vec3 indexFinger, vec3 midleFinger, int thumbFinger = 1, double perspectiveScale = 0.9, double perspectiveForce = 1)
     {
 
