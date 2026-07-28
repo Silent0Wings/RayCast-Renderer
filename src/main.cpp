@@ -1,79 +1,18 @@
 #include "helper.cpp"
 
+void simple()
+{
+    camera cam1(400, 400);
+    object obj(primitive::cube, 2, point(0, 0, 0));
+    space s({obj});
+    s.cameras.push_back(cam1);
+    s.triggerCameraRay();
+    s.saveImages();
+}
+
 int main(int argc, char const *argv[])
 {
-    // testintersection();
-    // testimage()
-    // testrayget();
-    // testvec3();
-    // testCamera();
-    // testSpace();
-    // testInterction();
-    // testInterctionAlt();
-    // testSpaceCamera();
-    // testSpaceCameraCube();
-    // testSpaceCameraCube1();
-    // testSpaceCameraCube2();
-    // testSpaceCameraCube3();
-    // testFileLoad();
-    // testMeshImportAndColoringDear();
-    // testMeshImportAndColoringDhalia();
-    // testMeshImportAndColoringSuzane();
-    // split_rays();
-    // split_raysThreads();
-    // cubeTextureTest();
-    // primitiveThreadTest();
-    // split_raysThreadsCube();
-    // cameraConfigTest();
-    // generateVideo();
-    // generateVideo1();
-    // generateVideo2();
-    // testPerspective();
-    // testPerspective1();
-    // testPerspective2();
-    // testPerspectiveLoop();
-    // testPerspectiveLoop1();
-    // splitCamera();
-    // splitCamera1();
-    // splitCameraThreadingV2();
-    // testraytracing();
-    // testraytracing2();
-    // testNonOptimizedrender();
-    // testOptimizedrender();
-    // testQuaternion();
-    // testRotationOnMesh();
-    // testRotationOnMeshVideo();
-    // testRotationOnMeshVideo1();
-    // testPerlin();
-    // testGraph();
-    // testGraph2();
-    // testGraph3();
-    // testGraph4();
-    // testGraph5();
-    // testGraph6();
-    // testGraph7();
-    // testGraph8();
-    // testGraph9();
-    // test_automated_Camera_Split();
-    // test_automated_Camera_Split_threaded();
-    // testGraph10();
-    // testGraph11();
-    // testGraph12();
-    // testGraph13();
-    // testGraph14();
-    // testGraph15();
-    // testGraph16();
-    // tttt();
-    // testSuzanRender();
-    // testColor();
-    // testframeRate();
-    // test3dString();
-    // testAlphabet();
-    // testStackedAlphabet();
-    // testRenderDiamond();
-    // testRenderDiamondLoop();
-    // montrealTest();
-    // testGraph17();
+    simple();
     return 0;
 }
 

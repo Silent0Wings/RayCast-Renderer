@@ -58,7 +58,7 @@ public:
         parent = nullptr;
         tex = texture();
     }
-    object(primitive prim, double scale, point offset, double angle = 0, vec3 axis = vec3(0, 0, 0))
+    object(primitive prim, double scale = 1, point offset = point(0, 0, 0), double angle = 0, vec3 axis = vec3(0, 0, 0))
     {
         // Initialize the object based on the primitive type
         switch (prim)

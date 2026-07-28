@@ -37,33 +37,8 @@ public:
         : gridRay(other.gridRay), width(other.width), height(other.height), defaultColor(other.defaultColor), img(other.img) {}
     // Default constructor
     camera() : camera(0, 0) {}
-    camera(int w, int h)
-    {
 
-        if (w < 0 || h < 0)
-        {
-            throw std::invalid_argument("Width and height must be non-negative");
-        }
-        if (w == 0 && h == 0)
-        {
-            width = 0;
-            height = 0;
-            gridRay = vector<vector<ray>>();
-            img = image();
-        }
-        else
-        {
-            this->width = static_cast<unsigned int>(w);
-            this->height = static_cast<unsigned int>(h);
-            gridRay.resize(height);
-            for (unsigned int i = 0; i < height; ++i)
-            {
-                gridRay[i].resize(width);
-            }
-            img = image(static_cast<unsigned int>(width), static_cast<unsigned int>(height));
-        }
-    }
-    camera(const int h, const int w, const double step, const point origin, const point offset, const vec3 affect, const vec3 direction)
+    camera(const int h, const int w, const double step = 1.0, const point origin = point(0, 0, 0), const point offset = point(0, 0, 0), const vec3 affect = vec3(0, 0, 1), const vec3 direction = vec3(0, 0, -1))
     {
         if (w <= 0 || h <= 0 || step <= 0)
         {
