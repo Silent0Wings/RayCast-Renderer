@@ -1,5 +1,12 @@
 @echo off
+setlocal
 cls
+
+set "SCRIPT_DIR=%~dp0"
+set "PROJECT_ROOT=%SCRIPT_DIR%.."
+set "SRC_DIR=%PROJECT_ROOT%\src"
+
+cd /d "%SRC_DIR%" || exit /b 1
 
 echo [1/5] Killing viewer.exe if running...
 taskkill /F /IM viewer.exe >nul 2>&1
@@ -21,3 +28,4 @@ if exist viewer.exe (
     echo ERROR: Build failed. viewer.exe not found.
     pause
 )
+endlocal

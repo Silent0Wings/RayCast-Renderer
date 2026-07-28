@@ -1,6 +1,12 @@
 @echo off
-cls
 setlocal enabledelayedexpansion
+cls
+
+set "SCRIPT_DIR=%~dp0"
+set "PROJECT_ROOT=%SCRIPT_DIR%.."
+set "SRC_DIR=%PROJECT_ROOT%\src"
+
+cd /d "%SRC_DIR%" || exit /b 1
 
 :: Initialize counters
 set totalH=0
@@ -49,3 +55,4 @@ echo ++++++++++++++++++++++++++++++++++++++++++++++++++
 echo Total size of .h + .cpp files: %totalSize% bytes
 pause
 cls
+endlocal

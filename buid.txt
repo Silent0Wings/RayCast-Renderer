@@ -1,0 +1,2 @@
+cd C:\Users\Gica\Github_Clones\RayCast-Renderer\src
+.\build_run.bat
