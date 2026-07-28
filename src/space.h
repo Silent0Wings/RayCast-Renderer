@@ -308,10 +308,51 @@ public:
         }
 
         // Load objects (rotation dropped — object class has no setRotation)
+        // Load objects
         for (const auto &objData : reader.sceneObjects)
         {
             double avgScale = (objData.scale.x + objData.scale.y + objData.scale.z) / 3.0;
-            object obj((primitive)objData.type, avgScale, point(objData.location.x, objData.location.y, objData.location.z));
+
+            double rx = objData.rotation.x * gmath::pi / 180.0;
+            double ry = objData.rotation.y * gmath::pi / 180.0;
+            double rz = objData.rotation.z * gmath::pi / 180.0;
+
+            double cx = cos(rx), sx = sin(rx);
+            double cy = cos(ry), sy = sin(ry);
+            double cz = cos(rz), sz = sin(rz);
+
+            // Combined rotation matrix R = Rz * Ry * Rx
+            double m00 = cy * cz;
+            double m01 = sx * sy * cz - cx * sz;
+            double m02 = cx * sy * cz + sx * sz;
+            double m10 = cy * sz;
+            double m11 = sx * sy * sz + cx * cz;
+            double m12 = cx * sy * sz - sx * cz;
+            double m20 = -sy;
+            double m21 = sx * cy;
+            double m22 = cx * cy;
+
+            // Extract axis-angle from rotation matrix (standard formula)
+            double traceVal = m00 + m11 + m22;
+            double angleRad = acos(std::clamp((traceVal - 1.0) / 2.0, -1.0, 1.0));
+            double angleDeg = angleRad * 180.0 / gmath::pi;
+
+            vec3 axis(0, 0, 1); // default fallback axis if angle is ~0
+            double sinAngle = sin(angleRad);
+            if (sinAngle > 1e-6)
+            {
+                axis = vec3(
+                    (m21 - m12) / (2.0 * sinAngle),
+                    (m02 - m20) / (2.0 * sinAngle),
+                    (m10 - m01) / (2.0 * sinAngle));
+            }
+
+            object obj(
+                (primitive)objData.type,
+                avgScale,
+                point(objData.location.x, objData.location.y, objData.location.z),
+                angleDeg,
+                axis);
             addObject(obj);
         }
 
@@ -347,7 +388,7 @@ public:
 
             double step = 0.01;
 
-            camera cam(reader.sceneCamera.resY, reader.sceneCamera.resX, step, origin, Xdirection, Ydirection, direction);
+            camera cam(reader.sceneCamera.resX, reader.sceneCamera.resY, step, origin, Xdirection, Ydirection, direction);
             cam.recenterTo(origin); // fixes edge-vs-center mismatch
             addCamera(cam);
         }
