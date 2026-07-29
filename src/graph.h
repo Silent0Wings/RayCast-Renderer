@@ -44,7 +44,7 @@ public:
     graph(const size_t height, const size_t width)
     {
         if (width == 0 || height == 0)
-            throw std::invalid_argument("Width and height must be non-zero");
+            throw std::invalid_argument("Graph Width and height must be non-zero");
 
         Height = height;
         Width = width;

@@ -14,8 +14,7 @@ void scene_file()
 {
     space s;
     s.loadFromFile("../scene_export.txt");
-    s.triggerCameraRayOptimized();
-    s.saveImages();
+    s.launchThreadedCameraSplit();
 }
 
 int main(int argc, char const *argv[])

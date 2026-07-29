@@ -81,6 +81,12 @@ public:
         return true;
     }
 
+    size_t getAvailableThreads()
+    {
+        size_t n = static_cast<size_t>(std::thread::hardware_concurrency());
+        return n > 0 ? n : 4; // 4 just in case it fails
+    }
+
     // trigger the camera ray behavior
     void triggerCameraRay()
     {
@@ -273,6 +279,45 @@ public:
         {
             future.get();
         }
+    }
+
+    // This launches a thread for each camera
+    void launchThreadedCameraSplit()
+    {
+        size_t originalH = 0;
+        size_t originalW = 0;
+        if (cameras.size() == 1)
+        {
+
+            originalH = cameras.at(0).getheight();
+            originalW = cameras.at(0).getwidth();
+            vector<camera> cam_list = cameras.at(0).splitCamera(cameras.at(0), getAvailableThreads());
+            cameras.clear();
+            cameras = cam_list;
+        }
+        else
+        {
+            throw std::runtime_error("launchThreadedCameraSplit() is only supported for a single camera in the space.");
+        }
+
+        std::vector<std::future<void>> futures;
+
+        for (size_t camIndex = 0; camIndex < cameras.size(); ++camIndex)
+        {
+            futures.push_back(std::async(std::launch::async, [&, camIndex]()
+                                         {
+                for (auto& o : obj) {
+                    cameras[camIndex].cameraToImageOptimized(o);
+                } }));
+        }
+
+        for (auto &future : futures)
+        {
+            future.get();
+        }
+
+        image finalstitched = cameras.at(0).consruct_split(cameras, originalH, originalW);
+        ImageRenderer::renderToFile(finalstitched, "stitched.ppm");
     }
 
     // output the imges

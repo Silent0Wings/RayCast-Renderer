@@ -36,14 +36,14 @@ public:
     camera(const camera &other)
         : gridRay(other.gridRay), width(other.width), height(other.height), defaultColor(other.defaultColor), img(other.img) {}
     // Default constructor
-    camera() : camera(0, 0) {}
+    camera() : width(0), height(0), gridRay(), defaultColor(), img() {}
     camera(const int h) : camera(h, h) {}
 
     camera(const int h, const int w, const double step = 1.0, const point origin = point(0, 0, 0), const point offset = point(0, 0, 0), const vec3 affect = vec3(0, 0, 1), const vec3 direction = vec3(0, 0, -1))
     {
         if (w <= 0 || h <= 0 || step <= 0)
         {
-            throw std::invalid_argument("Width and height must be non-negative");
+            throw std::invalid_argument("Camera Width and height must be non-negative");
         }
         if (w == 0 && h == 0 && step == 0)
         {
@@ -71,7 +71,7 @@ public:
 
         if (w <= 0 || h <= 0 || step <= 0)
         {
-            throw std::invalid_argument("Width and height must be non-negative");
+            throw std::invalid_argument("Camera Width and height must be non-negative");
         }
         if (w == 0 && h == 0 && step == 0)
         {
@@ -100,7 +100,7 @@ public:
 
         if (w <= 0 || h <= 0 || step <= 0)
         {
-            throw std::invalid_argument("Width and height must be non-negative");
+            throw std::invalid_argument("Camera Width and height must be non-negative");
         }
         if (w == 0 && h == 0 && step == 0)
         {
@@ -371,7 +371,7 @@ public:
     {
         if (new_width < 0 || new_height < 0)
         {
-            throw std::invalid_argument("Width and height must be non-negative width: " + std::to_string(new_width) + " | height : " + std::to_string(new_height));
+            throw std::invalid_argument("Camera Width and height must be non-negative width: " + std::to_string(new_width) + " | height : " + std::to_string(new_height));
         }
         vector<vector<ray>> gridRay;
     }
@@ -472,7 +472,7 @@ public:
                 {
                     // cout << "boum" << endl;
 
-                    getPixelColorOPtimized(j, i, obj, gridRay[i][j]);
+                    getPixelColorOPtimized(i, j, obj, gridRay[i][j]);
                 }
             }
         }
@@ -663,7 +663,7 @@ public:
         }
     }
 
-    vector<camera> splitCamera(camera &c, size_t split)
+    vector<camera> splitCamera(camera &c, const size_t split)
     {
         if (split <= 1 || c.getheight() == 0 || c.getwidth() == 0)
         {

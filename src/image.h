@@ -34,7 +34,7 @@ public:
 
         if (w < 0 || h < 0)
         {
-            throw std::invalid_argument("Width and height must be non-negative");
+            throw std::invalid_argument("Image Width and height must be non-negative");
         }
         if (w == 0 && h == 0)
         {
@@ -58,7 +58,7 @@ public:
 
         if (w < 0 || h < 0)
         {
-            throw std::invalid_argument("Width and height must be non-negative");
+            throw std::invalid_argument("Image Width and height must be non-negative");
         }
         if (w == 0 && h == 0)
         {
@@ -194,8 +194,8 @@ public:
         // cout << " x :" << x << " y : "<< y << endl;
         if (constrain(x, y))
         {
-            cout << "get("<< x <<" , "<< y<<")"<< endl;
-            cout << "width : "<< width << " | height : "<< height << endl;
+            cout << "get(" << x << " , " << y << ")" << endl;
+            cout << "width : " << width << " | height : " << height << endl;
             throw std::invalid_argument("image::get():Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
         }
         return pixels[x][y];
@@ -207,7 +207,7 @@ public:
     {
         if (constrain(x, y))
         {
-            cout << "set("<< x <<" , "<< y<<" , "<<c<<")"<< endl;
+            cout << "set(" << x << " , " << y << " , " << c << ")" << endl;
             throw std::invalid_argument("image::set_Pixel():Pixel coordinates out of bounds. x: " + std::to_string(x) + " | y: " + std::to_string(y));
         }
         pixels[x][y] = c;
@@ -243,7 +243,7 @@ public:
     {
         if (new_width == 0 || new_height == 0)
         {
-            throw std::invalid_argument("New width and height must be non-zero");
+            throw std::invalid_argument("Image New width and height must be non-zero");
         }
         try
         {
