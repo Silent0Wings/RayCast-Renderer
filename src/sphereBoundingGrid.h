@@ -146,6 +146,108 @@ public:
         return ix * m_divisions * m_divisions + iy * m_divisions + iz;
     }
 
+    bool RayGridRange(const point &ro, const point &rd,
+                      double &tEnter, double &tExit) const
+    {
+        const point o = m_boundingCube.Origin();
+        const double s = m_boundingCube.Size();
+
+        const double ros[3] = {ro.get_x(), ro.get_y(), ro.get_z()};
+        const double rds[3] = {rd.get_x(), rd.get_y(), rd.get_z()};
+        const double lo[3] = {o.get_x(), o.get_y(), o.get_z()};
+
+        tEnter = 0.0;
+        tExit = std::numeric_limits<double>::infinity();
+
+        for (int a = 0; a < 3; ++a)
+        {
+            const double hi = lo[a] + s;
+            if (std::fabs(rds[a]) < 1e-12)
+            {
+                if (ros[a] < lo[a] || ros[a] > hi)
+                    return false;
+                continue;
+            }
+            double t1 = (lo[a] - ros[a]) / rds[a];
+            double t2 = (hi - ros[a]) / rds[a];
+            if (t1 > t2)
+                std::swap(t1, t2);
+            tEnter = std::max(tEnter, t1);
+            tExit = std::min(tExit, t2);
+            if (tEnter > tExit)
+                return false;
+        }
+        return true;
+    }
+
+    template <typename Visitor>
+    void TraverseRay(const point &ro, const point &rd, Visitor visit) const
+    {
+        double tEnter, tExit;
+        if (!RayGridRange(ro, rd, tEnter, tExit))
+            return;
+
+        const point o = m_boundingCube.Origin();
+        const double cell = m_boundingCube.Size() / static_cast<double>(m_divisions);
+        const long n = static_cast<long>(m_divisions);
+        const double inf = std::numeric_limits<double>::infinity();
+
+        const double ros[3] = {ro.get_x(), ro.get_y(), ro.get_z()};
+        const double rds[3] = {rd.get_x(), rd.get_y(), rd.get_z()};
+        const double lo[3] = {o.get_x(), o.get_y(), o.get_z()};
+
+        long idx[3], step[3];
+        double tMax[3], tDelta[3];
+
+        for (int a = 0; a < 3; ++a)
+        {
+            const double start = ros[a] + rds[a] * tEnter;
+            long c = static_cast<long>(std::floor((start - lo[a]) / cell));
+            c = std::min<long>(std::max<long>(c, 0), n - 1);
+            idx[a] = c;
+
+            if (rds[a] > 1e-12)
+            {
+                step[a] = 1;
+                tMax[a] = tEnter + (lo[a] + (c + 1) * cell - start) / rds[a];
+                tDelta[a] = cell / rds[a];
+            }
+            else if (rds[a] < -1e-12)
+            {
+                step[a] = -1;
+                tMax[a] = tEnter + (lo[a] + c * cell - start) / rds[a];
+                tDelta[a] = -cell / rds[a];
+            }
+            else
+            {
+                step[a] = 0;
+                tMax[a] = inf;
+                tDelta[a] = inf;
+            }
+        }
+
+        for (;;)
+        {
+            if (!visit(IndexOf(static_cast<std::size_t>(idx[0]),
+                               static_cast<std::size_t>(idx[1]),
+                               static_cast<std::size_t>(idx[2]))))
+                return;
+
+            const int a = (tMax[0] < tMax[1])
+                              ? (tMax[0] < tMax[2] ? 0 : 2)
+                              : (tMax[1] < tMax[2] ? 1 : 2);
+
+            if (step[a] == 0 || tMax[a] > tExit)
+                return;
+
+            idx[a] += step[a];
+            if (idx[a] < 0 || idx[a] >= n)
+                return;
+
+            tMax[a] += tDelta[a];
+        }
+    }
+
     void PrecomputeNeighbors()
     {
         constexpr std::size_t kInvalid = static_cast<std::size_t>(-1);

@@ -12,7 +12,7 @@ void test()
 {
     space s;
     object obj(primitive::suzane, 10);
-    obj.enableGrid(10);
+    obj.enableGrid(20);
     s.addObject(obj);
 
     MeshReader reader;

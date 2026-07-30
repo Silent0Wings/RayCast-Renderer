@@ -282,86 +282,33 @@ public:
        Rendering
        -------------------------------------------------------------- */
 
-    void cameraToImage(object obj)
+    void cameraToImage(const object &obj)
     {
-        std::optional<std::size_t> cachedCube;
-
         for (unsigned i = 0; i < height; ++i)
         {
-            cachedCube.reset();
-
             for (unsigned j = 0; j < width; ++j)
             {
-                if (!gmath::intersectRaySphere(gridRay[i][j], obj.center, obj.sphereRadius))
+                const auto &ray = gridRay[i][j];
+
+                if (!gmath::intersectRaySphere(ray, obj.center, obj.sphereRadius))
                     continue;
 
-                if (obj.boundingGrid == nullptr)
+                if (!obj.boundingGrid)
                 {
-                    getPixelColor(i, j, obj, gridRay[i][j]);
+                    getPixelColor(i, j, obj, ray);
                     continue;
                 }
 
-                bool triangleHit = false;
+                const auto &grid = *obj.boundingGrid;
 
-                // Try cached cube first
-                if (cachedCube.has_value())
-                {
-                    auto entry = obj.boundingGrid->Entries().find(cachedCube.value());
-                    if (entry != obj.boundingGrid->Entries().end() &&
-                        !entry->second.data.triples.empty() &&
-                        gmath::intersectRayCube(gridRay[i][j], entry->second.cube))
-                    {
-                        triangleHit = getPixelColor(i, j, obj, entry->second.data.triples, gridRay[i][j]);
-                    }
-                }
-
-                if (triangleHit)
-                    continue; // cache confirmed valid, nothing more to do this pixel
-
-                // Fall back to full loop
-                bool boxHit = false; // used only to decide when to stop scanning cubes
-                for (auto const &[idx, x] : obj.boundingGrid->getCubes())
-                {
-                    if (x.data.triples.empty())
-                        continue;
-
-                    if (!gmath::intersectRayCube(gridRay[i][j], x.cube))
-                        continue;
-
-                    boxHit = true;
-
-                    if (getPixelColor(i, j, obj, x.data.triples, gridRay[i][j]))
-                    {
-                        triangleHit = true;
-                        cachedCube = idx;
-                    }
-
-                    for (std::size_t nidx : x.data.neighbors)
-                    {
-                        if (nidx == static_cast<std::size_t>(-1))
-                            continue; // sentinel: no usable neighbor in this direction
-
-                        
-                        auto it = obj.boundingGrid->Entries().find(nidx);
-                        if (it == obj.boundingGrid->Entries().end())
-                            continue;
-
-                        const auto &neighbor = it->second;
-                        if (!neighbor.data.triples.empty() &&
-                            gmath::intersectRayCube(gridRay[i][j], neighbor.cube))
-                        {
-                            if (getPixelColor(i, j, obj, neighbor.data.triples, gridRay[i][j]))
-                            {
-                                triangleHit = true;
-                                cachedCube = nidx; // keep the last cube that actually contributed a hit
-                            }
-                        }
-                    }
-                    break; // still safe: spatially, current + neighbors cover the local region
-                }
-
-                if (!triangleHit)
-                    cachedCube.reset(); // don't cache a cube that produced no real intersection
+                grid.TraverseRay(ray.getOrigine(), ray.getDirection(),
+                                 [&](std::size_t idx) -> bool
+                                 {
+                                     const auto &entry = grid.At(idx);
+                                     if (entry.data.triples.empty())
+                                         return true;
+                                     return !getPixelColor(i, j, obj, entry.data.triples, ray);
+                                 });
             }
         }
     }
