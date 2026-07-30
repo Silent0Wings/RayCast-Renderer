@@ -181,6 +181,14 @@ public:
         }
     }
 
+    point getOrigin() const
+    {
+        if (height == 0 || width == 0)
+            return point(0, 0, 0); // or throw, depending on your style
+
+        return get(width / 2, height / 2).getOrigine();
+    }
+
     /* --------------------------------------------------------------
        Getters / Setters
        -------------------------------------------------------------- */
@@ -318,7 +326,7 @@ public:
        -------------------------------------------------------------- */
 
 private:
-    void getPixelColor(unsigned int i, unsigned int j, object obj, ray r1, bool combine = false)
+    bool getPixelColor(unsigned int i, unsigned int j, object obj, ray r1, bool combine = false)
     {
         bool hasTexture = !obj.tex.empty();
         bool hit = false;
@@ -353,6 +361,7 @@ private:
         if (!hit && img.get(i, j) != defaultColor)
         img.set(i, j, defaultColor);
         */
+        return hit;
     }
 
     bool getPixelColor(unsigned int i, unsigned int j, object obj, const std::vector<std::array<point, 3>> &tris, ray r1, bool combine = false)
@@ -384,7 +393,6 @@ private:
                 img.set(i, j, obj.colorMap.at(tri));
             }
         }
-
 
         /*
         if (!hit && img.get(i, j) != defaultColor)

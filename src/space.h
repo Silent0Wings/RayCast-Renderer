@@ -41,6 +41,14 @@ public:
         cameras.push_back(c);
     }
 
+    void enableGrid(std::size_t divisions)
+    {
+        for (auto &o : obj)
+        {
+            o.enableGrid(divisions);
+        }
+    }
+
     // return the number of available threads on the system
     size_t getAvailableThreads()
     {
@@ -250,7 +258,8 @@ public:
                 perspectiveForce);
 
             cam.recenterTo(origin);
-
+            cout << "Camera origin: " << origin << endl;
+            cout << "Camera getOrigin(): " << cam.getOrigin() << endl;
             addCamera(cam);
         }
     }

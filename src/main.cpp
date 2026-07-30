@@ -4,19 +4,20 @@ void scene_file()
 {
     space s;
     s.loadFromFile("../scene_export.txt");
-    s.addObject(object(primitive::suzane, 10));
+    s.enableGrid(10);
     s.launchThreadedCameraSplit();
 }
 
 void test()
 {
     space s;
-    object obj(primitive::cube, 10);
-    object obj1(primitive::cube, 10, point(10, 0, 0));
-    //obj.enableGrid(20);
+    object obj(primitive::suzane, 10);
+    object obj1(primitive::cube, 10, point(15, 0, 0));
+    
     s.addObject(obj);
     s.addObject(obj1);
-
+    
+    s.enableGrid(10);
     MeshReader reader;
     s.loadReader("../scene_export.txt", reader);
     s.loadCameraFromFile(reader);

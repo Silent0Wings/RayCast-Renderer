@@ -87,6 +87,12 @@ public:
     // spatial grid optimisation
     void enableGrid(std::size_t divisions)
     {
+        // Clamp divisions to a safe range [1, MAX_DIVISIONS]
+        constexpr std::size_t MIN_DIVISIONS = 1;
+        constexpr std::size_t MAX_DIVISIONS = 64; // tune this to your memory/CPU budget
+
+        divisions = std::clamp(divisions, MIN_DIVISIONS, MAX_DIVISIONS);
+
         if (boundingGrid != nullptr)
         {
             delete boundingGrid; // Clean up existing grid if any
