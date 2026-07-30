@@ -96,7 +96,7 @@ public:
        Constructors
        -------------------------------------------------------------- */
 
-    camera() : width(0), height(0), gridRay(), defaultColor(), img() {}
+    camera() : gridRay(), width(0), height(0), defaultColor(), img() {}
 
     camera(const camera &other) = default;
 
@@ -145,16 +145,14 @@ public:
 
     // Constructor from an existing ray grid
     camera(int w, int h, vector<vector<ray>> g)
-        : width(static_cast<unsigned int>(w)),
+        : gridRay(std::move(g)),
+          width(static_cast<unsigned int>(w)),
           height(static_cast<unsigned int>(h)),
-          gridRay(std::move(g)),
           defaultColor(),
           img(image(w, h))
     {
         if (w <= 0 || h <= 0)
-        {
             throw std::invalid_argument("Camera width and height must be positive");
-        }
     }
 
     /* --------------------------------------------------------------

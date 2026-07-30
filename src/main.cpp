@@ -20,7 +20,7 @@ void test()
 
 int main(int argc, char const *argv[])
 {
-    test();
+    scene_file();
     return 0;
 }
 

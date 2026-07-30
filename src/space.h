@@ -41,6 +41,7 @@ public:
         cameras.push_back(c);
     }
 
+    // return the number of available threads on the system
     size_t getAvailableThreads()
     {
         size_t n = static_cast<size_t>(std::thread::hardware_concurrency());
@@ -81,26 +82,6 @@ public:
     }
 
     // This launches a thread for each camera
-    void launchThreadedCamera()
-    {
-        std::vector<std::future<void>> futures;
-
-        for (size_t camIndex = 0; camIndex < cameras.size(); ++camIndex)
-        {
-            futures.push_back(std::async(std::launch::async, [&, camIndex]()
-                                         {
-                for (auto& o : obj) {
-                    cameras[camIndex].cameraToImage(o);
-                } }));
-        }
-
-        for (auto &future : futures)
-        {
-            future.get();
-        }
-    }
-
-    // This launches a thread for each camera
     void launchThreadedCameraSplit()
     {
         // splits the camera
@@ -127,6 +108,26 @@ public:
         saveStitchedImage("stitched_output_", originalH, originalW);
     }
 
+    // This launches a thread for each camera
+    void launchThreadedCamera()
+    {
+        std::vector<std::future<void>> futures;
+
+        for (size_t camIndex = 0; camIndex < cameras.size(); ++camIndex)
+        {
+            futures.push_back(std::async(std::launch::async, [&, camIndex]()
+                                         {
+                for (auto& o : obj) {
+                    cameras[camIndex].cameraToImage(o);
+                } }));
+        }
+
+        for (auto &future : futures)
+        {
+            future.get();
+        }
+    }
+
     // output the imges
     void saveImages()
     {
@@ -139,7 +140,6 @@ public:
             saveImage(cameras[i], "output" + to_string(i));
         }
     }
-
     void saveImage(camera c, string name = "output_")
     {
         if (name.empty() || name == "output_")
@@ -148,7 +148,6 @@ public:
         }
         ImageRenderer::renderToFile(c.getimage(), name + ".ppm");
     }
-
     void saveStitchedImage(string name = "stitched_output_", size_t originalH = 0, size_t originalW = 0)
     {
         if (originalH == 0 || originalW == 0)
@@ -166,7 +165,6 @@ public:
     }
 
     // loading camera and objects from a scene file
-
     void loadFromFile(const string &path_to_scene)
     {
         // read the exported scene file and load the camera and objects into the space

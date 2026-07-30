@@ -71,10 +71,10 @@ public:
                 << img.getwidth() << ' ' << img.getheight() << "\n255\n";
 
         // Render the color data stored in the Image object
-        for (unsigned int i = 0; i < img.getheight(); ++i)
+        for (int i = img.getheight() - 1; i >= 0; --i)
         { // Outer loop: height (rows)
             // std::clog << "\rScanlines remaining: " << (img.getheight() - i) << ' ' << std::flush;
-            for (unsigned int j = 0; j < img.getwidth(); ++j)
+            for (int j = 0; j < (int)img.getwidth(); ++j)
             {                                // Inner loop: width (columns)
                 color color = img.get(i, j); // Access color data using width (j) and height (i)
                 int r = static_cast<int>(color.r());
