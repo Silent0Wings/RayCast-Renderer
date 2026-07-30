@@ -29,13 +29,13 @@ public:
         components[1] = 0;
         components[2] = 0;
     }
-    vec3(double x, double y, double z)
+    vec3(float x, float y, float z)
     {
         components[0] = x;
         components[1] = y;
         components[2] = z;
     }
-    vec3(const double val[3]) : vec3(val[0], val[1], val[2]) {}
+    vec3(const float val[3]) : vec3(val[0], val[1], val[2]) {}
     vec3(vec3 p, vec3 q)
     {
         vec3 result = q - p;
@@ -55,13 +55,13 @@ public:
             std::string delimiter = ",";
             size_t pos = 0;
             std::string token;
-            double coords[3] = {0, 0, 0}; // Initialize x, y, z
+            float coords[3] = {0, 0, 0}; // Initialize x, y, z
             int i = 0;
 
             while ((pos = s.find(delimiter)) != std::string::npos && i < 3)
             {
                 token = s.substr(0, pos);
-                coords[i++] = std::stod(token); // Convert to double
+                coords[i++] = std::stod(token); // Convert to float
                 s.erase(0, pos + delimiter.length());
             }
 
@@ -100,19 +100,19 @@ public:
     }
 
     // Getter
-    double x() const { return components[0]; }
-    double y() const { return components[1]; }
-    double z() const { return components[2]; }
+    float x() const { return components[0]; }
+    float y() const { return components[1]; }
+    float z() const { return components[2]; }
 
     // Setter
-    void set_x(double x) { components[0] = x; }
-    void set_y(double y) { components[1] = y; }
-    void set_z(double z) { components[2] = z; }
-    void set(const double val[3])
+    void set_x(float x) { components[0] = x; }
+    void set_y(float y) { components[1] = y; }
+    void set_z(float z) { components[2] = z; }
+    void set(const float val[3])
     {
         set(val[0], val[1], val[2]);
     }
-    void set(const double x, const double y, const double z)
+    void set(const float x, const float y, const float z)
     {
         components[0] = x;
         components[1] = y;
@@ -169,7 +169,7 @@ public:
     }
 
     // Overload operator*
-    vec3 operator*(double scalar) const
+    vec3 operator*(float scalar) const
     {
         return vec3(components[0] * scalar,
                     components[1] * scalar,
@@ -178,7 +178,7 @@ public:
 
     // Overload operator/
 
-    vec3 operator/(double scalar) const
+    vec3 operator/(float scalar) const
     {
         if (scalar == 0)
         {
@@ -222,7 +222,7 @@ public:
     }
 
     // overload operator*=
-    vec3 &operator*=(double scalar)
+    vec3 &operator*=(float scalar)
     {
         components[0] *= scalar;
         components[1] *= scalar;
@@ -231,7 +231,7 @@ public:
     }
 
     // overload operator/=
-    vec3 &operator/=(double scalar)
+    vec3 &operator/=(float scalar)
     {
         if (scalar == 0)
         {
