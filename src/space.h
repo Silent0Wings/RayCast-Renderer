@@ -84,6 +84,8 @@ public:
     // This launches a thread for each camera
     void launchThreadedCameraSplit()
     {
+        auto start = std::chrono::high_resolution_clock::now();
+
         // splits the camera
         size_t originalH = 0;
         size_t originalW = 0;
@@ -106,6 +108,10 @@ public:
 
         // stitch the images back together
         saveStitchedImage("stitched_output_", originalH, originalW);
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> elapsed = end - start;
+        std::cout << "test() elapsed time: " << elapsed.count() << " ms\n";
     }
 
     // This launches a thread for each camera

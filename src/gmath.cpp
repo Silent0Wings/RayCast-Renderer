@@ -349,6 +349,87 @@ bool gmath::intersectRaySphere(const ray &r1, const point center, const double r
     return distance(P, center) <= radius;
 }
 
+bool gmath::intersectRayCube(const ray &ray, const Cube &_cube)
+{
+    const std::array<point, 4> &cubePoints = _cube.Getpoints();
+
+    const point &o = cubePoints.at(0);
+    double size = cubePoints.at(1).get_x() - o.get_x();
+
+    point minCorner = o;
+    point maxCorner = o + point(size, size, size);
+
+    double tmin = 0.0;
+    double tmax = 1e30;
+
+    const double ox = ray.getOrigine().get_x();
+    const double oy = ray.getOrigine().get_y();
+    const double oz = ray.getOrigine().get_z();
+
+    const double dx = ray.getDirection().x();
+    const double dy = ray.getDirection().y();
+    const double dz = ray.getDirection().z();
+
+    if (std::abs(dx) < 1e-9)
+    {
+        if (ox < minCorner.get_x() || ox > maxCorner.get_x())
+            return false;
+    }
+    else
+    {
+        double tx1 = (minCorner.get_x() - ox) / dx;
+        double tx2 = (maxCorner.get_x() - ox) / dx;
+        double txmin = (tx1 < tx2) ? tx1 : tx2;
+        double txmax = (tx1 < tx2) ? tx2 : tx1;
+        if (txmin > tmin)
+            tmin = txmin;
+        if (txmax < tmax)
+            tmax = txmax;
+        if (tmin > tmax)
+            return false;
+    }
+
+    if (std::abs(dy) < 1e-9)
+    {
+        if (oy < minCorner.get_y() || oy > maxCorner.get_y())
+            return false;
+    }
+    else
+    {
+        double ty1 = (minCorner.get_y() - oy) / dy;
+        double ty2 = (maxCorner.get_y() - oy) / dy;
+        double tymin = (ty1 < ty2) ? ty1 : ty2;
+        double tymax = (ty1 < ty2) ? ty2 : ty1;
+        if (tymin > tmin)
+            tmin = tymin;
+        if (tymax < tmax)
+            tmax = tymax;
+        if (tmin > tmax)
+            return false;
+    }
+
+    if (std::abs(dz) < 1e-9)
+    {
+        if (oz < minCorner.get_z() || oz > maxCorner.get_z())
+            return false;
+    }
+    else
+    {
+        double tz1 = (minCorner.get_z() - oz) / dz;
+        double tz2 = (maxCorner.get_z() - oz) / dz;
+        double tzmin = (tz1 < tz2) ? tz1 : tz2;
+        double tzmax = (tz1 < tz2) ? tz2 : tz1;
+        if (tzmin > tmin)
+            tmin = tzmin;
+        if (tzmax < tmax)
+            tmax = tzmax;
+        if (tmin > tmax)
+            return false;
+    }
+
+    return true;
+}
+
 double gmath::magnitude(const vec3 v)
 {
     return std::sqrt(v.x() * v.x() + v.y() * v.y() + v.z() * v.z());

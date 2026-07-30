@@ -16,7 +16,7 @@
 #include "texture.h"
 #include "general.h"
 #include "MeshReader.h"
-
+#include "sphereBoundingGrid.h"
 using namespace std;
 
 /**
@@ -37,7 +37,10 @@ public:
     // Dictionary to link an array of 3 elements to a color.
     map<array<point, 3>, color> colorMap;
 
+    sphereBoundingGrid *boundingGrid = nullptr;
+
     bool isEmisive = false;
+    bool gridEnabled = false;
 
     // Create an enum variable and assign a value to it
 
@@ -81,6 +84,18 @@ public:
             throw std::invalid_argument("Unknown primitive type");
         }
     }
+    // spatial grid optimisation
+    void enableGrid(std::size_t divisions)
+    {
+        if (boundingGrid != nullptr)
+        {
+            delete boundingGrid; // Clean up existing grid if any
+        }
+
+        boundingGrid = new sphereBoundingGrid(center, sphereRadius, divisions, vertices);
+        gridEnabled = true;
+    }
+
     void cube(double scaling, point offset, vec3 axis = vec3(0, 0, 0), double angle = 0)
     {
         vector<point> cubeVertices = {

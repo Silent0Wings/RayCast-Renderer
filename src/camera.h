@@ -286,8 +286,31 @@ public:
     {
         for (unsigned i = 0; i < height; ++i)
             for (unsigned j = 0; j < width; ++j)
-                if (gmath::intersectRaySphere(gridRay[i][j], obj.center, obj.sphereRadius))
+            {
+                if (!gmath::intersectRaySphere(gridRay[i][j], obj.center, obj.sphereRadius))
+                    continue; // ray misses sphere, skip to next pixel
+
+                if (obj.boundingGrid == nullptr)
+                {
+                    // No grid optimization, just color directly
                     getPixelColor(i, j, obj, gridRay[i][j]);
+                }
+                else
+                {
+                    // Grid exists: find first intersecting cube
+                    for (auto const &x : obj.boundingGrid->getCubes())
+                    {
+                        if (x.second.data.triples.empty())
+                            continue;
+
+                        if (gmath::intersectRayCube(gridRay[i][j], x.second.cube))
+                        {
+                            getPixelColor(i, j, obj, x.second.data.triples, gridRay[i][j]);
+                            break;
+                        }
+                    }
+                }
+            }
     }
 
     /* --------------------------------------------------------------
@@ -323,6 +346,40 @@ private:
             else
             {
                 img.set(i, j, x.second);
+            }
+        }
+
+        if (!hit && img.get(i, j) != defaultColor)
+            img.set(i, j, defaultColor);
+    }
+
+    void getPixelColor(unsigned int i, unsigned int j, object obj, const std::vector<std::array<point, 3>> &tris, ray r1, bool combine = false)
+    {
+        bool hasTexture = !obj.tex.empty();
+        bool hit = false;
+        double best = 1.0e18;
+
+        for (const auto &tri : tris) // tri is already std::array<point, 3>
+        {
+            std::optional<point> val = gmath::intersectRayTriangle(r1, tri.data());
+            if (!val)
+                continue;
+
+            double d = gmath::distance(r1.getOrigine(), *val);
+            if (d > best)
+                continue;
+
+            hit = true;
+            best = d;
+
+            if (hasTexture)
+            {
+                color texel = obj.tex.get(i, j);
+                img.set(i, j, combine ? (obj.colorMap.at(tri) / 10 + texel / 2) : texel);
+            }
+            else
+            {
+                img.set(i, j, obj.colorMap.at(tri));
             }
         }
 

@@ -11,10 +11,14 @@ void scene_file()
 void test()
 {
     space s;
-    s.addObject(object(primitive::cube, 10));
+    object obj(primitive::suzane, 10);
+    obj.enableGrid(20);
+    s.addObject(obj);
+
     MeshReader reader;
     s.loadReader("../scene_export.txt", reader);
     s.loadCameraFromFile(reader);
+
     s.launchThreadedCameraSplit();
 }
 

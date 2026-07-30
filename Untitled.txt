@@ -1,0 +1,25 @@
+
+grid optimisation 
+with optiimisation =>test() elapsed time: 50052.5 ms
+without it : test() elapsed time: 50728.6 ms
+
+=========================================================
+with optiimisation =>test() elapsed time: 46746.2 ms
+without it : test() elapsed time: 50728.6 ms
+
+
+
+skip empties
+test() elapsed time: 44746.2 ms
+
+
+unordered map & never populate empty cubes
+	test() elapsed time: 43096 ms
+
+
+
+====
+division =2 -> test() elapsed time: 46749.5 ms
+
+
+division =10 -> 
