@@ -14,12 +14,39 @@ test() elapsed time: 44746.2 ms
 
 
 unordered map & never populate empty cubes
-	test() elapsed time: 43096 ms
+test() elapsed time: 43096 ms
 
 
 
-====
+-------------------------------------------------------------
+division =1 ->test() elapsed time: 51814.8 ms
+
+
 division =2 -> test() elapsed time: 46749.5 ms
 
 
-division =10 -> 
+division =10 -> test() elapsed time: 53902.2 ms
+
+
+division =20 -> 55528.1 ms
+====
+
+
+
+reset
+
+-------------------------------------------------------------
+added cach 
+
+division =1 -> test() elapsed time: 44444.8 ms
+
+
+division =2 -> test() elapsed time: 48761.4 ms
+
+
+division =10 -> test() elapsed time: 51748.5 ms
+
+
+division =20 -> test() elapsed time: 48837.2 ms
+====
+

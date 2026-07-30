@@ -16,6 +16,7 @@ struct CubeData
     std::array<point, 4> bounds;
     point origin;
     std::vector<std::array<point, 3>> triples; // each entry is exactly 3 points
+    std::array<std::size_t, 6> neighbors;      // [left, right, front, back, bottom, top]
 };
 
 struct CubeEntry
@@ -110,6 +111,29 @@ public:
         return ix * m_divisions * m_divisions + iy * m_divisions + iz;
     }
 
+    void PrecomputeNeighbors()
+    {
+        for (std::size_t ix = 0; ix < m_divisions; ++ix)
+            for (std::size_t iy = 0; iy < m_divisions; ++iy)
+                for (std::size_t iz = 0; iz < m_divisions; ++iz)
+                {
+                    std::size_t idx = IndexOf(ix, iy, iz);
+                    auto &entry = m_entries.at(idx);
+
+                    // Left
+                    entry.data.neighbors[0] = (ix > 0) ? IndexOf(ix - 1, iy, iz) : idx;
+                    // Right
+                    entry.data.neighbors[1] = (ix < m_divisions - 1) ? IndexOf(ix + 1, iy, iz) : idx;
+                    // Front
+                    entry.data.neighbors[2] = (iy > 0) ? IndexOf(ix, iy - 1, iz) : idx;
+                    // Back
+                    entry.data.neighbors[3] = (iy < m_divisions - 1) ? IndexOf(ix, iy + 1, iz) : idx;
+                    // Bottom
+                    entry.data.neighbors[4] = (iz > 0) ? IndexOf(ix, iy, iz - 1) : idx;
+                    // Top
+                    entry.data.neighbors[5] = (iz < m_divisions - 1) ? IndexOf(ix, iy, iz + 1) : idx;
+                }
+    }
     CubeEntry &At(std::size_t index) { return m_entries.at(index); }
     const CubeEntry &At(std::size_t index) const { return m_entries.at(index); }
 

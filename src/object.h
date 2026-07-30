@@ -93,6 +93,7 @@ public:
         }
 
         boundingGrid = new sphereBoundingGrid(center, sphereRadius, divisions, vertices);
+        boundingGrid->PrecomputeNeighbors();
         gridEnabled = true;
     }
 

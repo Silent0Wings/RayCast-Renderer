@@ -284,33 +284,87 @@ public:
 
     void cameraToImage(object obj)
     {
+        std::optional<std::size_t> cachedCube; // per-row cache
+
         for (unsigned i = 0; i < height; ++i)
+        {
+            cachedCube.reset(); // reset per row
+
             for (unsigned j = 0; j < width; ++j)
             {
                 if (!gmath::intersectRaySphere(gridRay[i][j], obj.center, obj.sphereRadius))
-                    continue; // ray misses sphere, skip to next pixel
+                    continue;
 
                 if (obj.boundingGrid == nullptr)
                 {
-                    // No grid optimization, just color directly
                     getPixelColor(i, j, obj, gridRay[i][j]);
                 }
                 else
                 {
-                    // Grid exists: find first intersecting cube
-                    for (auto const &x : obj.boundingGrid->getCubes())
-                    {
-                        if (x.second.data.triples.empty())
-                            continue;
+                    bool hit = false;
 
-                        if (gmath::intersectRayCube(gridRay[i][j], x.second.cube))
+                    // Try cached cube first
+                    if (cachedCube.has_value())
+                    {
+                        const auto &entry = obj.boundingGrid->Entries().at(cachedCube.value());
+                        if (!entry.data.triples.empty() &&
+                            gmath::intersectRayCube(gridRay[i][j], entry.cube))
                         {
-                            getPixelColor(i, j, obj, x.second.data.triples, gridRay[i][j]);
-                            break;
+                            getPixelColor(i, j, obj, entry.data.triples, gridRay[i][j]);
+                            hit = true;
+
+                            // Check neighbors of cached cube
+                            if (!hit)
+                            {
+                                for (std::size_t nidx : entry.data.neighbors)
+                                {
+                                    const auto &neighbor = obj.boundingGrid->Entries().at(nidx);
+                                    if (!neighbor.data.triples.empty() &&
+                                        gmath::intersectRayCube(gridRay[i][j], neighbor.cube))
+                                    {
+                                        getPixelColor(i, j, obj, neighbor.data.triples, gridRay[i][j]);
+                                        cachedCube = nidx;
+                                        hit = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Fall back to full loop
+                    if (!hit)
+                    {
+                        for (auto const &[idx, x] : obj.boundingGrid->getCubes())
+                        {
+                            if (x.data.triples.empty())
+                                continue;
+
+                            if (gmath::intersectRayCube(gridRay[i][j], x.cube))
+                            {
+                                cachedCube = idx;
+                                getPixelColor(i, j, obj, x.data.triples, gridRay[i][j]);
+                                hit = true;
+
+                                // Check neighbors of this cube
+                                for (std::size_t nidx : x.data.neighbors)
+                                {
+                                    const auto &neighbor = obj.boundingGrid->Entries().at(nidx);
+                                    if (!neighbor.data.triples.empty() &&
+                                        gmath::intersectRayCube(gridRay[i][j], neighbor.cube))
+                                    {
+                                        getPixelColor(i, j, obj, neighbor.data.triples, gridRay[i][j]);
+                                        cachedCube = nidx;
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
                         }
                     }
                 }
             }
+        }
     }
 
     /* --------------------------------------------------------------
