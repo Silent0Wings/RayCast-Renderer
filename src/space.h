@@ -293,6 +293,8 @@ public:
                 perspectiveScale,
                 perspectiveForce);
 
+            cam.recenterTo(origin);
+
             addCamera(cam);
         }
     }
