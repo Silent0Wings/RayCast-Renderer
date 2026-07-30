@@ -12,19 +12,18 @@ void test()
 {
     space s;
     object obj(primitive::suzane, 10);
-    obj.enableGrid(20);
+    obj.enableGrid(10);
     s.addObject(obj);
 
     MeshReader reader;
     s.loadReader("../scene_export.txt", reader);
     s.loadCameraFromFile(reader);
-
     s.launchThreadedCameraSplit();
 }
 
 int main(int argc, char const *argv[])
 {
-    scene_file();
+    test();
     return 0;
 }
 

@@ -37,10 +37,54 @@ public:
         Subdivide(nullptr, nullptr);
     }
 
+    // Returns the [min,max] cube index range along each axis that a triangle's AABB touches.
+    bool TriangleCubeRange(const std::array<point, 3> &tri,
+                           std::size_t &ixMin, std::size_t &ixMax,
+                           std::size_t &iyMin, std::size_t &iyMax,
+                           std::size_t &izMin, std::size_t &izMax) const
+    {
+        point minP = tri[0], maxP = tri[0];
+        for (int k = 1; k < 3; ++k)
+        {
+            minP = point(std::min(minP.get_x(), tri[k].get_x()),
+                         std::min(minP.get_y(), tri[k].get_y()),
+                         std::min(minP.get_z(), tri[k].get_z()));
+            maxP = point(std::max(maxP.get_x(), tri[k].get_x()),
+                         std::max(maxP.get_y(), tri[k].get_y()),
+                         std::max(maxP.get_z(), tri[k].get_z()));
+        }
+
+        const point origin = m_boundingCube.Origin();
+        const double fullSize = m_boundingCube.Size();
+        const double subSize = fullSize / static_cast<double>(m_divisions);
+
+        auto clampIdx = [&](double d) -> std::size_t
+        {
+            double c = std::min(std::max(d, 0.0), fullSize - 1e-9);
+            return static_cast<std::size_t>(std::min(c / subSize, static_cast<double>(m_divisions - 1)));
+        };
+
+        // If the triangle is entirely outside the bounding cube on any axis, reject.
+        if (maxP.get_x() < origin.get_x() || minP.get_x() > origin.get_x() + fullSize)
+            return false;
+        if (maxP.get_y() < origin.get_y() || minP.get_y() > origin.get_y() + fullSize)
+            return false;
+        if (maxP.get_z() < origin.get_z() || minP.get_z() > origin.get_z() + fullSize)
+            return false;
+
+        ixMin = clampIdx(minP.get_x() - origin.get_x());
+        ixMax = clampIdx(maxP.get_x() - origin.get_x());
+        iyMin = clampIdx(minP.get_y() - origin.get_y());
+        iyMax = clampIdx(maxP.get_y() - origin.get_y());
+        izMin = clampIdx(minP.get_z() - origin.get_z());
+        izMax = clampIdx(maxP.get_z() - origin.get_z());
+        return true;
+    }
+
     // Accelerated constructor: pass a vector of point-groups (no flattening).
     // For each group:
     //   - If all points in the group lie in the SAME cube AND group.size() >= 3,
-    //     that cube gets one triple from the first 3 points of that group.
+    //     that cube gets ALL possible triples from that group (triangle list: every 3 points).
     //   - If the group's points span multiple cubes, or group.size() < 3,
     //     the group is ignored (no partial assignment, no flattening).
     sphereBoundingGrid(const point &sphereCenter, double sphereRadius, std::size_t divisions,
@@ -61,27 +105,18 @@ public:
             if (!TryIndexForPoint(group[0], firstIdx))
                 continue; // first point outside bounding cube -> ignore group
 
-            bool allSame = true;
-            for (std::size_t i = 1; i < group.size(); ++i)
+            for (std::size_t i = 0; i + 2 < group.size(); i += 3)
             {
-                std::size_t idx;
-                if (!TryIndexForPoint(group[i], idx) || idx != firstIdx)
-                {
-                    allSame = false;
-                    break;
-                }
-            }
+                std::array<point, 3> triple = {group[i], group[i + 1], group[i + 2]};
 
-            if (!allSame)
-                continue; // group spans multiple cubes -> ignore
+                std::size_t ixMin, ixMax, iyMin, iyMax, izMin, izMax;
+                if (!TriangleCubeRange(triple, ixMin, ixMax, iyMin, iyMax, izMin, izMax))
+                    continue; // fully outside bounding cube
 
-            if (group.size() >= 3)
-            {
-                std::array<point, 3> triple = {
-                    group[0],
-                    group[1],
-                    group[2]};
-                cubeTriples[firstIdx].push_back(triple);
+                for (std::size_t ix = ixMin; ix <= ixMax; ++ix)
+                    for (std::size_t iy = iyMin; iy <= iyMax; ++iy)
+                        for (std::size_t iz = izMin; iz <= izMax; ++iz)
+                            cubeTriples[IndexOf(ix, iy, iz)].push_back(triple);
             }
         }
 
@@ -134,6 +169,7 @@ public:
                     entry.data.neighbors[5] = (iz < m_divisions - 1) ? IndexOf(ix, iy, iz + 1) : idx;
                 }
     }
+
     CubeEntry &At(std::size_t index) { return m_entries.at(index); }
     const CubeEntry &At(std::size_t index) const { return m_entries.at(index); }
 
@@ -276,7 +312,6 @@ private:
                    std::vector<std::size_t> *outTouchedIndices)
     {
         m_entries.clear();
-        // m_entries is now a map, so no resize needed
 
         const point origin = m_boundingCube.Origin();
         const double fullSize = m_boundingCube.Size();
@@ -312,9 +347,8 @@ private:
                         }
                     }
 
-                    // Only insert if this cube has geometry
-                    if (!data.triples.empty())
-                        m_entries[idx] = CubeEntry{std::move(subCube), std::move(data)};
+                    // Always insert the cube (even if empty)
+                    m_entries[idx] = CubeEntry{std::move(subCube), std::move(data)};
                 }
             }
         }

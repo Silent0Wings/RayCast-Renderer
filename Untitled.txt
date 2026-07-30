@@ -18,6 +18,8 @@ test() elapsed time: 43096 ms
 
 
 
+1 suzane run test :
+
 -------------------------------------------------------------
 division =1 ->test() elapsed time: 51814.8 ms
 
@@ -49,4 +51,11 @@ division =10 -> test() elapsed time: 51748.5 ms
 
 division =20 -> test() elapsed time: 48837.2 ms
 ====
+
+
+-------------------------------------------------------------
+added neighbors + cach 
+
+
+division =20 -> test() elapsed time: 45837.2 ms
 

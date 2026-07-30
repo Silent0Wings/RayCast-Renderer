@@ -284,11 +284,11 @@ public:
 
     void cameraToImage(object obj)
     {
-        std::optional<std::size_t> cachedCube; // per-row cache
+        std::optional<std::size_t> cachedCube;
 
         for (unsigned i = 0; i < height; ++i)
         {
-            cachedCube.reset(); // reset per row
+            cachedCube.reset();
 
             for (unsigned j = 0; j < width; ++j)
             {
@@ -298,71 +298,66 @@ public:
                 if (obj.boundingGrid == nullptr)
                 {
                     getPixelColor(i, j, obj, gridRay[i][j]);
+                    continue;
                 }
-                else
+
+                bool triangleHit = false;
+
+                // Try cached cube first
+                if (cachedCube.has_value())
                 {
-                    bool hit = false;
-
-                    // Try cached cube first
-                    if (cachedCube.has_value())
+                    auto entry = obj.boundingGrid->Entries().find(cachedCube.value());
+                    if (entry != obj.boundingGrid->Entries().end() &&
+                        !entry->second.data.triples.empty() &&
+                        gmath::intersectRayCube(gridRay[i][j], entry->second.cube))
                     {
-                        const auto &entry = obj.boundingGrid->Entries().at(cachedCube.value());
-                        if (!entry.data.triples.empty() &&
-                            gmath::intersectRayCube(gridRay[i][j], entry.cube))
-                        {
-                            getPixelColor(i, j, obj, entry.data.triples, gridRay[i][j]);
-                            hit = true;
-
-                            // Check neighbors of cached cube
-                            if (!hit)
-                            {
-                                for (std::size_t nidx : entry.data.neighbors)
-                                {
-                                    const auto &neighbor = obj.boundingGrid->Entries().at(nidx);
-                                    if (!neighbor.data.triples.empty() &&
-                                        gmath::intersectRayCube(gridRay[i][j], neighbor.cube))
-                                    {
-                                        getPixelColor(i, j, obj, neighbor.data.triples, gridRay[i][j]);
-                                        cachedCube = nidx;
-                                        hit = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    // Fall back to full loop
-                    if (!hit)
-                    {
-                        for (auto const &[idx, x] : obj.boundingGrid->getCubes())
-                        {
-                            if (x.data.triples.empty())
-                                continue;
-
-                            if (gmath::intersectRayCube(gridRay[i][j], x.cube))
-                            {
-                                cachedCube = idx;
-                                getPixelColor(i, j, obj, x.data.triples, gridRay[i][j]);
-                                hit = true;
-
-                                // Check neighbors of this cube
-                                for (std::size_t nidx : x.data.neighbors)
-                                {
-                                    const auto &neighbor = obj.boundingGrid->Entries().at(nidx);
-                                    if (!neighbor.data.triples.empty() &&
-                                        gmath::intersectRayCube(gridRay[i][j], neighbor.cube))
-                                    {
-                                        getPixelColor(i, j, obj, neighbor.data.triples, gridRay[i][j]);
-                                        cachedCube = nidx;
-                                        break;
-                                    }
-                                }
-                                break;
-                            }
-                        }
+                        triangleHit = getPixelColor(i, j, obj, entry->second.data.triples, gridRay[i][j]);
                     }
                 }
+
+                if (triangleHit)
+                    continue; // cache confirmed valid, nothing more to do this pixel
+
+                // Fall back to full loop
+                bool boxHit = false; // used only to decide when to stop scanning cubes
+                for (auto const &[idx, x] : obj.boundingGrid->getCubes())
+                {
+                    if (x.data.triples.empty())
+                        continue;
+
+                    if (!gmath::intersectRayCube(gridRay[i][j], x.cube))
+                        continue;
+
+                    boxHit = true;
+
+                    if (getPixelColor(i, j, obj, x.data.triples, gridRay[i][j]))
+                    {
+                        triangleHit = true;
+                        cachedCube = idx;
+                    }
+
+                    for (std::size_t nidx : x.data.neighbors)
+                    {
+                        auto it = obj.boundingGrid->Entries().find(nidx);
+                        if (it == obj.boundingGrid->Entries().end())
+                            continue;
+
+                        const auto &neighbor = it->second;
+                        if (!neighbor.data.triples.empty() &&
+                            gmath::intersectRayCube(gridRay[i][j], neighbor.cube))
+                        {
+                            if (getPixelColor(i, j, obj, neighbor.data.triples, gridRay[i][j]))
+                            {
+                                triangleHit = true;
+                                cachedCube = nidx; // keep the last cube that actually contributed a hit
+                            }
+                        }
+                    }
+                    break; // still safe: spatially, current + neighbors cover the local region
+                }
+
+                if (!triangleHit)
+                    cachedCube.reset(); // don't cache a cube that produced no real intersection
             }
         }
     }
@@ -386,7 +381,7 @@ private:
                 continue;
 
             double d = gmath::distance(r1.getOrigine(), *val);
-            if (d > best)
+            if (d >= best) // ← Same fix here
                 continue;
 
             hit = true;
@@ -394,7 +389,7 @@ private:
 
             if (hasTexture)
             {
-                color texel = obj.tex.get(i, j); // TODO: verify this should be UV, not screen coords
+                color texel = obj.tex.get(i, j);
                 img.set(i, j, combine ? (x.second / 10 + texel / 2) : texel);
             }
             else
@@ -407,20 +402,20 @@ private:
             img.set(i, j, defaultColor);
     }
 
-    void getPixelColor(unsigned int i, unsigned int j, object obj, const std::vector<std::array<point, 3>> &tris, ray r1, bool combine = false)
+    bool getPixelColor(unsigned int i, unsigned int j, object obj, const std::vector<std::array<point, 3>> &tris, ray r1, bool combine = false)
     {
         bool hasTexture = !obj.tex.empty();
         bool hit = false;
         double best = 1.0e18;
 
-        for (const auto &tri : tris) // tri is already std::array<point, 3>
+        for (const auto &tri : tris)
         {
             std::optional<point> val = gmath::intersectRayTriangle(r1, tri.data());
             if (!val)
                 continue;
 
             double d = gmath::distance(r1.getOrigine(), *val);
-            if (d > best)
+            if (d >= best) // ← Skip if NOT closer (was: d > best)
                 continue;
 
             hit = true;
@@ -439,6 +434,8 @@ private:
 
         if (!hit && img.get(i, j) != defaultColor)
             img.set(i, j, defaultColor);
+
+        return hit;
     }
 
     /* --------------------------------------------------------------
