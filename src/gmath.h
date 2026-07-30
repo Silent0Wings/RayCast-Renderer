@@ -70,7 +70,7 @@ public:
     {
         return a < 0 ? -a : a;
     }
-    static constexpr long double epsilon = 1.0e-10; //  this is the smallest value that can be represented in the system
+    static constexpr long double epsilon = 1.0e-5; //  the smallest value for our system to check 0 since we use floating point now
     /*
     This keyword specifies that epsilon is a constant expression.
     A constexpr variable is evaluated at compile time,

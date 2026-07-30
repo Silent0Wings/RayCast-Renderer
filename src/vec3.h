@@ -19,7 +19,7 @@
 class vec3
 {
 private:
-    double components[3] = {0, 0, 0}; // Declaration
+    float components[3] = {0, 0, 0}; // Declaration
 
 public:
     // Constructor
