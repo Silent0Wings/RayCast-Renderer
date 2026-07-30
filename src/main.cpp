@@ -8,9 +8,19 @@ void scene_file()
     s.launchThreadedCameraSplit();
 }
 
+void test()
+{
+    space s;
+    s.addObject(object(primitive::suzane, 10));
+    MeshReader reader;
+    s.loadReader("../scene_export.txt", reader);
+    s.loadCameraFromFile(reader);
+    s.launchThreadedCameraSplit();
+}
+
 int main(int argc, char const *argv[])
 {
-    scene_file();
+    test();
     return 0;
 }
 
