@@ -12,6 +12,7 @@
 #include "ray.h"
 #include "object.h"
 #include "point.h"
+#include <optional>
 using namespace std;
 
 class camera
@@ -301,38 +302,32 @@ private:
         bool hasTexture = !obj.tex.empty();
         bool hit = false;
         double best = 1.0e18;
+
         for (auto const &x : obj.colorMap)
         {
-            array<point, 3> arr = {x.first[0], x.first[1], x.first[2]};
-            point *val = gmath::intersectRayTriangle(r1, arr.data());
-            if (val)
+            std::array<point, 3> tri = {x.first[0], x.first[1], x.first[2]};
+            std::optional<point> val = gmath::intersectRayTriangle(r1, tri.data());
+            if (!val)
+                continue;
+
+            double d = gmath::distance(r1.getOrigine(), *val);
+            if (d > best)
+                continue;
+
+            hit = true;
+            best = d;
+
+            if (hasTexture)
             {
-                double d = gmath::distance(r1.getOrigine(), *val);
-                delete val;
-                if (d <= best)
-                {
-                    hit = true;
-                    best = d;
-                    if (hasTexture)
-                    {
-                        if (combine)
-                        {
-                            best = d;
-                            color blended = x.second / 10 + obj.tex.get(i, j) / 2;
-                            img.set(i, j, blended);
-                        }
-                        else
-                        {
-                            img.set(i, j, obj.tex.get(i, j));
-                        }
-                    }
-                    else
-                    {
-                        img.set(i, j, x.second);
-                    }
-                }
+                color texel = obj.tex.get(i, j); // TODO: verify this should be UV, not screen coords
+                img.set(i, j, combine ? (x.second / 10 + texel / 2) : texel);
+            }
+            else
+            {
+                img.set(i, j, x.second);
             }
         }
+
         if (!hit && img.get(i, j) != defaultColor)
             img.set(i, j, defaultColor);
     }

@@ -174,52 +174,30 @@ point *gmath::intersectLocation(const ray &r1, const ray &r2)
     return intersection;
 }
 
-point *gmath::intersectRayTriangle(const ray &r, const point triangle[3])
+std::optional<point> gmath::intersectRayTriangle(const ray &r1, const point triangle[3])
 {
     const point &A = triangle[0];
     const point &B = triangle[1];
     const point &C = triangle[2];
 
-    // Step 1: Early direction check (ray must point toward triangle)
-    point rayOrigin = r.getOrigine();
-    point shiftedOrigin = r.get(epsilon);
-    bool movingToward = false;
-
-    for (int i = 0; i < 3; ++i)
-    {
-        double distFromOrigin = gmath::distance(rayOrigin, triangle[i]);
-        double distFromShifted = gmath::distance(shiftedOrigin, triangle[i]);
-        if (distFromShifted < distFromOrigin)
-        {
-            movingToward = true;
-            break;
-        }
-    }
-
-    if (!movingToward)
-        return nullptr;
-
-    // Step 2: Plane intersection
     vec3 AB = B - A;
     vec3 AC = C - A;
     vec3 normal = cross(AB, AC);
 
-    vec3 dir = r.getDirection();
-    point origin = r.getOrigine();
+    vec3 dir = r1.getDirection();
+    point origin = r1.getOrigine();
 
     double denominator = dot(normal, dir);
     if (std::abs(denominator) < 1e-6)
-        return nullptr; // Ray is parallel to triangle's plane
+        return std::nullopt; // ray is parallel to the triangle's plane
 
     double t = dot(normal, A - origin) / denominator;
     if (t < 0)
-        return nullptr; // Intersection is behind ray
+        return std::nullopt; // intersection is behind the ray
 
     point P = origin + dir * t;
 
-    // Step 3: Barycentric coordinate test
     vec3 AP = P - A;
-
     double dot00 = dot(AB, AB);
     double dot01 = dot(AB, AC);
     double dot02 = dot(AB, AP);
@@ -228,15 +206,15 @@ point *gmath::intersectRayTriangle(const ray &r, const point triangle[3])
 
     double denom = dot00 * dot11 - dot01 * dot01;
     if (std::abs(denom) < 1e-6)
-        return nullptr;
+        return std::nullopt;
 
     double u = (dot11 * dot02 - dot01 * dot12) / denom;
     double v = (dot00 * dot12 - dot01 * dot02) / denom;
 
     if (u >= 0 && v >= 0 && (u + v <= 1))
-        return new point(P);
+        return P;
 
-    return nullptr;
+    return std::nullopt;
 }
 
 Hit *gmath::intersect3dHit(const ray &r1, const point arr[3])
@@ -349,63 +327,26 @@ Hit *gmath::intersect3dHit(const ray &r1, const point arr[3])
     }
 }
 
-point *gmath::intersect3d2(const ray &r1, const point arr[4])
-{
-    // Check if the ray intersects the first triangle
-    point arr1[3] = {arr[0], arr[1], arr[2]};
-    // Check if the ray intersects the second triangle
-    point arr2[3] = {arr[0], arr[2], arr[3]};
-
-    point *p1 = intersectRayTriangle(r1, arr1);
-    point *p2 = intersectRayTriangle(r1, arr2);
-
-    // Determine the intersection point
-    if (p1 == nullptr && p2 == nullptr)
-    {
-        return nullptr; // No intersection
-    }
-    else if (p1 == nullptr)
-    {
-        return p2; // Return the intersection point from the second triangle
-    }
-    else if (p2 == nullptr)
-    {
-        return p1; // Return the intersection point from the first triangle
-    }
-    else
-    {
-        // Both triangles intersect, return the closest intersection point
-        double d1 = distance(r1.getOrigine(), *p1);
-        double d2 = distance(r1.getOrigine(), *p2);
-        return d1 < d2 ? p1 : p2;
-    }
-}
-
 bool gmath::intersectRaySphere(const ray &r1, const point center, const double radius)
 {
-
-    // (x-h)^2 +(x-k)^2+(x-l)^2= Radius^2
+    // (x-h)^2 + (y-k)^2 + (z-l)^2 = Radius^2
     // h=x , k=y , l=z the center of the sphere
-    // now a point along the ray is p= r0+rd*t
-    // and the perpindicular projection of the origine of the sphere on the line represented by the ray is P at time  t calculared as so:
-    // t=dot(s-r0,rd))
+    // a point along the ray is p = r0 + rd*t
+    // t = dot(center - r0, rd) gives the parameter of the perpendicular
+    // projection of the sphere center onto the ray
 
     double t = dot(center - r1.getOrigine(), r1.getDirection());
-    point P = r1.get(t);
 
-    // if the distance between t and the center of the sphere is > to the radius then it is outisde and there is no possible intersection
-    if (distance(P, center) > radius) // then the intersection never happens since the line is outside of the sphere
-    {
+    // if the closest approach happens behind the ray's origin, the sphere
+    // is only "in front" if it also overlaps the origin itself
+    if (t < 0.0 && distance(r1.getOrigine(), center) > radius)
         return false;
-    }
-    else if (distance(P, center) == radius) // then the intersection happens at one point
-    {
-        return true;
-    }
-    else // intersection happens at 2 points
-    {
-        return true;
-    }
+
+    point P = r1.get(t < 0.0 ? 0.0 : t);
+
+    // if the distance from P to the center exceeds the radius, the ray
+    // (line) never comes close enough to intersect the sphere
+    return distance(P, center) <= radius;
 }
 
 double gmath::magnitude(const vec3 v)
