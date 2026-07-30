@@ -338,6 +338,10 @@ public:
 
                     for (std::size_t nidx : x.data.neighbors)
                     {
+                        if (nidx == static_cast<std::size_t>(-1))
+                            continue; // sentinel: no usable neighbor in this direction
+
+                        
                         auto it = obj.boundingGrid->Entries().find(nidx);
                         if (it == obj.boundingGrid->Entries().end())
                             continue;

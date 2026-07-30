@@ -148,6 +148,20 @@ public:
 
     void PrecomputeNeighbors()
     {
+        constexpr std::size_t kInvalid = static_cast<std::size_t>(-1);
+
+        auto resolve = [&](bool inBounds, std::size_t candidate) -> std::size_t
+        {
+            if (!inBounds)
+                return kInvalid;
+
+            auto it = m_entries.find(candidate);
+            if (it == m_entries.end() || it->second.data.triples.empty())
+                return kInvalid; // skip empty/nonexistent neighbors
+
+            return candidate;
+        };
+
         for (std::size_t ix = 0; ix < m_divisions; ++ix)
             for (std::size_t iy = 0; iy < m_divisions; ++iy)
                 for (std::size_t iz = 0; iz < m_divisions; ++iz)
@@ -155,21 +169,14 @@ public:
                     std::size_t idx = IndexOf(ix, iy, iz);
                     auto &entry = m_entries.at(idx);
 
-                    // Left
-                    entry.data.neighbors[0] = (ix > 0) ? IndexOf(ix - 1, iy, iz) : idx;
-                    // Right
-                    entry.data.neighbors[1] = (ix < m_divisions - 1) ? IndexOf(ix + 1, iy, iz) : idx;
-                    // Front
-                    entry.data.neighbors[2] = (iy > 0) ? IndexOf(ix, iy - 1, iz) : idx;
-                    // Back
-                    entry.data.neighbors[3] = (iy < m_divisions - 1) ? IndexOf(ix, iy + 1, iz) : idx;
-                    // Bottom
-                    entry.data.neighbors[4] = (iz > 0) ? IndexOf(ix, iy, iz - 1) : idx;
-                    // Top
-                    entry.data.neighbors[5] = (iz < m_divisions - 1) ? IndexOf(ix, iy, iz + 1) : idx;
+                    entry.data.neighbors[0] = resolve(ix > 0, (ix > 0) ? IndexOf(ix - 1, iy, iz) : 0);
+                    entry.data.neighbors[1] = resolve(ix < m_divisions - 1, (ix < m_divisions - 1) ? IndexOf(ix + 1, iy, iz) : 0);
+                    entry.data.neighbors[2] = resolve(iy > 0, (iy > 0) ? IndexOf(ix, iy - 1, iz) : 0);
+                    entry.data.neighbors[3] = resolve(iy < m_divisions - 1, (iy < m_divisions - 1) ? IndexOf(ix, iy + 1, iz) : 0);
+                    entry.data.neighbors[4] = resolve(iz > 0, (iz > 0) ? IndexOf(ix, iy, iz - 1) : 0);
+                    entry.data.neighbors[5] = resolve(iz < m_divisions - 1, (iz < m_divisions - 1) ? IndexOf(ix, iy, iz + 1) : 0);
                 }
     }
-
     CubeEntry &At(std::size_t index) { return m_entries.at(index); }
     const CubeEntry &At(std::size_t index) const { return m_entries.at(index); }
 
