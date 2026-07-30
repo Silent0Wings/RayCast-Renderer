@@ -21,6 +21,8 @@ struct CameraData
     Vec3 position, rotation;
     double fov = 60.0, nearClip = 0.1, farClip = 1000.0;
     int resX = 800, resY = 800;
+    double perspectiveScale = 1.0;
+    double perspectiveForce = 1.0;
 };
 
 struct ObjectData
@@ -115,7 +117,7 @@ public:
             if (parts.empty())
                 continue;
 
-            if (parts[0] == "CAMERA" && parts.size() == 5)
+            if (parts[0] == "CAMERA" && (parts.size() == 5 || parts.size() == 6))
             {
                 sceneCamera.position = parseVec3(parts[1]);
                 sceneCamera.rotation = parseVec3(parts[2]);
@@ -127,6 +129,18 @@ public:
                 Vec3 res = parseVec3(parts[4] + ", 0");
                 sceneCamera.resX = (int)res.x;
                 sceneCamera.resY = (int)res.y;
+
+                if (parts.size() == 6)
+                {
+                    Vec3 persp = parseVec3(parts[5] + ", 0");
+                    sceneCamera.perspectiveScale = persp.x;
+                    sceneCamera.perspectiveForce = persp.y;
+                }
+                else
+                {
+                    sceneCamera.perspectiveScale = 1.0;
+                    sceneCamera.perspectiveForce = 1.0;
+                }
 
                 hasCamera = true;
             }

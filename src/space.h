@@ -316,7 +316,7 @@ public:
             future.get();
         }
 
-        image finalstitched = cameras.at(0).consruct_split(cameras, originalH, originalW);
+        image finalstitched = cameras.at(0).construct_split(cameras, originalH, originalW);
         ImageRenderer::renderToFile(finalstitched, "stitched.ppm");
     }
 
@@ -352,7 +352,6 @@ public:
             return;
         }
 
-        // Load objects (rotation dropped — object class has no setRotation)
         // Load objects
         for (const auto &objData : reader.sceneObjects)
         {
@@ -366,7 +365,6 @@ public:
             double cy = cos(ry), sy = sin(ry);
             double cz = cos(rz), sz = sin(rz);
 
-            // Combined rotation matrix R = Rz * Ry * Rx
             double m00 = cy * cz;
             double m01 = sx * sy * cz - cx * sz;
             double m02 = cx * sy * cz + sx * sz;
@@ -377,12 +375,11 @@ public:
             double m21 = sx * cy;
             double m22 = cx * cy;
 
-            // Extract axis-angle from rotation matrix (standard formula)
             double traceVal = m00 + m11 + m22;
             double angleRad = acos(std::clamp((traceVal - 1.0) / 2.0, -1.0, 1.0));
             double angleDeg = angleRad * 180.0 / gmath::pi;
 
-            vec3 axis(0, 0, 1); // default fallback axis if angle is ~0
+            vec3 axis(0, 0, 1);
             double sinAngle = sin(angleRad);
             if (sinAngle > 1e-6)
             {
@@ -419,22 +416,44 @@ public:
 
             double m00 = cy * cz;
             double m01 = sx * sy * cz - cx * sz;
-            double m02 = cx * sy * cz + sx * sz;
             double m10 = cy * sz;
             double m11 = sx * sy * sz + cx * cz;
-            double m12 = cx * sy * sz - sx * cz;
             double m20 = -sy;
             double m21 = sx * cy;
-            double m22 = cx * cy;
 
             vec3 Xdirection(m00, m10, m20);
             vec3 Ydirection(m01, m11, m21);
-            vec3 direction(-m02, -m12, -m22);
 
             double step = 0.01;
 
-            camera cam(reader.sceneCamera.resX, reader.sceneCamera.resY, step, origin, Xdirection, Ydirection, direction);
-            cam.recenterTo(origin); // fixes edge-vs-center mismatch
+            double perspectiveScale = reader.sceneCamera.perspectiveScale > 1.0
+                                          ? reader.sceneCamera.perspectiveScale
+                                          : 1.0;
+
+            double fovRad = reader.sceneCamera.fov * gmath::pi / 180.0;
+            double halfWidth = reader.sceneCamera.resX / 2.0;
+            double perspectiveForce =
+                ((perspectiveScale - 1.0) * step * halfWidth) / tan(fovRad / 2.0);
+
+            // Compute the ray direction that the old factory used to calculate
+            // internally from the right-hand rule:
+            //   direction = normalize(cross(indexFinger, midleFinger)) * thumb
+            // Here Ydirection was indexFinger (row/forward) and Xdirection was midleFinger (col/up).
+            int thumbFinger = 1;
+            vec3 camRayDir = gmath::normalize(gmath::cross(Ydirection, Xdirection)) * thumbFinger;
+
+            // Unified constructor (replaces camera::perspectiveCamera)
+            camera cam(
+                reader.sceneCamera.resY,
+                reader.sceneCamera.resX,
+                step,
+                origin,
+                Xdirection, // xDir  (column / width axis)
+                Ydirection, // yDir  (row / height axis)
+                camRayDir,
+                perspectiveScale,
+                perspectiveForce);
+
             addCamera(cam);
         }
     }
