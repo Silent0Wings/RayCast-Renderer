@@ -349,8 +349,10 @@ private:
             }
         }
 
+        /*
         if (!hit && img.get(i, j) != defaultColor)
-            img.set(i, j, defaultColor);
+        img.set(i, j, defaultColor);
+        */
     }
 
     bool getPixelColor(unsigned int i, unsigned int j, object obj, const std::vector<std::array<point, 3>> &tris, ray r1, bool combine = false)
@@ -383,8 +385,11 @@ private:
             }
         }
 
+
+        /*
         if (!hit && img.get(i, j) != defaultColor)
-            img.set(i, j, defaultColor);
+        img.set(i, j, defaultColor);
+        */
 
         return hit;
     }

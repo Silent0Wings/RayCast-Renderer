@@ -11,9 +11,11 @@ void scene_file()
 void test()
 {
     space s;
-    object obj(primitive::suzane, 10);
-    obj.enableGrid(20);
+    object obj(primitive::cube, 10);
+    object obj1(primitive::cube, 10, point(10, 0, 0));
+    //obj.enableGrid(20);
     s.addObject(obj);
+    s.addObject(obj1);
 
     MeshReader reader;
     s.loadReader("../scene_export.txt", reader);
@@ -23,7 +25,7 @@ void test()
 
 int main(int argc, char const *argv[])
 {
-    test();
+    scene_file();
     return 0;
 }
 
