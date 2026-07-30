@@ -285,32 +285,10 @@ public:
 
     void cameraToImage(object obj)
     {
-        if (!obj.tex.empty() && !obj.colorMap.empty())
-        {
-            for (unsigned i = 0; i < height; ++i)
-                for (unsigned j = 0; j < width; ++j)
-                    getPixelCombined(i, j, obj, gridRay[i][j]);
-        }
-        else if (obj.tex.empty())
-        {
-            for (unsigned i = 0; i < height; ++i)
-                for (unsigned j = 0; j < width; ++j)
-                    getPixelColor(i, j, obj, gridRay[i][j]);
-        }
-        else if (obj.colorMap.empty())
-        {
-            for (unsigned i = 0; i < height; ++i)
-                for (unsigned j = 0; j < width; ++j)
-                    getPixelTexture(i, j, obj, gridRay[i][j]);
-        }
-    }
-
-    void cameraToImageOptimized(object obj)
-    {
         for (unsigned i = 0; i < height; ++i)
             for (unsigned j = 0; j < width; ++j)
                 if (gmath::intersectRaySphere(gridRay[i][j], obj.center, obj.sphereRadius))
-                    getPixelColorOPtimized(i, j, obj, gridRay[i][j]);
+                    getPixelColor(i, j, obj, gridRay[i][j]);
     }
 
     /* --------------------------------------------------------------
@@ -318,10 +296,11 @@ public:
        -------------------------------------------------------------- */
 
 private:
-    void getPixelCombined(unsigned int i, unsigned int j, object obj, ray r1)
+    void getPixelColor(unsigned int i, unsigned int j, object obj, ray r1, bool combine = false)
     {
-        double best = 1.0e18;
+        bool hasTexture = !obj.tex.empty();
         bool hit = false;
+        double best = 1.0e18;
         for (auto const &x : obj.colorMap)
         {
             array<point, 3> arr = {x.first[0], x.first[1], x.first[2]};
@@ -332,83 +311,30 @@ private:
                 delete val;
                 if (d <= best)
                 {
-                    best = d;
-                    color blended = x.second / 10 + obj.tex.get(i, j) / 2;
-                    img.set(i, j, blended);
                     hit = true;
+                    best = d;
+                    if (hasTexture)
+                    {
+                        if (combine)
+                        {
+                            best = d;
+                            color blended = x.second / 10 + obj.tex.get(i, j) / 2;
+                            img.set(i, j, blended);
+                        }
+                        else
+                        {
+                            img.set(i, j, obj.tex.get(i, j));
+                        }
+                    }
+                    else
+                    {
+                        img.set(i, j, x.second);
+                    }
                 }
             }
         }
         if (!hit && img.get(i, j) != defaultColor)
             img.set(i, j, defaultColor);
-    }
-
-    void getPixelTexture(unsigned int i, unsigned int j, object obj, ray r1)
-    {
-        double best = 1.0e18;
-        bool hit = false;
-        for (auto const &x : obj.colorMap)
-        {
-            array<point, 3> arr = {x.first[0], x.first[1], x.first[2]};
-            point *val = gmath::intersectRayTriangle(r1, arr.data());
-            if (val)
-            {
-                double d = gmath::distance(r1.getOrigine(), *val);
-                delete val;
-                if (d <= best)
-                {
-                    best = d;
-                    img.set(i, j, obj.tex.get(i, j));
-                    hit = true;
-                }
-            }
-        }
-        if (!hit && img.get(i, j) != defaultColor)
-            img.set(i, j, defaultColor);
-    }
-
-    void getPixelColor(unsigned int i, unsigned int j, object obj, ray r1)
-    {
-        double best = 1.0e18;
-        bool hit = false;
-        for (auto const &x : obj.colorMap)
-        {
-            array<point, 3> arr = {x.first[0], x.first[1], x.first[2]};
-            point *val = gmath::intersectRayTriangle(r1, arr.data());
-            if (val)
-            {
-                double d = gmath::distance(r1.getOrigine(), *val);
-                delete val;
-                if (d <= best)
-                {
-                    best = d;
-                    img.set(i, j, x.second);
-                    hit = true;
-                }
-            }
-        }
-        if (!hit && img.get(i, j) == defaultColor)
-            img.set(i, j, defaultColor);
-    }
-
-    void getPixelColorOPtimized(unsigned int i, unsigned int j, object obj, ray r1)
-    {
-        double best = 1.0e18;
-        for (auto const &x : obj.colorMap)
-        {
-            array<point, 3> arr = {x.first[0], x.first[1], x.first[2]};
-            point *val = gmath::intersectRayTriangle(r1, arr.data());
-            if (val)
-            {
-                double d = gmath::distance(r1.getOrigine(), *val);
-                delete val;
-                if (d <= best)
-                {
-                    best = d;
-                    img.set(i, j, x.second);
-                }
-            }
-        }
     }
 
     /* --------------------------------------------------------------

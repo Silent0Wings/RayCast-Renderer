@@ -11,7 +11,7 @@ void scene_file()
 void test()
 {
     space s;
-    s.addObject(object(primitive::suzane, 10));
+    s.addObject(object(primitive::cube, 10));
     MeshReader reader;
     s.loadReader("../scene_export.txt", reader);
     s.loadCameraFromFile(reader);

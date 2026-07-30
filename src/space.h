@@ -44,25 +44,8 @@ public:
     size_t getAvailableThreads()
     {
         size_t n = static_cast<size_t>(std::thread::hardware_concurrency());
+        cout << "Available threads: " << n << endl;
         return n > 0 ? n : 4; // 4 just in case it fails
-    }
-
-    // trigger the camera ray behavior
-    void triggerCameraRayOptimized()
-    {
-
-        if (cameras.empty() || obj.empty())
-        {
-            cout << "Empty Space :No cameras or objects to process." << endl;
-            return;
-        }
-        for (auto &cam : cameras)
-        {
-            for (auto &o : obj)
-            {
-                cam.cameraToImageOptimized(o);
-            }
-        }
     }
 
     // trigger the camera ray behavior
@@ -107,7 +90,7 @@ public:
             futures.push_back(std::async(std::launch::async, [&, camIndex]()
                                          {
                 for (auto& o : obj) {
-                    cameras[camIndex].cameraToImageOptimized(o);
+                    cameras[camIndex].cameraToImage(o);
                 } }));
         }
 
@@ -182,8 +165,11 @@ public:
         ImageRenderer::renderToFile(finalstitched, "stitched.ppm");
     }
 
+    // loading camera and objects from a scene file
+
     void loadFromFile(const string &path_to_scene)
     {
+        // read the exported scene file and load the camera and objects into the space
         MeshReader reader;
         loadReader(path_to_scene, reader);
 
@@ -193,7 +179,6 @@ public:
         // Load camera
         loadCameraFromFile(reader);
     }
-
     void loadReader(const string &path_to_scene, MeshReader &reader)
     {
         if (!reader.loadScene(path_to_scene))
@@ -202,7 +187,6 @@ public:
             return;
         }
     }
-
     void loadCameraFromFile(const MeshReader &reader)
     {
         // Load camera
