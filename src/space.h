@@ -266,7 +266,7 @@ public:
             double step = 0.01;
 
             double perspectiveScale = reader.sceneCamera.perspectiveScale > 1.0
-                                          ? reader.sceneCamera.perspectiveScale
+                                          ? reader.sceneCamera.perspectiveScale * 2
                                           : 1.0;
 
             double fovRad = reader.sceneCamera.fov * gmath::pi / 180.0;
