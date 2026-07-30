@@ -41,67 +41,10 @@ public:
         cameras.push_back(c);
     }
 
-    // Overload operator<< for prunsigned inting
-    friend ostream &operator<<(ostream &os, const space &s)
-    {
-        os << "Objects in space:\n";
-        for (const auto &o : s.obj)
-        {
-            os << o << "\n";
-        }
-        os << "Cameras in space:\n";
-        for (const auto &c : s.cameras)
-        {
-            os << c << "\n";
-        }
-        return os;
-    }
-
-    // Overload operator==
-    bool operator==(const space &other) const
-    {
-        if (obj.size() != other.obj.size() || cameras.size() != other.cameras.size())
-        {
-            return false;
-        }
-        for (size_t i = 0; i < obj.size(); ++i)
-        {
-            if (obj[i] != other.obj[i])
-            {
-                return false;
-            }
-        }
-        for (size_t i = 0; i < cameras.size(); ++i)
-        {
-            if (cameras[i] != other.cameras[i])
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
     size_t getAvailableThreads()
     {
         size_t n = static_cast<size_t>(std::thread::hardware_concurrency());
         return n > 0 ? n : 4; // 4 just in case it fails
-    }
-
-    // trigger the camera ray behavior
-    void triggerCameraRay()
-    {
-        if (cameras.empty() || obj.empty())
-        {
-            cout << "Empty Space :No cameras or objects to process." << endl;
-            return;
-        }
-        for (auto &cam : cameras)
-        {
-            for (auto &o : obj)
-            {
-                cam.cameraToImage(o);
-            }
-        }
     }
 
     // trigger the camera ray behavior
@@ -154,113 +97,6 @@ public:
         }
     }
 
-    // trigger async behavior
-    void threadedCameraRay(std::vector<std::future<void>> &futures)
-    {
-        for (auto &cam : cameras)
-        {
-            // cout << "!!!!!!!!!!!!!!!!!" << endl;
-            size_t camIndex = &cam - &cameras[0];
-            // std::cout << "Thread N*= " << camIndex << " |started!" << std::endl;
-            for (auto &o : obj)
-            {
-                // Launch asynchronous task for processing each camera-object pair
-                futures.push_back(std::async(std::launch::async, [&cam, &o, camIndex]()
-                                             {
-                                                 // Calculate thread identifier for logging
-
-                                                 // Log thread start
-
-                                                 // Clear screen (optional, might not work in all consoles)
-
-                                                 // Process the object with the camera
-                                                 cam.cameraToImage(o);
-
-                                                 // Save the rendered image to a file
-                                                 // ImageRenderer::renderToFile(cam.getimage(), "output" + std::to_string(camIndex) + ".ppm");
-                                                 // cerr << " camIndex= " << camIndex << "!" << endl;
-
-                                                 // Log thread end
-                                             }));
-                // std::cout << "\033[2J\033[H";
-            }
-            // std::cout << "Thread N*= " << camIndex << " |ended!" << std::endl;
-        }
-    }
-    void threadedCameraRayOptimized(std::vector<std::future<void>> &futures)
-    {
-        for (auto &cam : cameras)
-        {
-            // cout << "!!!!!!!!!!!!!!!!!" << endl;
-            size_t camIndex = &cam - &cameras[0];
-            // std::cout << "Thread N*= " << camIndex << " |started!" << std::endl;
-            for (auto &o : obj)
-            {
-                // Launch asynchronous task for processing each camera-object pair
-                futures.push_back(std::async(std::launch::async, [&cam, &o, camIndex]()
-                                             {
-                                                 // Calculate thread identifier for logging
-
-                                                 // Log thread start
-
-                                                 // Clear screen (optional, might not work in all consoles)
-
-                                                 // Process the object with the camera
-                                                 cam.cameraToImageOptimized(o);
-
-                                                 // Save the rendered image to a file
-                                                 // ImageRenderer::renderToFile(cam.getimage(), "output" + std::to_string(camIndex) + ".ppm");
-                                                 // cerr << " camIndex= " << camIndex << "!" << endl;
-
-                                                 // Log thread end
-                                             }));
-                // std::cout << "\033[2J\033[H";
-            }
-            // std::cout << "Thread N*= " << camIndex << " |ended!" << std::endl;
-        }
-    }
-
-    // this laucnhes a thread for each camera to object pair : 10 objects & 10 cameras = 100 threads !!! not good
-    void launchThreadedCameraRay()
-    {
-        std::vector<std::future<void>> futures;
-
-        for (auto &cam : cameras)
-        {
-            // cout << "!!!!!!!!!!!!!!!!!" << endl;
-            size_t camIndex = &cam - &cameras[0];
-            // std::cout << "Thread N*= " << camIndex << " |started!" << std::endl;
-            for (auto &o : obj)
-            {
-                // Launch asynchronous task for processing each camera-object pair
-                futures.push_back(std::async(std::launch::async, [&cam, &o, camIndex]()
-                                             {
-                                                 // Calculate thread identifier for logging
-
-                                                 // Log thread start
-
-                                                 // Clear screen (optional, might not work in all consoles)
-
-                                                 // Process the object with the camera
-                                                 cam.cameraToImageOptimized(o);
-
-                                                 // Save the rendered image to a file
-                                                 // ImageRenderer::renderToFile(cam.getimage(), "output" + std::to_string(camIndex) + ".ppm");
-                                                 // cerr << " camIndex= " << camIndex << "!" << endl;
-
-                                                 // Log thread end
-                                             }));
-                // std::cout << "\033[2J\033[H";
-            }
-            // std::cout << "Thread N*= " << camIndex << " |ended!" << std::endl;
-        }
-
-        for (auto &future : futures)
-        {
-            future.get();
-        }
-    }
-
     // This launches a thread for each camera
     void launchThreadedCamera()
     {
@@ -284,6 +120,7 @@ public:
     // This launches a thread for each camera
     void launchThreadedCameraSplit()
     {
+        // splits the camera
         size_t originalH = 0;
         size_t originalW = 0;
         if (cameras.size() == 1)
@@ -300,24 +137,11 @@ public:
             throw std::runtime_error("launchThreadedCameraSplit() is only supported for a single camera in the space.");
         }
 
-        std::vector<std::future<void>> futures;
+        // launche the threads
+        launchThreadedCamera();
 
-        for (size_t camIndex = 0; camIndex < cameras.size(); ++camIndex)
-        {
-            futures.push_back(std::async(std::launch::async, [&, camIndex]()
-                                         {
-                for (auto& o : obj) {
-                    cameras[camIndex].cameraToImageOptimized(o);
-                } }));
-        }
-
-        for (auto &future : futures)
-        {
-            future.get();
-        }
-
-        image finalstitched = cameras.at(0).construct_split(cameras, originalH, originalW);
-        ImageRenderer::renderToFile(finalstitched, "stitched.ppm");
+        // stitch the images back together
+        saveStitchedImage("stitched_output_", originalH, originalW);
     }
 
     // output the imges
@@ -329,18 +153,33 @@ public:
         {
             cout << "_____________" << endl;
             cout << "Saving image " << to_string(i) << endl;
-            ImageRenderer::renderToFile(cameras[i].getimage(), "output" + to_string(i) + ".ppm");
+            saveImage(cameras[i], "output" + to_string(i));
         }
     }
 
-    void saveImage(camera c)
+    void saveImage(camera c, string name = "output_")
     {
-        ImageRenderer::renderToFile(c.getimage(), "output_" + to_string(chrono::high_resolution_clock::now().time_since_epoch().count()) + ".ppm");
+        if (name.empty() || name == "output_")
+        {
+            name = "output_" + to_string(chrono::high_resolution_clock::now().time_since_epoch().count());
+        }
+        ImageRenderer::renderToFile(c.getimage(), name + ".ppm");
     }
 
-    void saveImage(camera c, string name)
+    void saveStitchedImage(string name = "stitched_output_", size_t originalH = 0, size_t originalW = 0)
     {
-        ImageRenderer::renderToFile(c.getimage(), "output_" + name + ".ppm");
+        if (originalH == 0 || originalW == 0)
+        {
+            throw std::runtime_error("Original height and width must be provided for stitching.");
+        }
+
+        if (name.empty() || name == "stitched_output_")
+        {
+            name = "stitched_output_" + to_string(chrono::high_resolution_clock::now().time_since_epoch().count());
+        }
+        // stitch the images back together
+        image finalstitched = cameras.at(0).construct_split(cameras, originalH, originalW);
+        ImageRenderer::renderToFile(finalstitched, "stitched.ppm");
     }
 
     void loadFromFile(const string &path_to_scene)
