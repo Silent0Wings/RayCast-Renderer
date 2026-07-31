@@ -3,7 +3,7 @@
 void scene_file(size_t pass)
 {
     space s;
-    s.loadFromFile("../scene_export.txt");
+    s.loadFromFile("../scene/scene_export.txt");
     s.enableGrid(pass);
     s.launchThreadedCameraSplit();
 }
@@ -17,7 +17,7 @@ void test()
     s.enableGrid(10);
 
     MeshReader reader;
-    s.loadReader("../scene_export.txt", reader);
+    s.loadReader("../scene/scene_export.txt", reader);
     s.loadCameraFromFile(reader);
     s.launchThreadedCameraSplit();
 }

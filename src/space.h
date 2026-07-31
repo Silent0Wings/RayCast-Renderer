@@ -266,7 +266,6 @@ public:
     }
     void loadObjectFromFile(const MeshReader &reader)
     {
-
         // Load objects
         for (const auto &objData : reader.sceneObjects)
         {
