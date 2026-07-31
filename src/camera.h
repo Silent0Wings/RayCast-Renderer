@@ -290,33 +290,46 @@ public:
        Rendering
        -------------------------------------------------------------- */
 
+    // In cameraToImage:
     void cameraToImage(const object &obj)
     {
         for (unsigned i = 0; i < height; ++i)
         {
             for (unsigned j = 0; j < width; ++j)
             {
-                const auto &ray = gridRay[i][j];
+                auto &ray = gridRay[i][j];
 
                 if (!gmath::intersectRaySphere(ray, obj.center, obj.sphereRadius))
                     continue;
 
+                double bestDist = ray.hasLastHit() ? ray.getLastHitDistance() : std::numeric_limits<double>::infinity();
+
                 if (!obj.boundingGrid)
                 {
-                    getPixelColor(i, j, obj, ray);
+                    bool hit = getPixelColor(i, j, obj, ray, bestDist);
+                    if (hit)
+                        ray.setLastHitDistance(bestDist);
                     continue;
                 }
 
                 const auto &grid = *obj.boundingGrid;
 
-                grid.TraverseRay(ray.getOrigine(), ray.getDirection(),
-                                 [&](std::size_t idx) -> bool
-                                 {
-                                     const auto &entry = grid.At(idx);
-                                     if (entry.data.triples.empty())
-                                         return true;
-                                     return !getPixelColor(i, j, obj, entry.data.triples, ray);
-                                 });
+                const auto visitedCubes = grid.TraverseRay(ray.getOrigine(), ray.getDirection());
+                bool hit = false;
+                for (const auto &[idx, cubeDist] : visitedCubes)
+                {
+                    if (cubeDist > bestDist)
+                        break;
+
+                    const auto &entry = grid.At(idx);
+                    if (entry.data.triples.empty())
+                        continue;
+
+                    hit = getPixelColor(i, j, obj, entry.data.triples, ray, bestDist) || hit;
+                }
+
+                if (hit)
+                    ray.setLastHitDistance(bestDist);
             }
         }
     }
@@ -325,26 +338,32 @@ public:
        Pixel helpers (private implementation)
        -------------------------------------------------------------- */
 
-private:
-    bool getPixelColor(unsigned int i, unsigned int j, object obj, ray r1, bool combine = false)
+    // No-grid, full-object version that shares bestDist with the caller
+    bool getPixelColor(
+        unsigned int i,
+        unsigned int j,
+        object obj,
+        ray r1,
+        double &bestDist,
+        bool combine = false)
     {
         bool hasTexture = !obj.tex.empty();
         bool hit = false;
-        double best = 1.0e18;
 
         for (auto const &x : obj.colorMap)
         {
             std::array<point, 3> tri = {x.first[0], x.first[1], x.first[2]};
+
             std::optional<point> val = gmath::intersectRayTriangle(r1, tri.data());
             if (!val)
                 continue;
 
             double d = gmath::distance(r1.getOrigine(), *val);
-            if (d >= best) // ← Same fix here
+            if (d >= bestDist)
                 continue;
 
             hit = true;
-            best = d;
+            bestDist = d;
 
             if (hasTexture)
             {
@@ -357,18 +376,21 @@ private:
             }
         }
 
-        /*
-        if (!hit && img.get(i, j) != defaultColor)
-        img.set(i, j, defaultColor);
-        */
         return hit;
     }
 
-    bool getPixelColor(unsigned int i, unsigned int j, object obj, const std::vector<std::array<point, 3>> &tris, ray r1, bool combine = false)
+    // Grid-cell version (already correct)
+    bool getPixelColor(
+        unsigned int i,
+        unsigned int j,
+        object obj,
+        const std::vector<std::array<point, 3>> &tris,
+        ray r1,
+        double &bestDist,
+        bool combine = false)
     {
         bool hasTexture = !obj.tex.empty();
         bool hit = false;
-        double best = 1.0e18;
 
         for (const auto &tri : tris)
         {
@@ -377,11 +399,11 @@ private:
                 continue;
 
             double d = gmath::distance(r1.getOrigine(), *val);
-            if (d >= best) // ← Skip if NOT closer (was: d > best)
+            if (d >= bestDist)
                 continue;
 
             hit = true;
-            best = d;
+            bestDist = d;
 
             if (hasTexture)
             {
@@ -394,14 +416,8 @@ private:
             }
         }
 
-        /*
-        if (!hit && img.get(i, j) != defaultColor)
-        img.set(i, j, defaultColor);
-        */
-
         return hit;
     }
-
     /* --------------------------------------------------------------
        Split / Merge
        -------------------------------------------------------------- */

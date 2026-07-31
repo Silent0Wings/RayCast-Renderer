@@ -92,7 +92,6 @@ public:
     // This launches a thread for each camera
     void launchThreadedCameraSplit()
     {
-        auto start = std::chrono::high_resolution_clock::now();
 
         // splits the camera
         size_t originalH = 0;
@@ -116,15 +115,13 @@ public:
 
         // stitch the images back together
         saveStitchedImage("stitched_output_", originalH, originalW);
-
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double, std::milli> elapsed = end - start;
-        std::cout << "test() elapsed time: " << elapsed.count() << " ms\n";
     }
 
     // This launches a thread for each camera
     void launchThreadedCamera()
     {
+        auto start = std::chrono::high_resolution_clock::now();
+
         std::vector<std::future<void>> futures;
 
         for (size_t camIndex = 0; camIndex < cameras.size(); ++camIndex)
@@ -140,6 +137,10 @@ public:
         {
             future.get();
         }
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> elapsed = end - start;
+        std::cout << "test() elapsed time: " << elapsed.count() << " ms\n";
     }
 
     // output the imges

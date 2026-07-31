@@ -180,41 +180,49 @@ std::optional<point> gmath::intersectRayTriangle(const ray &r1, const point tria
     const point &B = triangle[1];
     const point &C = triangle[2];
 
-    vec3 AB = B - A;
-    vec3 AC = C - A;
-    vec3 normal = cross(AB, AC);
+    auto tryIntersect = [&](const point &a, const point &b, const point &c) -> std::optional<point>
+    {
+        vec3 AB = b - a;
+        vec3 AC = c - a;
+        vec3 normal = cross(AB, AC);
 
-    vec3 dir = r1.getDirection();
-    point origin = r1.getOrigine();
+        vec3 dir = r1.getDirection();
+        point origin = r1.getOrigine();
 
-    double denominator = dot(normal, dir);
-    if (std::abs(denominator) < 1e-6)
-        return std::nullopt; // ray is parallel to the triangle's plane
+        double denominator = dot(normal, dir);
+        if (std::abs(denominator) < 1e-6)
+            return std::nullopt;
 
-    double t = dot(normal, A - origin) / denominator;
-    if (t < 0)
-        return std::nullopt; // intersection is behind the ray
+        double t = dot(normal, a - origin) / denominator;
+        if (t < 0)
+            return std::nullopt;
 
-    point P = origin + dir * t;
+        point P = origin + dir * t;
 
-    vec3 AP = P - A;
-    double dot00 = dot(AB, AB);
-    double dot01 = dot(AB, AC);
-    double dot02 = dot(AB, AP);
-    double dot11 = dot(AC, AC);
-    double dot12 = dot(AC, AP);
+        vec3 AP = P - a;
+        double dot00 = dot(AB, AB);
+        double dot01 = dot(AB, AC);
+        double dot02 = dot(AB, AP);
+        double dot11 = dot(AC, AC);
+        double dot12 = dot(AC, AP);
 
-    double denom = dot00 * dot11 - dot01 * dot01;
-    if (std::abs(denom) < 1e-6)
+        double denom = dot00 * dot11 - dot01 * dot01;
+        if (std::abs(denom) < 1e-6)
+            return std::nullopt;
+
+        double u = (dot11 * dot02 - dot01 * dot12) / denom;
+        double v = (dot00 * dot12 - dot01 * dot02) / denom;
+
+        if (u >= 0 && v >= 0 && (u + v <= 1))
+            return P;
+
         return std::nullopt;
+    };
 
-    double u = (dot11 * dot02 - dot01 * dot12) / denom;
-    double v = (dot00 * dot12 - dot01 * dot02) / denom;
+    if (auto hit = tryIntersect(A, B, C))
+        return hit;
 
-    if (u >= 0 && v >= 0 && (u + v <= 1))
-        return P;
-
-    return std::nullopt;
+    return tryIntersect(A, C, B);
 }
 
 Hit *gmath::intersect3dHit(const ray &r1, const point arr[3])

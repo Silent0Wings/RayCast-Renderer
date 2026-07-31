@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <functional>
 #include <algorithm>
+#include <utility>
 #include "point.h"
 #include "Cube.h"
 
@@ -180,12 +181,13 @@ public:
         return true;
     }
 
-    template <typename Visitor>
-    void TraverseRay(const point &ro, const point &rd, Visitor visit) const
+    std::vector<std::pair<std::size_t, double>> TraverseRay(const point &ro, const point &rd) const
     {
+        std::vector<std::pair<std::size_t, double>> visitedCubes;
+
         double tEnter, tExit;
         if (!RayGridRange(ro, rd, tEnter, tExit))
-            return;
+            return visitedCubes;
 
         const point o = m_boundingCube.Origin();
         const double cell = m_boundingCube.Size() / static_cast<double>(m_divisions);
@@ -226,26 +228,31 @@ public:
             }
         }
 
+        double cubeDist = tEnter;
         for (;;)
         {
-            if (!visit(IndexOf(static_cast<std::size_t>(idx[0]),
-                               static_cast<std::size_t>(idx[1]),
-                               static_cast<std::size_t>(idx[2]))))
-                return;
+            visitedCubes.emplace_back(IndexOf(
+                                          static_cast<std::size_t>(idx[0]),
+                                          static_cast<std::size_t>(idx[1]),
+                                          static_cast<std::size_t>(idx[2])),
+                                      cubeDist);
 
             const int a = (tMax[0] < tMax[1])
                               ? (tMax[0] < tMax[2] ? 0 : 2)
                               : (tMax[1] < tMax[2] ? 1 : 2);
 
             if (step[a] == 0 || tMax[a] > tExit)
-                return;
+                break;
 
             idx[a] += step[a];
             if (idx[a] < 0 || idx[a] >= n)
-                return;
+                break;
 
+            cubeDist = tMax[a];
             tMax[a] += tDelta[a];
         }
+
+        return visitedCubes;
     }
 
     void PrecomputeNeighbors()

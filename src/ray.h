@@ -8,6 +8,7 @@
 #define RAY_H
 
 #include <cmath>
+#include <limits>
 #include "point.h" // Ensure this is included before using vec3
 
 /**
@@ -21,10 +22,12 @@ class ray
 private:
     point origine;
     vec3 direction;
+    double lastHitDistance;
+    bool hasHit;
 
 public:
-    ray() : ray(point(0, 0, 0), vec3(0, 0, 0)) {}      // Constructor
-    ray(point p, vec3 v) : origine(p), direction(v) {} // Constructor
+    ray() : ray(point(0, 0, 0), vec3(0, 0, 0)) {}                                                                               // Constructor
+    ray(point p, vec3 v) : origine(p), direction(v), lastHitDistance(std::numeric_limits<double>::infinity()), hasHit(false) {} // Constructor
 
     // Getter
     point getOrigine() const { return origine; }
@@ -33,6 +36,18 @@ public:
     // Setter
     void setOrigine(point p) { origine = p; }
     void setDirection(vec3 v) { direction = v; }
+    double getLastHitDistance() const { return lastHitDistance; }
+    bool hasLastHit() const { return hasHit; }
+    void setLastHitDistance(double distance)
+    {
+        lastHitDistance = distance;
+        hasHit = true;
+    }
+    void clearLastHitDistance()
+    {
+        lastHitDistance = std::numeric_limits<double>::infinity();
+        hasHit = false;
+    }
 
     // Point at a distance t along the ray
     point get(double t) const

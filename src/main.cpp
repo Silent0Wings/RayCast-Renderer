@@ -1,10 +1,10 @@
 #include "helper.cpp"
 
-void scene_file()
+void scene_file(size_t pass)
 {
     space s;
     s.loadFromFile("../scene_export.txt");
-    s.enableGrid(10);
+    s.enableGrid(pass);
     s.launchThreadedCameraSplit();
 }
 
@@ -12,12 +12,10 @@ void test()
 {
     space s;
     object obj(primitive::suzane, 10);
-    object obj1(primitive::cube, 10, point(15, 0, 0));
-    
+
     s.addObject(obj);
-    s.addObject(obj1);
-    
     s.enableGrid(10);
+
     MeshReader reader;
     s.loadReader("../scene_export.txt", reader);
     s.loadCameraFromFile(reader);
@@ -26,7 +24,8 @@ void test()
 
 int main(int argc, char const *argv[])
 {
-    scene_file();
+    scene_file(5);
+
     return 0;
 }
 
