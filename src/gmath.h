@@ -14,6 +14,7 @@
 #include "Hit.h"
 #include "Cube.h"
 #include <optional>
+#include "color.h"
 
 /**
  * @class gmath
@@ -62,6 +63,8 @@ public:
     static point *intersect3d2(const ray &r1, const point arr[4]);
     static bool intersectRaySphere(const ray &r1, const point center, const double radius);
     static bool intersectRayCube(const ray &ray, const Cube &cube);
+    static vec3 *normalVector(const point &a, const point &b, const point &c);
+    static void normalOrientationColor(const vec3 &normal, color &color);
 
     static double magnitude(const vec3);
 

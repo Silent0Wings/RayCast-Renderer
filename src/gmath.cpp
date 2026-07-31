@@ -438,6 +438,113 @@ bool gmath::intersectRayCube(const ray &ray, const Cube &_cube)
     return true;
 }
 
+vec3 *gmath::normalVector(const point &a, const point &b, const point &c)
+{
+    vec3 edge1 = b - a;
+    vec3 edge2 = c - a;
+
+    vec3 normal = cross(edge1, edge2);
+    return new vec3(normal);
+}
+
+void gmath::normalOrientationColor(const vec3 &normal, color &final)
+{
+    vec3 n = normal;
+    double len = std::sqrt(n.x() * n.x() + n.y() * n.y() + n.z() * n.z());
+    if (len < 1e-6)
+    {
+        n = vec3(0, 0, 1);
+    }
+    else
+    {
+        n = n / len;
+    }
+
+    // orientation vectors
+    vec3 right(1, 0, 0);
+    vec3 left(-1, 0, 0);
+    vec3 up(0, 1, 0);
+    vec3 down(0, -1, 0);
+    vec3 forward(0, 0, 1);
+    vec3 backward(0, 0, -1);
+
+    // angles in degrees
+    double angleRight = gmath::angleBetweenDegree(n, right);
+    double angleLeft = gmath::angleBetweenDegree(n, left);
+    double angleUp = gmath::angleBetweenDegree(n, up);
+    double angleDown = gmath::angleBetweenDegree(n, down);
+    double angleForward = gmath::angleBetweenDegree(n, forward);
+    double angleBackward = gmath::angleBetweenDegree(n, backward);
+
+    // raw weights in [0,1]
+    double wRight = std::max(0.0, 1.0 - angleRight / 180.0);
+    double wLeft = std::max(0.0, 1.0 - angleLeft / 180.0);
+    double wUp = std::max(0.0, 1.0 - angleUp / 180.0);
+    double wDown = std::max(0.0, 1.0 - angleDown / 180.0);
+    double wForward = std::max(0.0, 1.0 - angleForward / 180.0);
+    double wBackward = std::max(0.0, 1.0 - angleBackward / 180.0);
+
+    // normalize weights so they sum to 1 (avoid division by zero)
+    double wSum = wRight + wLeft + wUp + wDown + wForward + wBackward;
+    if (wSum < 1e-6)
+    {
+        // Fallback if all weights are ~0
+        wSum = 1.0;
+        wRight = 1.0;
+    }
+    else
+    {
+        wRight /= wSum;
+        wLeft /= wSum;
+        wUp /= wSum;
+        wDown /= wSum;
+        wForward /= wSum;
+        wBackward /= wSum;
+    }
+
+    // Base colors in 0–255
+    const double redR = 255, redG = 0, redB = 0;
+    const double greenR = 0, greenG = 255, greenB = 0;
+    const double blueR = 0, blueG = 0, blueB = 255;
+    const double yellowR = 255, yellowG = 255, yellowB = 0;
+    const double cyanR = 0, cyanG = 255, cyanB = 255;
+    const double magentaR = 255, magentaG = 0, magentaB = 255;
+
+    // weighted average of colors
+    double r =
+        redR * wRight +
+        greenR * wLeft +
+        blueR * wUp +
+        yellowR * wDown +
+        cyanR * wForward +
+        magentaR * wBackward;
+
+    double g =
+        redG * wRight +
+        greenG * wLeft +
+        blueG * wUp +
+        yellowG * wDown +
+        cyanG * wForward +
+        magentaG * wBackward;
+
+    double b =
+        redB * wRight +
+        greenB * wLeft +
+        blueB * wUp +
+        yellowB * wDown +
+        cyanB * wForward +
+        magentaB * wBackward;
+
+    // clamp to [0, 255] and convert
+    int ri = static_cast<int>(std::round(std::clamp(r, 0.0, 255.0)));
+    int gi = static_cast<int>(std::round(std::clamp(g, 0.0, 255.0)));
+    int bi = static_cast<int>(std::round(std::clamp(b, 0.0, 255.0)));
+
+    final.set_x(static_cast<double>(ri));
+    final.set_y(static_cast<double>(gi));
+    final.set_z(static_cast<double>(bi));
+}
+
 double gmath::magnitude(const vec3 v)
 {
     return std::sqrt(v.x() * v.x() + v.y() * v.y() + v.z() * v.z());
