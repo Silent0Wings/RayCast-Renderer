@@ -412,7 +412,15 @@ public:
             }
             else
             {
-                img.set(i, j, obj.colorMap.at(tri));
+                 img.set(i, j, obj.colorMap.at(tri));
+
+
+                /*
+                vec3 n = gmath::normalVector(tri[0], tri[1], tri[2]);
+                color c(0, 0, 0);
+                gmath::normalOrientationColor(n, c);
+                img.set(i, j, c);
+                */
             }
         }
 
