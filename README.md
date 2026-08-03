@@ -95,6 +95,7 @@ The engine uses linear algebra to test ray-triangle intersections. When a ray hi
 
 2. **C++ Compiler**:
    - Supports C++17 or later (required for multithreading).
+   - On Windows, run [script/setup.bat](script/setup.bat) if g++ is missing.
 
 ## Theory Behind the Renderer
 
